@@ -1,2 +1,3 @@
 # Learning-Notebook-Codes
- 存放平时学习的代码
+
+这个仓库存放了我平时的学习日记。
