@@ -583,6 +583,8 @@ if __name__ == "__main__":
 
 ![](./Python的Registry.png)
 
+> 高清图片链接: [图片 + 源文件](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python_Registry/Python%E7%9A%84Registry.png)
+
 1. `Register` 类继承了内置的 `dict` 类，并在其构造函数中初始化一个名为 `_dict` 的字典，用于保存注册的可调用对象。
 
 2. `register` 方法用于注册可调用对象。它接受一个参数 `target`，这可以是可调用对象或者是一个注册名。如果 `target` 是可调用对象，它会将函数或类名作为注册名。如果 `target` 不可调用，它会将传入的注册名与传入的可调用对象关联。
