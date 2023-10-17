@@ -353,14 +353,251 @@ param1: 参数1 | param2: 参数2
 
 # 3. Python 注册器 —— Registry
 
+## 3.1 实现一个手动注册器
+
 有了装饰器的基础之后，我们现在要走入注册器的世界了。Python 的注册器本质上就是用装饰器的原理实现的。Registry 提供了字符串到函数或类的映射，这个映射会被整合到一个字典中，开发者只要输入输入相应的字符串（为函数或类起的名字）和参数，就能获得一个函数或初始化好的类。为了说明 Registry 的好处，我们首先看一下用一个字典存放字符串到函数的映射：
 
 ```python
+def foo():
+    ...
 
+
+def fn(x): return x**2
+
+
+class ExampleClass:
+    ...
+
+
+if __name__ == "__main__":
+    # 创建注册字典
+    register = dict()
+
+    # 开始为函数和类进行注册
+    register[foo.__name__] = foo
+    register[fn.__name__] = fn
+    register[ExampleClass.__name__] = ExampleClass
+
+    print(register)
 ```
 
+```
+{'foo': <function foo at 0x000001D730752550>, 
+'<lambda>': <function <lambda> at 0x000001D730752D30>, 
+'ExmpleClass': <class '__main__.ExampleClass'>} 
+```
+
+虽然这样也可以创建一个注册器，但这样做的缺点是我们需要手动维护 `register` 这个字典，当增加或删除新的函数或类时，我们需要手动修改 `register` 这个字典，因此我们需要一个可以自动维护的字典，在我们定义一个函数或类的时候就自动把它整合到字典中。为了达到这一目的，这里就使用到了装饰器，<font color='blue'>在装饰器中将我们新定义的函数或类存放的字典中，这个过程我们称之为注册</font>。
+
+## 3.2 实现一个半自动注册器
+
+### 3.2.1 代码
+
+这里我们需要定义一个装饰器类 `Register`，其中核心部分就是成员函数 `register`，它作为一个装饰器函数：
+
+```python
+class Register(dict):
+    def __init__(self, *args, **kwargs):
+        super(Register, self).__init__(*args, **kwargs)
+        self._dict = dict()  # 创建一个字典用于保存注册的可调用对象
+
+    def register(self, target):
+        def add_item(key, value):
+            if key in self._dict:  # 如果 key 已经存在
+                print(f"\033[31m"
+                      f"WARNING: {value.__name__} 已经存在!"
+                      f"\033[0m")
+
+            # 进行注册，将 key 和 value 添加到字典中
+            self[key] = value
+            return value
+
+        # 传入的 target 可调用 --> 没有给注册名 --> 传入的函数名或类名作为注册名
+        if callable(target):  # key 为函数/类的名称; value 为函数/类本体
+            return add_item(key=target.__name__, value=target)
+        else:  # 传入的 target 不可调用 --> 抛出异常
+            raise TypeError("\033[31mOnly support callable object, e.g. function or class\033[0m")
+        
+    def __call__(self, target):
+        return self.register(target)
+
+    def __setitem__(self, key, value):  # 将键值对添加到 _dict 字典中
+        self._dict[key] = value
+
+    def __getitem__(self, key):  # 从 _dict 字典中获取注册的可调用对象
+        return self._dict[key]
+
+    def __contains__(self, key):  # 检查给定的注册名是否存在于 _dict 字典中
+        return key in self._dict
+
+    def __str__(self):  # 返回 _dict 字典的字符串表示
+        return str(self._dict)
+
+    def keys(self):  # 返回 _dict 字典中的所有键
+        return self._dict.keys()
+
+    def values(self):  # 返回 _dict 字典中的所有值
+        return self._dict.values()
+
+    def items(self):  # 返回 _dict 字典中的所有键值对
+        return self._dict.items()
 
 
+if __name__ == "__main__":
+    register_obj = Register()
+    
+    @register_obj  # 不用再 register_obj.register 了
+    def fn1_add(a, b):
+        return a + b
+    
+    @register_obj  # 不用再 register_obj.register 了
+    def fn2_subject(a, b):
+        return a - b
+    
+    @register_obj  # 不用再 register_obj.register 了
+    def fn3_multiply(a, b):
+        return a * b
+    
+    @register_obj  # 不用再 register_obj.register 了
+    def fn4_divide(a, b):
+        return a / b
+    
+    # 我们再重复定义一个函数
+    @register_obj  # 不用再 register_obj.register 了
+    def fn2_subject(a, b):
+        return b - a
+    
+    # 尝试使用 register 方法注册不可调用的对象
+    try:
+        register_obj.register("传入字符串，它是不可调用的")
+    except Exception as e:
+        print(f"报错啦: {e}")
+
+    print("所有函数均已注册!\n")
+    
+    # 我们查看一个注册器中有哪些元素
+    print(f"\033[34mkey\t\tvalue\033[0m")
+    for k, v in register_obj.items():  # <=> for k, v in register_obj._dict.items()
+        print(f"{k}: \t{v}")
+```
+
+![](./imgs_markdown/2023-10-17-14-15-43.png)
+
+
+## 3.3 实现一个全自动注册器
+
+### 3.3.1 代码实现
+
+如果不想手动调用 `register()` 函数，可以在 `Register` 类中添加一个 `__call__()` 函数：
+
+```python
+class Register(dict):
+    def __init__(self, *args, **kwargs):
+        super(Register, self).__init__(*args, **kwargs)
+        self._dict = dict()  # 创建一个字典用于保存注册的可调用对象
+
+    def register(self, target):
+        def add_item(key, value):
+            if key in self._dict:  # 如果 key 已经存在
+                print(f"\033[34m"
+                      f"WARNING: {value.__name__} 已经存在!"
+                      f"\033[0m")
+
+            # 进行注册，将 key 和 value 添加到字典中
+            self[key] = value
+            return value
+
+        # 传入的 target 可调用 --> 没有给注册名 --> 传入的函数名或类名作为注册名
+        if callable(target):  # key 为函数/类的名称; value 为函数/类本体
+            return add_item(key=target.__name__, value=target)
+        else:  # 传入的 target 不可调用 --> 抛出异常
+            raise TypeError("\033[31mOnly support callable object, e.g. function or class\033[0m")
+        
+    def __call__(self, target):
+        return self.register(target)
+
+    def __setitem__(self, key, value):  # 将键值对添加到 _dict 字典中
+        self._dict[key] = value
+
+    def __getitem__(self, key):  # 从 _dict 字典中获取注册的可调用对象
+        return self._dict[key]
+
+    def __contains__(self, key):  # 检查给定的注册名是否存在于 _dict 字典中
+        return key in self._dict
+
+    def __str__(self):  # 返回 _dict 字典的字符串表示
+        return str(self._dict)
+
+    def keys(self):  # 返回 _dict 字典中的所有键
+        return self._dict.keys()
+
+    def values(self):  # 返回 _dict 字典中的所有值
+        return self._dict.values()
+
+    def items(self):  # 返回 _dict 字典中的所有键值对
+        return self._dict.items()
+
+
+if __name__ == "__main__":
+    register_obj = Register()
+    
+    @register_obj  # 不用再 register_obj.register 了
+    def fn1_add(a, b):
+        return a + b
+    
+    @register_obj  # 不用再 register_obj.register 了
+    def fn2_subject(a, b):
+        return a - b
+    
+    @register_obj  # 不用再 register_obj.register 了
+    def fn3_multiply(a, b):
+        return a * b
+    
+    @register_obj  # 不用再 register_obj.register 了
+    def fn4_divide(a, b):
+        return a / b
+    
+    # 我们再重复定义一个函数
+    @register_obj  # 不用再 register_obj.register 了
+    def fn2_subject(a, b):
+        return b - a
+    
+    # 尝试使用 register 方法注册不可调用的对象
+    try:
+        register_obj("传入字符串，它是不可调用的")
+        # <=> register_obj.register("传入字符串，它是不可调用的")  # 因为我们实现了__call__()函数
+    except Exception as e:
+        print(f"报错啦: {e}")
+
+    print("\n所有函数均已注册!\n")
+    
+    # 我们查看一个注册器中有哪些元素
+    print(f"\033[34mkey\t\tvalue\033[0m")
+    for k, v in register_obj.items():  # <=> for k, v in register_obj._dict.items()
+        print(f"{k}: \t{v}")
+```
+
+![](./imgs_markdown/2023-10-17-14-15-43.png)
+
+### 3.3.2 代码分析
+
+![](./Python的Registry.png)
+
+1. `Register` 类继承了内置的 `dict` 类，并在其构造函数中初始化一个名为 `_dict` 的字典，用于保存注册的可调用对象。
+
+2. `register` 方法用于注册可调用对象。它接受一个参数 `target`，这可以是可调用对象或者是一个注册名。如果 `target` 是可调用对象，它会将函数或类名作为注册名。如果 `target` 不可调用，它会将传入的注册名与传入的可调用对象关联。
+
+3. `add_item` 内部函数检查可调用对象是否可被调用，如果不可调用会引发异常。它还检查注册名是否已存在，如果存在则发出警告。
+
+4. :star: `__call__` 方法允许对象实例（`register_obj`）像函数一样被调用，实际上是将调用委托给 `register` 方法。
+
+5. 其余的魔法方法（`__setitem__`, `__getitem__`, `__contains__`, `__str__`, `keys()`, `values()`, `items()`）覆盖了字典的行为，以便访问和管理内部的 `_dict` 字典。
+
+6. 在主程序中，`Register` 类的一个实例 `register_obj` 被创建。
+
+7. 使用装饰器 `@register_obj`，将多个函数注册到 `register_obj` 实例中，每个函数都有一个注册名。如果函数的注册名已经存在，会打印警告信息。
+
+8. 最后，程序输出注册器中的所有注册名和可调用对象。
 
 # 知识来源
 1. [【Python】Python的Registry机制](https://zhuanlan.zhihu.com/p/567619814)
