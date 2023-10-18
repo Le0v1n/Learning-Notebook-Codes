@@ -1,4 +1,4 @@
-<center><b><font size=12>Comprehensive Guide to Ultralytics YOLOv5</font></b></center>
+<center><b><font size=12>YOLOv5：训练自己的 VOC 格式数据集</font></b></center>
 
 # 1. 自定义数据集
 
