@@ -29,31 +29,24 @@ YOLOv5 仓库是在 `2020-05-18` 创建的，到今天已经迭代了很多个�
 
 # 1. 网络结构
 
-1. 模型结构
-YOLOv5的架构由三个主要部分组成：
-
-主干网络：
-
-颈部：
-
-头部：
-
-模型的结构如下图所示。有。
-
 YOLOv5 的网络结构主要由以下几部分组成：
 
 1. **Backbone**: New CSP-Darknet53
  这是网络的主体部分。对于 YOLOv5，主干网络采用了 New CSP-Darknet53 结构，这是对先前版本中使用的 Darknet 架构的修改。
-2. **Neck**: SPPF, New CSP-PAN
+1. **Neck**: SPPF, New CSP-PAN
  这部分连接了主干网络和头部。在 YOLOv5 中，使用了 SPPF 和 New CSP-PAN 结构。
-3. **Head**: YOLOv3 Head
+1. **Head**: YOLOv3 Head
  这部分负责生成最终的输出。YOLOv5 使用 YOLOv3 头部来实现这一目标。
 
 > 关模型结构的详细信息可以在 [yolov5l.yaml](https://github.com/ultralytics/yolov5/blob/e4df1ec5bab52601d5de6d62d428dfd03ab53be1/models/yolov5l.yaml) 中找到
 
 下面是官方根据 `yolov5l.yaml` 绘制的网络整体结构，YOLOv5 不同大小(`n`, `s`, `m`, `l`, `x`)的网络整体架构都是一样的，只不过会**在每个子模块中采用不同的深度和宽度**，分别应对 .yaml 文件中的 `depth_multiple` 和 `width_multiple` 参数。还需要注意一点，官方除了 `n, s, m, l, x` 版本外还有 `n6, s6, m6, l6, x6`，区别在于后者是针对更大分辨率的图片比如 $1280\times 1280$，当然结构上也有些差异，后者会 64 倍下采样，4 个预测特征层，而前者只会下采样到 32 倍且采用 3 个预测特征层。本文只讨论前者。
 
-![](./yolov5-arch.png)
+<div align="center">
+  <img 
+  src="./yolov5-arch.png"
+  >
+</div>
 
 **注意**：YOLOv5 相对于其前身引入了一些小的改变：
 + 早期版本中的 Focus 结构被替换为 6x6 Conv2d 结构。这个变化提高了效率 #4825。
@@ -133,7 +126,11 @@ SPPF time: 0.20780706405639648
 
 下图是原来的 Focus 模块(和之前 [Swin Transformer](https://blog.csdn.net/weixin_44878336/article/details/125444556) 中的 Patch Merging 类似)，将每个 $2×2$ 的相邻像素划分为一个 patch，然后将每个 patch 中相同位置（同一颜色）像素给拼在一起就得到了 4 个 feature map，然后在接上一个 $3×3$ 大小的卷积层。这和直接使用一个 $6×6$ 大小的卷积层等效。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/c9b39d44ffb34685a3cb7eee80bc92ca.png)
+<div align="center">
+  <img 
+  src="https://img-blog.csdnimg.cn/c9b39d44ffb34685a3cb7eee80bc92ca.png"
+  width=500>
+</div>
 
 
 ## 1.2 Neck
@@ -144,7 +141,11 @@ YOLOv5 在 Neck 部分的变化还是相对较大的，首先是将 SPP 换成�
 
 SPP 结构如下图所示，是将输入并行通过多个不同大小的 MaxPool，然后做进一步融合，能在一定程度上解决目标多尺度问题。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/16ca48d2f1604db09098b3b4adadc616.png)
+<div align="center">
+  <img 
+  src="https://img-blog.csdnimg.cn/16ca48d2f1604db09098b3b4adadc616.png"
+  >
+</div>
 
 
 每一个分支得到 feature map 的 shape 都一样 , 最后会实现通道数 $×4$。
@@ -155,7 +156,9 @@ SPP 结构如下图所示，是将输入并行通过多个不同大小的 MaxPoo
 
 而 SPPF 结构是将输入**串行**通过多个 $5×5$ 大小的 MaxPool 层，这里需要注意的是串行两个 $5×5$ 大小的 MaxPool 层是和一个 $9×9$ 大小的 MaxPool 层计算结果是一样的，串行三个 $5×5$ 大小的 MaxPool 层是和一个 $13×13$ 大小的 MaxPool 层计算结果是一样的。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/98a93080d8eb4e8292140d8133ba9508.png#pic_center)
+<div align="center">
+  <img src="https://img-blog.csdnimg.cn/98a93080d8eb4e8292140d8133ba9508.png">
+</div>
 
 
 > SPPF 最后同样会实现通道数 $×4$
@@ -226,7 +229,11 @@ CSP 结构是在 CSPNet（Cross Stage Partial Network）论文中提出的，CSP
 
 CSP 的加入可以: <u>减少网络的计算量以及对显存的占用，同时保证网络的能力不变或者略微提升</u>。CSP 结构的思想参考原论文中绘制的 CSPDenseNet，进入每个 stage（一般在下采样后）先将数据划分成俩部分，如下图左图所示的 Part1 和 Part2。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/cb4d5d59d96f42e6839ffc0abf022cf4.png#pic_center)
+
+<div align="center">
+  <img src="https://img-blog.csdnimg.cn/2febc44c745048399d3ac186936313b2.png"
+  width="200">
+</div>
 
 左边的图是 CSPDenseNet（来源于 CSPNet 论文）。CSP 结构会将网络分为两个部分。Part2 分支首先会经过一系列的 Block（这里是 DenseBlock），最后经过 Transition，得到输出后再与 Part1 上的输出进行 Transition 融合。
 
@@ -242,14 +249,17 @@ CSP 的加入可以: <u>减少网络的计算量以及对显存的占用，同�
 
 **核心思想**：将 4 张图片拼成一张图片。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/5e392602964d41708e4b5a81b64773e2.png#pic_center)
+<div align="center">
+  <img src="https://img-blog.csdnimg.cn/5e392602964d41708e4b5a81b64773e2.png">
+</div>
 
 ## 2.2 Copy Paste，复制粘贴增强
 
 将部分目标随机的粘贴到图片中，**前提是数据要有分割数据才行**，即每个目标的实例分割信息。下面是 Copy paste 原论文中的示意图。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/89df8187398c48c2b2e27e6135670e7c.png#pic_center)
-
+<div align="center">
+  <img src="https://img-blog.csdnimg.cn/89df8187398c48c2b2e27e6135670e7c.png">
+</div>
 
 > 可以理解为是升级版的 Mosaic
 
@@ -257,7 +267,9 @@ CSP 的加入可以: <u>减少网络的计算量以及对显存的占用，同�
 
 随机进行仿射变换，但根据配置文件里的超参数发现只使用了 `Scale` (缩放)和 `Translation` (平移)。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/3df8924fe656400f84d89b3bbcbe792b.png#pic_center)
+<div align="center">
+  <img src="https://img-blog.csdnimg.cn/3df8924fe656400f84d89b3bbcbe792b.png">
+</div>
 
 
 > **参考资料**：[数据增强中的仿射变换：旋转，缩放，平移以及错切(shear)](https://blog.csdn.net/weixin_44878336/article/details/124902173)
@@ -266,7 +278,9 @@ CSP 的加入可以: <u>减少网络的计算量以及对显存的占用，同�
 
 Mixup 就是将两张图片按照一定的透明度融合在一起，具体有没有用不太清楚，毕竟没有论文，也没有消融实验。代码中只有较大的模型才使用到了 MixUp，而且每次只有 $10\%$ 的概率会使用到。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/4f532657aa7e4d22be990ae173b1d7c6.png#pic_center)
+<div align="center">
+  <img src="https://img-blog.csdnimg.cn/4f532657aa7e4d22be990ae173b1d7c6.png">
+</div>
 
 ## 2.5 Albumentations
 
@@ -319,33 +333,58 @@ github 及其示例地址如下：
 
 随机调整色度，饱和度以及明度。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/a68d59304dfc40df93dbf5c92bfce17a.png#pic_center =x400)
+<div align="center">
+  <img src="https://img-blog.csdnimg.cn/a68d59304dfc40df93dbf5c92bfce17a.png">
+</div>
 
 
 ## 2.7 Random horizontal flip，随机水平翻转
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/0f2bbb7806b146a7b8fbe450b809a6be.png#pic_center =x400)
+<div align="center">
+  <img src="https://img-blog.csdnimg.cn/0f2bbb7806b146a7b8fbe450b809a6be.png">
+</div>
 
 # 3. 训练策略
 
 在 YOLOv5 源码中使用到了很多训练的策略，这里简单总结几个：
 
-1. `Multi-scale training(0.5~1.5x)`，**多尺度训练**: 假设设置输入图片的大小为 $640 \times 640$，训练时采用尺寸是在 $0.5 \times 640 \sim 1.5 \times 640$ 之间随机取值，注意取值时取得都是32的整数倍（因为网络会最大下采样32倍）。
-2. `AutoAnchor(For training custom data)`: 训练自己数据集时可以根据自己数据集里的目标进行重新聚类生成Anchors模板。
-3. `Warmup and Cosine LR scheduler`: 训练前先进行Warmup热身，然后在采用Cosine学习率下降策略。
-4. `EMA(Exponential Moving Average)`: 可以理解为给训练的参数加了一个动量，让它更新过程更加平滑。
-5. `Mixed precision`: **混合精度训练**，能够减少显存的占用并且加快训练速度，前提是GPU硬件支持。
-6. `Evolve hyper-parameters`，**超参数优化**: 没有炼丹经验的人勿碰，保持默认就好。
+1. `Multi-scale training(0.5~1.5x)`（多尺度训练）：假设设置输入图片的大小为 $640 \times 640$，训练时采用尺寸是在 $0.5 \times 640 \sim 1.5 \times 640$ 之间随机取值，注意取值时取得都是 32 的整数倍（因为网络会最大下采样 32 倍）。
+2. `AutoAnchor(For training custom data)`（自动聚类生产 Anchor 模板）：训练自己数据集时可以根据自己数据集里的目标进行重新聚类生成 Anchors 模板。
+3. `Warmup and Cosine LR scheduler`（带有 Warmup 的余弦调度器）：训练前先进行 Warmup 热身，然后在采用 Cosine 学习率下降策略。
+4. `EMA(Exponential Moving Average)`（指数移动平均）：可以理解为给训练的参数（模型参数）加了一个动量，让它更新过程更加平滑。
+5. `Mixed precision`（混合精度训练）：能够减少显存的占用并且加快训练速度，前提是GPU硬件支持。
+6. `Evolve hyper-parameters`（超参数优化）：没有炼丹经验的人勿碰，保持默认就好。
+
+<details>
+<summary> Evolve Hyper-parameters 简介</summary>
+
+"Evolve hyper-parameters" 指的是在机器学习和深度学习中，通过优化算法或搜索策略来动态地调整模型的超参数（Hyperparameters），以提高模型的性能和泛化能力。超参数是指那些不是由模型自动学习而是需要手动设置的参数，它们通常用于控制模型的结构、学习率、正则化等方面。
+
+"Evolve" 表示超参数可以通过不断地尝试不同的值来进行迭代调整，以找到最优的超参数组合。这种过程通常涉及超参数搜索和优化技术，如网格搜索、随机搜索、贝叶斯优化等。
+
+通过进化超参数，可以实现以下目标：
+
+1. 提高模型性能：通过找到最佳的超参数组合，模型的性能通常会得到显著的提升。这包括准确性、泛化能力和训练效率。
+
+2. 防止过拟合：适当的超参数选择可以帮助防止模型过拟合训练数据，从而提高模型的泛化能力。
+
+3. 节省时间和资源：有效的超参数优化可以节省训练时间和计算资源，因为它可以避免不必要的试验和训练周期。
+
+4. 适应不同任务：通过调整超参数，可以使同一模型适应不同类型的任务，而无需重新设计整个模型。
+
+总之，"evolve hyper-parameters" 意味着通过智能的搜索和优化技术来改进模型的性能和适应性，而不是仅仅手动选择固定的超参数值。这是机器学习和深度学习中重要的实践，以实现更好的结果。
+
+</details>
 
 # 4. 其他
 
 ## 4.1 损失计算
 
-YOLOv5的损失主要由三个部分组成：
+YOLOv5 的损失主要由三个部分组成：
 
-1. Classes loss，**分类损失**: 采用的是BCE loss，注意只计算<font color='red'>正样本</font>的分类损失。
-2. Objectness loss，**obj损失(置信度损失)**: 采用的依然是BCE loss，注意这里的obj指的是网络预测的目标边界框与GT Box的CIoU。这里计算的是font color='red'>所有样本</font>的obj损失。
-3. Location loss，**定位损失**: 采用的是CIoU loss，注意只计算<font color='red'>正样本</font>的定位损失。
+1. Classes loss（分类损失）: 采用的是 BCE loss，注意只计算<font color='red'>正样本</font>的分类损失。
+2. Objectness loss（obj 损失(置信度损失)）: 采用的依然是 BCE loss，注意这里的 obj 指的是网络预测的目标边界框与 Ground True 的 CIoU。这里计算的是<font color='red'>所有样本</font>的 obj 损失。
+3. Location loss（定位损失）: 采用的是 CIoU loss，注意只计算<font color='red'>正样本</font>的定位损失。
 
 $$
 {\mathcal L}_{all} = \lambda_1 {\mathcal L}_{\rm cls} + \lambda_2 {\mathcal L}_{\rm obj} + \lambda_3 {\mathcal L}_{\rm loc}
@@ -355,17 +394,20 @@ $$
 
 ## 4.2 平衡不同尺度的损失
 
-这里是指针对三个预测特征层（`P3, P4, P5`）上的`obj损失`采用不同的权重。在源码中，针对预测小目标的预测特征层（P3）采用的权重是4.0，针对预测中等目标的预测特征层（P4）采用的权重是1.0，针对预测大目标的预测特征层（P5）采用的权重是0.4，作者说这是针对COCO数据集设置的超参数。
+这里是指针对三个预测特征层（`P3, P4, P5`）上的 `obj损失` 采用不同的权重。在源码中，针对预测小目标的预测特征层（P3）采用的权重是 4.0，针对预测中等目标的预测特征层（P4）采用的权重是 1.0，针对预测大目标的预测特征层（P5）采用的权重是 0.4，作者说这是针对 COCO 数据集设置的超参数。
 
 $$
-{\mathcal L}_{\rm obj} = 4.0 \cdot {\mathcal L}^{\rm small}_{\rm obj} + 1.0 \cdot {\mathcal L}^{\rm medium}_{\rm obj} + 0.4 \cdot {\mathcal L}^{\rm small}_{\rm large}
+{\mathcal L}_{\rm obj} = 4.0 \times {\mathcal L}^{\rm small}_{\rm obj} + 1.0 \times {\mathcal L}^{\rm medium}_{\rm obj} + 0.4 \times {\mathcal L}^{\rm small}_{\rm large}
 $$
 
-## 4.3 消除Grid敏感度 (Eliminating grid sensitivity)
+## 4.3 消除 Grid 敏感度 (Eliminating grid sensitivity)
 
-在YOLOv4中有提到过，主要是调整预测目标中心点相对Grid网格的左上角偏移量。下图是YOLOv2，v3的计算公式。
+在 YOLOv4 中有提到过，主要是调整预测目标中心点相对 Grid 网格的左上角偏移量。下图是 [YOLOv2 和 YOLOv3](https://blog.csdn.net/weixin_44878336/article/details/124759307) 的计算公式。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/a3a0a62db8654ee5810a9a67d8bfb205.png#pic_center =x400)
+<div align="center">
+  <img src="https://img-blog.csdnimg.cn/a3a0a62db8654ee5810a9a67d8bfb205.png" width="400">
+</div>
+
 
 
 其中：
@@ -373,11 +415,11 @@ $$
 + $t_y$ 是网络预测的目标中心 $y$ 坐标偏移量（相对于网格的左上角）
 + $c_x$ 是对应网格左上角的 $x$ 坐标
 + $c_y$ 是对应网格左上角的 $y$ 坐标
-+ $\sigma$ 是sigmoid激活函数，**将预测的偏移量限制在0到1之间**，即预测的中心点不会超出对应的Grid Cell区域
++ $\sigma$ 是 sigmoid 激活函数，**将预测的偏移量限制在0到1之间**，即预测的中心点不会超出对应的 Grid Cell 区域
 
-关于预测目标中心点相对Grid网格左上角 $(c_x, c_y)$ 偏移量为 $\sigma(t_x), \sigma(t_y)$。YOLOv4的作者认为这样做不太合理，比如当真实目标中心点非常靠近网格的左上角点 $\sigma(t_x)$ 和 $\sigma(t_y)$ 应该趋近与0）或者右下角点（$\sigma(t_x)$ 和 $\sigma(t_y)$ 应该趋近与1）时，网络的预测值需要负无穷或者正无穷时才能取到，而这种很极端的值网络一般无法达到。
+关于预测目标中心点相对 Grid 网格左上角 $(c_x, c_y)$ 偏移量为 $\sigma(t_x), \sigma(t_y)$。YOLOv4 的作者认为这样做不太合理，比如当真实目标中心点非常靠近网格的左上角点 $\sigma(t_x)$ 和 $\sigma(t_y)$ 应该趋近与 0 或者右下角点（$\sigma(t_x)$ 和 $\sigma(t_y)$ 应该趋近与 1）时，网络的预测值需要负无穷或者正无穷时才能取到，而这种很极端的值网络一般无法达到。
 
-为了解决这个问题，作者对偏移量进行了缩放从原来的 $(0, 1)$ 缩放到 $(-0.5, 1.5)$ 这样网络预测的偏移量就能很方便达到0或1，故最终预测的目标**中心点** $b_x, b_y$ 的计算公式为：
+为了解决这个问题，作者对偏移量进行了缩放从原来的 $(0, 1)$ 缩放到 $(-0.5, 1.5)$ 这样网络预测的偏移量就能很方便达到 0 或 1，故最终预测的目标**中心点** $b_x, b_y$ 的计算公式为：
 
 $$
 b_x = \left( 2 \cdot \sigma(t_x) - 0.5 \right) + c_x \\
@@ -386,51 +428,55 @@ $$
 
 下面是霹雳吧啦Wz绘制的 $y = \sigma(x)$ 对应sigma曲线和 $y = 2 \cdot \sigma(x) - 0.5$ 对应scale曲线。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/0d783c611ff342c5bb82f424d49e7db4.png#pic_center =x400)
+<div align = center>
+    <img src = https://img-blog.csdnimg.cn/0d783c611ff342c5bb82f424d49e7db4.png
+    width = 400>
+</div>
 
+很明显通过引入缩放系数 scale 以后，$x$ 在同样的区间内，$y$ 的取值范围更大，或者说，$y$ 对 $x$ 更敏感了。并且偏移的范围由原来 $(0, 1)$ 调整到了 $(-0.5, 1.5)$。
 
-
-很明显通过引入缩放系数scale以后，$x$ 在同样的区间内，$y$ 的取值范围更大，或者说 $y$ 对 $x$ 更敏感了。并且偏移的范围由原来 $(0, 1)$ 调整到了 $(-0.5, 1.5)$。
-
-> $b_w, b_h$ 保持YOLOv3的策略不变。
+> $b_w, b_h$ 保持 YOLOv3 的策略不变。
 
 ---
 
-在YOLOv5中除了调整预测Anchor相对Grid网格左上角 $(c_x, c_y)$ 偏移量以外，还调整了预测目标高宽的计算公式，之前是：
+在 YOLOv5 中除了调整预测 Anchor 相对 Grid 网格左上角 $(c_x, c_y)$ 偏移量以外，还调整了预测目标高宽的计算公式，之前是：
 
 $$
 b_w = p_w \cdot e^{t_w} \\
 b_h = p_h \cdot e^{t_h}
 $$
 
-在YOLOv5中被作者调整为：
+在 YOLOv5 中被作者调整为：
 
 $$
 b_w = p_w \cdot (2 \cdot \sigma(t_w))^2 \\
 b_h = p_h \cdot (2 \cdot \sigma(t_h))^2
 $$
 
-作者Glenn Jocher对此修改的原话如下，也可以参考[issue #471](https://github.com/ultralytics/yolov5/issues/471)：
+作者 Glenn Jocher 对此修改的原话如下，也可以参考[issue #471](https://github.com/ultralytics/yolov5/issues/471)：
 
 > The original yolo/darknet box equations have a serious flaw. Width and Height are completely unbounded as they are simply out=exp(in), which is dangerous, as it can lead to runaway gradients, instabilities, NaN losses and ultimately a complete loss of training.
 > 
-> 原始的yolo/darknet盒子方程有一个严重的缺陷。宽度和高度是完全无界的，因为它们只是out=exp(in)，这很危险，因为它可能导致梯度失控、不稳定、NaN损失，最终完全失去训练。
+> 原始的 YOLO/Darknet box 公式存在严重缺陷。宽度和高度完全无限制，因为它们仅为 out = exp(in)，这是危险的，因为它可能导致梯度失控、不稳定、NaN 损失，最终完全失去训练的能力。
 
 作者的大致意思是，原来的计算公式并没有对预测目标宽高做限制，这样可能出现梯度爆炸，训练不稳定等问题。下图是修改前 $y = e^x$ 和修改后 $y = (2 \cdot \sigma(x))^2$ （相对Anchor宽高的倍率因子）的变化曲线， 很明显调整后倍率因子被限制在 $(0, 4)$ 之间。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/4ca6a36213924fbb88421fcdd5e3d692.png#pic_center =x400)
+<div align=center>
+    <img src=https://img-blog.csdnimg.cn/4ca6a36213924fbb88421fcdd5e3d692.png
+    width=400>
+</div>
 
 
-## 4.4 匹配张样本 (Build Targets)
+## 4.4 匹配样本 (Build Targets)
 
-之前在YOLOv4介绍中有讲过该部分内容，其实YOLOv5也差不多。主要的区别在于GT Box与Anchor Templates模板的匹配方式。在YOLOv4中是直接将每个GT Box与对应的Anchor Templates模板计算IoU，只要IoU大于设定的阈值就算匹配成功。但在YOLOv5中，作者先去计算每个GT Box与对应的Anchor Templates模板的高宽比例，即：
+之前在 YOLOv4 介绍中有讲过该部分内容，其实 YOLOv5 也差不多。主要的区别在于 GT Box 与 Anchor Templates 模板的匹配方式。在 YOLOv4 中是直接将每个 GT Box 与对应的 Anchor Templates 模板计算 IoU，只要 IoU 大于设定的阈值就算匹配成功。但在 YOLOv5 中，作者先去计算每个 GT Box 与对应的 Anchor Templates 模板的高宽比例，即：
 
 $$
 r_w = \frac{w_{gt}}{w_{at}} \\
 r_h = \frac{h_{gt}}{hw_{at}}
 $$
 
-然后统计这些比例和它们倒数之间的最大值，这里可以理解成计算GT Box和Anchor Templates分别在`宽度`以及`高度`方向的**最大差异**（当相等的时候比例为1，差异最小）：
+然后统计这些比例和它们倒数之间的最大值，这里可以理解成计算 GT Box 和 Anchor Templates 分别在宽度以及高度方向的**最大差异**（当相等的时候比例为 1，差异最小）：
 
 $$
 r^{\max}_w = \max(r_w, \frac{1}{r_w}) \\ 
@@ -443,30 +489,37 @@ $$
 r^{\max} = \max(r_w^{\max}, r_h^{\max})
 $$
 
-如果GT Box和对应的Anchor Template的 $r^{max}$ 小于阈值anchor_t（在源码中默认设置为4.0），即GT Box和对应的Anchor Template的高、宽比例相差不算太大，则将GT Box分配给该Anchor Template模板。为了方便大家理解，可以看下图。
+如果 GT Box 和对应的 Anchor Template 的 $r^{max}$ 小于阈值 anchor_t（在源码中默认设置为 4.0），即 GT Box 和对应的 Anchor Template 的高、宽比例相差不算太大，则将 GT Box 分配给该 Anchor Template 模板。为了方便大家理解，可以看下图。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/24d3bc14d9ca4e289415dfb35a70b26f.png#pic_center)
-
-
-假设对某个GT Box而言，其实只要GT Box满足在某个Anchor Template宽和高的 $\times 0.25$ 倍和 $\times 4.0$ 倍之间就算匹配成功。
-
-剩下的步骤和YOLOv4中一致：
-
-将GT投影到对应预测特征层上，根据GT的中心点定位到对应Cell，注意图中有三个对应的Cell。因为网络预测中心点的偏移范围已经调整到了 $(-0.5, 1.5)$，所以按理说只要Grid Cell左上角点距离GT中心点在 $(−0.5,1.5)$ 范围内它们对应的Anchor都能回归到GT的位置处。这样会让正样本的数量得到大量的扩充。
-
-则这三个Cell对应的AT2和AT3都为正样本。
-
-![在这里插入图片描述](https://img-blog.csdnimg.cn/b55b3594ef1e4afb8f63000a0af03507.png#pic_center)
+<div align=center>
+    <img src=https://img-blog.csdnimg.cn/24d3bc14d9ca4e289415dfb35a70b26f.png
+    width=100%>
+</div>
 
 
-还需要注意的是，YOLOv5源码中扩展Cell时只会往上、下、左、右**四个方向**扩展，不会往左上、右上、左下、右下方向扩展。
+假设对某个 GT Box 而言，其实只要 GT Box 满足在某个 Anchor Template 宽和高的 $\times 0.25$ 倍和 $\times 4.0$ 倍之间就算匹配成功。
 
-下面又给出了一些根据 $GT_x^{center}$, $GT_y^{center}$ 的位置扩展的一些Cell案例，其中`%1`表示取余并保留小数部分。
+剩下的步骤和 YOLOv4 中一致：
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/4e09ed2c16b44f9b8623e3d809022c3a.png#pic_center)
+将 GT 投影到对应预测特征层上，根据 GT 的中心点定位到对应 Cell，注意图中有三个对应的 Cell。因为网络预测中心点的偏移范围已经调整到了 $(-0.5, 1.5)$，所以按理说只要 Grid Cell 左上角点距离 GT 中心点在 $(−0.5, 1.5)$ 范围内它们对应的 Anchor 都能回归到 GT 的位置处。这样会让正样本的数量得到大量的扩充。
 
+则这三个 Cell 对应的 AT2 和 AT3 都为正样本。
 
-到此，YOLOv5相关理论的内容基本上都分析完了。
+<div align=center>
+    <img src=https://img-blog.csdnimg.cn/b55b3594ef1e4afb8f63000a0af03507.png
+    width=80% >
+</div> 
+
+还需要注意的是，YOLOv5 源码中扩展 Cell 时只会往上、下、左、右 **四个方向** 扩展，不会往左上、右上、左下、右下方向扩展。
+
+下面又给出了一些根据 $GT_x^{center}$, $GT_y^{center}$ 的位置扩展的一些 Cell 案例，其中 `%1` 表示取余并保留小数部分。
+
+<div align=center>
+    <img src=https://img-blog.csdnimg.cn/4e09ed2c16b44f9b8623e3d809022c3a.png
+    width=80% >
+</div> 
+
+到此，YOLOv5 相关理论的内容基本上都分析完了。
 
 # 知识来源
 
