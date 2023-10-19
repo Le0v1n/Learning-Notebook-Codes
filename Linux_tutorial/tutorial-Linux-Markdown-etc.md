@@ -119,6 +119,8 @@
 
 以下是包含 LaTeX 代码和符号说明的数学排版表格：
 
+<div align=center>
+
 | 数学符号 | LaTeX 代码 | 符号说明 |
 | :-: | :-: | :-: |
 | $A \ B$ | `$A \ B$` | 空格 |
@@ -138,7 +140,11 @@
 | $\underset{A}{B}$ | `$\underset{A}{B}$` | 在下方写 |
 | $\overset{A}{B}$ | `$\overset{A}{B}$` | 在上方写 |
 
+</div>
+
 ### 2.3.2 字体
+
+<div align=center>
 
 | 数学符号 | LaTeX 代码 | 符号说明 |
 | :-: | :- | :- |
@@ -149,6 +155,8 @@
 | $\mathcal{Hello}$ | `$\mathcal{Hello}$` | Calligraphic 字体 |
 | $\mathbb{Hello}$ | `$\mathbb{Hello}$` | Blackboard bold 字体 |
 | $\boldsymbol{Hello}$ | `$\boldsymbol{Hello}$` | Boldsymbol bold 字体 |
+
+</div>
 
 ### 2.3.3 矩阵、对齐、分段函数
 
@@ -203,6 +211,8 @@
 
 ### 2.3.4 希腊字母
 
+<div align=center>
+
 | 数学符号 | LaTeX 代码 | 对应大写字母 | LaTeX 代码 |
 | :-: | :- | :-: | :- |
 | $\alpha$ | `$\alpha$` | $\Gamma$ | `$\Gamma$` |
@@ -235,9 +245,11 @@
 | $\psi$ | `$\psi$` | $\Psi$ | `$\Psi$` |
 | $\omega$ | `$\omega$` | $\Omega$ | `$\Omega$` |
 
+</div>
+
 ### 2.3.5 运算符
 
-以下是已经添加 LaTeX 代码的数学符号表格：
+<div align=center>
 
 | 数学符号 | LaTeX 代码 | 说明 |
 | :-: | :- | :-: |
@@ -259,9 +271,11 @@
 | $\int$ | `$\int$` | 积分 |
 | $\partial$ | `$\partial$` | 偏导 |
 
+</div>
+
 ### 2.3.6 其他符号
 
-以下是补全后的表格：
+<div align=center>
 
 | 数学符号 | LaTeX 代码 | 说明 |
 | :-: | :- | :- |
@@ -283,6 +297,7 @@
 | $\nLeftrightarrow$ | `$\nLeftrightarrow$` | 非左右双箭头 |
 | $\varnothing$ | `$\varnothing$` | 空集符号 |
 
+</div>
 
 # 3. WSL2 的安装
 
@@ -385,4 +400,3 @@ kms.mc06.net
 
 1. [如何使用jupyter编写数学公式(译)](https://www.jianshu.com/p/93ccc63e5a1b)
 2. [旧版 WSL 的手动安装步骤](https://learn.microsoft.com/zh-cn/windows/wsl/install-manual)
-3. 
