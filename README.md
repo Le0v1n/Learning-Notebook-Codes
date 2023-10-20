@@ -2,6 +2,7 @@
 
 ## TODO
 
+- [ ] 添加 PP-LiteSeg 笔记
 - [ ] 添加机器学习笔记
 
 
@@ -38,14 +39,28 @@
 
 ## 3. 仓库结构
 
-| 开始时间 | 文件/文件夹名称 | 简介 | 对应博客 | 额外说明 |
-|  :-  |       :-:      |  :-  |   :-   |    :-   | 
+| <font color='RoyalBlue'>开始时间</font> | <font color='RoyalBlue'>文件/文件夹名称</font> | <font color='RoyalBlue'>简介</font> | <font color='RoyalBlue'>对应博客</font> | <font color='RoyalBlue'>额外说明</font> |
+|  :-  |       :-      |  :-  |   :-   |    :-   | 
 |2023/10/17|<kbd>CSDN封面(480x270).drawio</bkd>|制作CSDN封面|||
-|2023/10/17|<kbd>Python_Registry</kbd>|Python 的注册机制|[Python 的注册机制](https://blog.csdn.net/weixin_44878336/article/details/133887655)||
-|2023/10/17|<kbd>mmcv_Registry</kbd>|MMCV 的注册机制||:hammer_and_wrench: 尚未完成|
-|2023/10/18|<kbd>ObjectDetection_YOLOv5</kbd>|目标检测之 YOLOv5|1. [理论](https://blog.csdn.net/weixin_44878336/article/details/133901265)</br>2. [自建数据集和模型训练](https://blog.csdn.net/weixin_44878336/article/details/133915488)||
-|2023/10/18|<kbd>VOCdevkit</kbd>|Lite 版 VOC 2012|[PASCAL VOC 2012](https://blog.csdn.net/weixin_44878336/article/details/124540069)||
-|2023/10/19|<kbd>Linux_tutorial</kbd>| Linux + Markdown + 其他</br>相关命令|[Linux + Markdown + 其他](https://blog.csdn.net/weixin_44878336/article/details/133934093)|命令介绍|
+|<br>|||| 
+|2023/10/17|<kbd>Dataset</bkd>|数据集相关|||
+|2023/10/17|<kbd>Dataset/VOCdevkit</bkd>|Lite 版 VOC 2012|[PASCAL VOC 2012](https://blog.csdn.net/weixin_44878336/article/details/124540069)||
+|<br>|||| 
+|2023/10/17|<kbd>Linux</bkd>| Linux + Markdown + 其他</br>相关命令|[Linux + Markdown + 其他](https://blog.csdn.net/weixin_44878336/article/details/133934093)|命令介绍|
+|<br>|||| 
+|2023/10/17|<kbd>ObjectDetection</bkd>|目标检测相关|||
+|2023/10/17|<kbd>ObjectDetection/YOLOv5</bkd>|YOLOv5|1. [理论](https://blog.csdn.net/weixin_44878336/article/details/133901265)</br>2. [自建数据集和模型训练](https://blog.csdn.net/weixin_44878336/article/details/133915488)||
+|<br>|||| 
+|2023/10/17|<kbd>Office-word-excel-ppt</bkd>|Office 相关|||
+|<br>|||| 
+|2023/10/17|<kbd>Python</bkd>|Python 相关|||
+|2023/10/17|<kbd>Python/Python_Registry</bkd>|Python 的注册机制|[Python 的注册机制](https://blog.csdn.net/weixin_44878336/article/details/133887655)||
+|<br>|||| 
+|2023/10/17|<kbd>PyTorch</bkd>|PyTorch|||
+|2023/10/17|<kbd>PyTorch/mmcv_Registry</bkd>|MMCV 的注册机制|TODO|:hammer_and_wrench: 尚未完成|
+|<br>|||| 
+|2023/10/17|<kbd>SemanticSegmentation</bkd>|SemanticSegmentation|||
+|2023/10/17|<kbd>SemanticSegmentation/PP-LiteSeg</bkd>|PaddlePaddle 的 PP-LiteSeg|[对应博文](https://blog.csdn.net/weixin_44878336/article/details/132211283)||
 
 # 联系我
 
