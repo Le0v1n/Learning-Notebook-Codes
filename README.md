@@ -2,8 +2,8 @@
 
 ## TODO
 
-- [x] 添加 PP-LiteSeg 笔记
-- [ ] 添加机器学习笔记
+- [x] <kbd>2023/10/20</kbd>添加 Python 的 logging 笔记
+- [x] <kbd>2023/10/20</kbd>添加 PP-LiteSeg 笔记
 
 
 ## 1. 简介
@@ -43,26 +43,39 @@
 
 | <font color='RoyalBlue'>开始时间</font> | <font color='RoyalBlue'>文件/文件夹名称</font> | <font color='RoyalBlue'>简介</font> | <font color='RoyalBlue'>对应博客</font> | <font color='RoyalBlue'>额外说明</font> |
 |  :-  |       :-      |  :-  |   :-   |    :-   | 
-|2023/10/17|<kbd>CSDN封面(480x270).drawio</bkd>|制作CSDN封面|||
+|<font color=#DC143C><b>2023/10/17</b></font>|<kbd>root</bkd>|<font color=#DC143C><b>Github 仓库 root 地址</b></font>|||
+|2023/10/17|&emsp;&emsp;<kbd>CSDN封面(480x270).drawio</bkd>|制作CSDN封面|||
 |<br>|||| 
-|2023/10/17|<kbd>Dataset</bkd>|数据集相关|||
-|2023/10/17|<kbd>Dataset/VOCdevkit</bkd>|Lite 版 VOC 2012|[PASCAL VOC 2012](https://blog.csdn.net/weixin_44878336/article/details/124540069)||
+|<font color=#DC143C><b>2023/10/20</b></font>|<kbd>常用命令</bkd>|<font color=#DC143C><b>常用命令(Linux + Markdown + LaTex)</b></font>|||
+|2023/10/20|&emsp;&emsp;<kbd>Linux</bkd>|Linux 常用命令|||
+|2023/10/20|&emsp;&emsp;<kbd>Markdown</bkd>|Markdown 常用命令|||
+|2023/10/20|&emsp;&emsp;<kbd>LaTex</bkd>|LaTex 常用命令|||
 |<br>|||| 
-|2023/10/17|<kbd>Linux</bkd>| Linux + Markdown + 其他</br>相关命令|[Linux + Markdown + 其他](https://blog.csdn.net/weixin_44878336/article/details/133934093)|命令介绍|
+|<font color=#DC143C><b>2023/10/17</b></font>|<kbd>Dataset</bkd>|<font color=#DC143C><b>数据集相关</b></font>|||
+|2023/10/17|&emsp;&emsp;<kbd>VOCdevkit</bkd>|Lite 版 VOC 2012|[PASCAL VOC 2012](https://blog.csdn.net/weixin_44878336/article/details/124540069)||
 |<br>|||| 
-|2023/10/17|<kbd>ObjectDetection</bkd>|目标检测相关|||
-|2023/10/17|<kbd>ObjectDetection/YOLOv5</bkd>|YOLOv5|1. [理论](https://blog.csdn.net/weixin_44878336/article/details/133901265)</br>2. [自建数据集和模型训练](https://blog.csdn.net/weixin_44878336/article/details/133915488)||
+|<font color=#DC143C><b>2023/10/17</b></font>|<kbd>Linux</bkd>|<font color=#DC143C><b>Linux 相关</b></font>|||
+|2023/10/17|&emsp;&emsp;<kbd>配置Anaconda</bkd>|配置 Anaconda|||
 |<br>|||| 
-|2023/10/17|<kbd>Office-word-excel-ppt</bkd>|Office 相关|||
+|<font color=#DC143C><b>2023/10/17</b></font>|<kbd>ObjectDetection</bkd>|<font color=#DC143C><b>目标检测相关</b></font>|||
+|2023/10/17|&emsp;&emsp;<kbd>YOLOv5</bkd>|YOLOv5|1. [理论](https://blog.csdn.net/weixin_44878336/article/details/133901265)</br>2. [自建数据集和模型训练](https://blog.csdn.net/weixin_44878336/article/details/133915488)||
 |<br>|||| 
-|2023/10/17|<kbd>Python</bkd>|Python 相关|||
-|2023/10/17|<kbd>Python/Registry</bkd>|Python 的注册机制|[Python 的注册机制](https://blog.csdn.net/weixin_44878336/article/details/133887655)||
+|<font color=#DC143C><b>2023/10/17</b></font>|<kbd>Office-word-excel-ppt</bkd>|<font color=#DC143C><b>Office 相关</b></font>|||
 |<br>|||| 
-|2023/10/17|<kbd>PyTorch</bkd>|PyTorch|||
-|2023/10/17|<kbd>PyTorch/mmcv_Registry</bkd>|MMCV 的注册机制|TODO|:hammer_and_wrench: 尚未完成|
+|<font color=#DC143C><b>2023/10/17</b></font>|<kbd>Python</bkd>|<font color=#DC143C><b>Python 相关</b></font>|||
+|2023/10/17|&emsp;&emsp;<kbd>Registry</bkd>|Python 的注册机制|[Python 的注册机制](https://blog.csdn.net/weixin_44878336/article/details/133887655)||
+|2023/10/17|&emsp;&emsp;<kbd>logging</bkd>|Python 的日志|[Python 的 logging](https://blog.csdn.net/weixin_44878336/article/details/133868928)||
+|2023/10/17|&emsp;&emsp;<kbd>配置JupyterNotebook</bkd>|配置 JupyterNotebook|||
 |<br>|||| 
-|2023/10/17|<kbd>SemanticSegmentation</bkd>|SemanticSegmentation|||
-|2023/10/17|<kbd>SemanticSegmentation/PP-LiteSeg</bkd>|PaddlePaddle 的 PP-LiteSeg|[对应博文](https://blog.csdn.net/weixin_44878336/article/details/132211283)||
+|<font color=#DC143C><b>2023/10/17</b></font>|<kbd>PyTorch</bkd>|<font color=#DC143C><b>PyTorch 相关</b></font>|||
+|2023/10/17|&emsp;&emsp;<kbd>mmcv_Registry</bkd>|MMCV 的注册机制|TODO|:hammer_and_wrench: 尚未完成|
+|<br>|||| 
+|<font color=#DC143C><b>2023/10/20</b></font>|<kbd>SemanticSegmentation</bkd>|<font color=#DC143C><b>语义分割相关</b></font>|||
+|2023/10/20|&emsp;&emsp;<kbd>PP-LiteSeg</bkd>|PaddlePaddle 的 PP-LiteSeg|[PP-LiteSeg](https://blog.csdn.net/weixin_44878336/article/details/132211283)||
+|<br>|||| 
+|<font color=#DC143C><b>2023/10/20</b></font>|<kbd>Windows</bkd>|<font color=#DC143C><b>Windows 相关</b></font>|||
+|2023/10/20|&emsp;&emsp;<kbd>KMS</bkd>|KMS 主机配置|||
+|2023/10/20|&emsp;&emsp;<kbd>WSL2</bkd>|WSL2 的安装|||
 
 </div>
 
