@@ -78,7 +78,7 @@
 |<b>2023/10/20|<kbd>Windows</bkd>|<b>Windows 相关||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Windows)|
 |2023/10/19|&emsp;&emsp;<kbd>KMS</bkd>|KMS 主机配置||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Windows/KMS)|
 |2023/10/19|&emsp;&emsp;<kbd>WSL2</bkd>|WSL2 的安装||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Windows/WSL2)|
-|2023/10/20|&emsp;&emsp;<kbd>自用软件 + VSCode插件集合（持续更新...）</bkd>|自用软件 + VSCode插件集合（持续更新...）|[对应博客](https://blog.csdn.net/weixin_44878336/article/details/133272093)|[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Windows/TODO)|
+|2023/10/20|&emsp;&emsp;<kbd>自用软件 + VSCode插件集合（持续更新...）</bkd>|自用软件 + VSCode插件集合（持续更新...）|[对应博客](https://blog.csdn.net/weixin_44878336/article/details/133272093)|[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Windows/%E8%87%AA%E7%94%A8%E8%BD%AF%E4%BB%B6%20%2B%20VSCode%E6%8F%92%E4%BB%B6%E9%9B%86%E5%90%88%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0...%EF%BC%89)|
 
 </div>
 
