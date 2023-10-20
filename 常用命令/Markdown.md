@@ -90,6 +90,8 @@
 
 <summary>展开/折叠(有点长)</summary>
 
+> 在 Github 中可能无法正常显示字体颜色。
+
 <div align="center">
 
 | 颜色名 | 十六进制颜色值 | 颜色 |
@@ -178,9 +180,7 @@
 | <font color="#FF00FF">Magenta</font> | #FF00FF | rgb(255, 0, 255) |
 | <font color="#800000">Maroon</font> | #800000 | rgb(128, 0, 0) |
 | <font color="#66CDAA">MediumAquaMarine</font> | #66CDAA | rgb(102, 205, 170) |
-| <font color="#0000CD">MediumBlue</font> | #0000CD | rgb(0, 
-
-0, 205) |
+| <font color="#0000CD">MediumBlue</font> | #0000CD | rgb(0, 0, 205) |
 | <font color="#BA55D3">MediumOrchid</font> | #BA55D3 | rgb(186, 85, 211) |
 | <font color="#9370D8">MediumPurple</font> | #9370D8 | rgb(147, 112, 216) |
 | <font color="#3CB371">MediumSeaGreen</font> | #3CB371 | rgb(60, 179, 113) |
