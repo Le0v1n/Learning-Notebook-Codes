@@ -2,7 +2,7 @@
 
 ## TODO
 
-- [ ] 添加 PP-LiteSeg 笔记
+- [x] 添加 PP-LiteSeg 笔记
 - [ ] 添加机器学习笔记
 
 
@@ -39,6 +39,8 @@
 
 ## 3. 仓库结构
 
+<div align=center>
+
 | <font color='RoyalBlue'>开始时间</font> | <font color='RoyalBlue'>文件/文件夹名称</font> | <font color='RoyalBlue'>简介</font> | <font color='RoyalBlue'>对应博客</font> | <font color='RoyalBlue'>额外说明</font> |
 |  :-  |       :-      |  :-  |   :-   |    :-   | 
 |2023/10/17|<kbd>CSDN封面(480x270).drawio</bkd>|制作CSDN封面|||
@@ -61,6 +63,8 @@
 |<br>|||| 
 |2023/10/17|<kbd>SemanticSegmentation</bkd>|SemanticSegmentation|||
 |2023/10/17|<kbd>SemanticSegmentation/PP-LiteSeg</bkd>|PaddlePaddle 的 PP-LiteSeg|[对应博文](https://blog.csdn.net/weixin_44878336/article/details/132211283)||
+
+</div>
 
 # 联系我
 
