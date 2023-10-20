@@ -2,8 +2,7 @@
 
 ## TODO
 
-- [x] <kbd>2023/10/20</kbd> 添加 Python 的 logging 笔记
-- [x] <kbd>2023/10/20</kbd> 添加 PP-LiteSeg 笔记
+- [ ] <kbd>2023/10/20</kbd> 暂无
 
 
 ## 1. 简介
