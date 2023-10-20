@@ -19,8 +19,8 @@
 
 之后别插入题注了，直接复制粘贴。
 
-> 目前还有很多 Bug :cry:
-
+> 1. 目前还有很多 Bug :cry:
+> 2. 也可以参考该视频的方法: [优雅搞定论文图片&表格](https://www.bilibili.com/video/BV1iZ4y1P7wa)
 
 
 
