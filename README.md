@@ -41,8 +41,8 @@
 
 <div align=center>
 
-| 开始时间 | 文件/文件夹名称 | 简介 | 对应博客 | 站内链接 |
-|  :-  |       :-      |  :-  |   :-   |    :-   | 
+| 创建时间 | 文件/文件夹名称 | 简介 | 对应博客 | 站内链接 |
+|  :-:  |       :-      |  :-  |   :-   |    :-:   | 
 |<b>2023/10/17|<kbd>root</bkd>|<b>Github 仓库 root 地址||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes)|
 |2023/10/17|&emsp;&emsp;<kbd>CSDN封面(480x270).drawio</bkd>|制作CSDN封面||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/CSDN%E5%B0%81%E9%9D%A2(480x270).drawio)|
 |<br>|||| 
@@ -54,8 +54,8 @@
 |<b>2023/10/17|<kbd>Dataset</bkd>|<b>数据集相关||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Datasets)|
 |2023/10/17|&emsp;&emsp;<kbd>VOCdevkit</bkd>|Lite 版 VOC 2012|[PASCAL VOC 2012](https://blog.csdn.net/weixin_44878336/article/details/124540069)|[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Datasets/VOCdevkit)|
 |<br>|||| 
-|<b>2023/10/17|<kbd>Linux</bkd>|<b>Linux 相关||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Linux/)|
-|2023/10/17|&emsp;&emsp;<kbd>配置Anaconda</bkd>|配置 Anaconda||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Linux/%E9%85%8D%E7%BD%AEAnaconda)|
+|<b>2023/10/20|<kbd>Linux</bkd>|<b>Linux 相关||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Linux/)|
+|2023/10/20|&emsp;&emsp;<kbd>配置Anaconda</bkd>|配置 Anaconda||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Linux/%E9%85%8D%E7%BD%AEAnaconda)|
 |<br>|||| 
 |<b>2023/10/17|<kbd>ObjectDetection</bkd>|<b>目标检测相关||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/ObjectDetection/)|
 |2023/10/17|&emsp;&emsp;<kbd>YOLOv5</bkd>|YOLOv5|1. [理论](https://blog.csdn.net/weixin_44878336/article/details/133901265)</br>2. [自建数据集和模型训练](https://blog.csdn.net/weixin_44878336/article/details/133915488)|[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/ObjectDetection/YOLOv5)|
@@ -63,10 +63,10 @@
 |<b>2023/10/20|<kbd>Office-word-excel-ppt</bkd>|<b>Office 相关||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Office-word-excel-ppt)|
 |2023/10/20|&emsp;&emsp;<kbd>Word</bkd>|Word 技巧||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Office-word-excel-ppt/Word)|
 |<br>|||| 
-|<b>2023/10/17|<kbd>Python</bkd>|<b>Python 相关||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Python)|
-|2023/10/17|&emsp;&emsp;<kbd>Registry</bkd>|Python 的注册机制|[Python 的注册机制](https://blog.csdn.net/weixin_44878336/article/details/133887655)|[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Python/Registry)|
-|2023/10/17|&emsp;&emsp;<kbd>logging</bkd>|Python 的日志|[Python 的 logging](https://blog.csdn.net/weixin_44878336/article/details/133868928)|[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Python/logging)|
-|2023/10/17|&emsp;&emsp;<kbd>配置JupyterNotebook</bkd>|配置 JupyterNotebook||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Python/%E9%85%8D%E7%BD%AEJupyterNotebook)|
+|<b>2023/10/20|<kbd>Python</bkd>|<b>Python 相关||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Python)|
+|2023/10/20|&emsp;&emsp;<kbd>Registry</bkd>|Python 的注册机制|[Python 的注册机制](https://blog.csdn.net/weixin_44878336/article/details/133887655)|[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Python/Registry)|
+|2023/10/20|&emsp;&emsp;<kbd>logging</bkd>|Python 的日志|[Python 的 logging](https://blog.csdn.net/weixin_44878336/article/details/133868928)|[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Python/logging)|
+|2023/10/20|&emsp;&emsp;<kbd>配置JupyterNotebook</bkd>|配置 JupyterNotebook||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Python/%E9%85%8D%E7%BD%AEJupyterNotebook)|
 |<br>|||| 
 |<b>2023/10/17|<kbd>PyTorch</bkd>|<b>PyTorch 相关||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/PyTorch/)|
 |2023/10/17|&emsp;&emsp;<kbd>mmcv_Registry</bkd>|MMCV 的注册机制|TODO|:hammer_and_wrench: [站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/PyTorch/mmcv_Registry)|
@@ -75,8 +75,8 @@
 |2023/10/20|&emsp;&emsp;<kbd>PP-LiteSeg</bkd>|PaddlePaddle 的 PP-LiteSeg|[PP-LiteSeg](https://blog.csdn.net/weixin_44878336/article/details/132211283)|[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/SemanticSegmentation/PP-LiteSeg)|
 |<br>|||| 
 |<b>2023/10/20|<kbd>Windows</bkd>|<b>Windows 相关||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Windows)|
-|2023/10/20|&emsp;&emsp;<kbd>KMS</bkd>|KMS 主机配置||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Windows/KMS)|
-|2023/10/20|&emsp;&emsp;<kbd>WSL2</bkd>|WSL2 的安装||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Windows/WSL2)|
+|2023/10/19|&emsp;&emsp;<kbd>KMS</bkd>|KMS 主机配置||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Windows/KMS)|
+|2023/10/19|&emsp;&emsp;<kbd>WSL2</bkd>|WSL2 的安装||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Windows/WSL2)|
 
 </div>
 
