@@ -70,7 +70,7 @@
 |<br>|||| 
 |<b>2023/10/17|<kbd>PyTorch</bkd>|<b>PyTorch 相关||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/PyTorch/)|
 |2023/10/17|&emsp;&emsp;<kbd>mmcv_Registry</bkd>|MMCV 的注册机制|TODO|:hammer_and_wrench: [站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/PyTorch/mmcv_Registry)|
-|2023/10/20|&emsp;&emsp;<kbd>PyTorch的hook函数</bkd>|PyTorch 的 hook 函数|[PyTorch 的 hook 函数](https://blog.csdn.net/weixin_44878336/article/details/133859089)|[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/PyTorch/mmcv_Registry)|
+|2023/10/20|&emsp;&emsp;<kbd>PyTorch的hook函数</bkd>|PyTorch 的 hook 函数|[PyTorch 的 hook 函数](https://blog.csdn.net/weixin_44878336/article/details/133859089)|[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/PyTorch/PyTorch%E7%9A%84hook%E5%87%BD%E6%95%B0)|
 |<br>|||| 
 |<b>2023/10/20|<kbd>SemanticSegmentation</bkd>|<b>语义分割相关||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/SemanticSegmentation/PP-LiteSeg)|
 |2023/10/20|&emsp;&emsp;<kbd>PP-LiteSeg</bkd>|PaddlePaddle 的 PP-LiteSeg|[PP-LiteSeg](https://blog.csdn.net/weixin_44878336/article/details/132211283)|[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/SemanticSegmentation/PP-LiteSeg)|
