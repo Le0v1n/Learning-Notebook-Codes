@@ -2,8 +2,8 @@
 
 ## TODO
 
-- [x] <kbd>2023/10/20</kbd>添加 Python 的 logging 笔记
-- [x] <kbd>2023/10/20</kbd>添加 PP-LiteSeg 笔记
+- [x] <kbd>2023/10/20</kbd> 添加 Python 的 logging 笔记
+- [x] <kbd>2023/10/20</kbd> 添加 PP-LiteSeg 笔记
 
 
 ## 1. 简介
@@ -82,13 +82,13 @@
 
 # 其他说明
 
-1. 因为 Github 仓库有最大容量限制，所以会搬运来自我 CSDN 博客上的图片；
-2. 如果文章有问题，请联系我！[^footnote_2]
+1. 因为 Github 仓库有最大容量限制，所以会搬运来自 [我的 CSDN 博客]((https://blog.csdn.net/weixin_44878336)) 上的图片；
+2. 如果文章有问题（语法、链接错误、文字、版权等），请联系我！[^footnote_2]
 
 [^footnote_2]: 请在文末找到对应的联系方式 :zany_face:
 
 # 联系我
 
 1. :e-mail: [发邮件](mailto:zjkljd@163.com)
-2. :speech_balloon: [在CSDN上私信我](https://blog.csdn.net/weixin_44878336)
+2. :speech_balloon: [在 CSDN 上私信我](https://blog.csdn.net/weixin_44878336)
 3. ❓ [新建一个 Issue](https://github.com/Le0v1n/Learning-Notebook-Codes/issues/new/choose)
