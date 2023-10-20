@@ -56,7 +56,7 @@
 |2023/10/17|<kbd>Office-word-excel-ppt</bkd>|Office 相关|||
 |<br>|||| 
 |2023/10/17|<kbd>Python</bkd>|Python 相关|||
-|2023/10/17|<kbd>Python/Python_Registry</bkd>|Python 的注册机制|[Python 的注册机制](https://blog.csdn.net/weixin_44878336/article/details/133887655)||
+|2023/10/17|<kbd>Python/Registry</bkd>|Python 的注册机制|[Python 的注册机制](https://blog.csdn.net/weixin_44878336/article/details/133887655)||
 |<br>|||| 
 |2023/10/17|<kbd>PyTorch</bkd>|PyTorch|||
 |2023/10/17|<kbd>PyTorch/mmcv_Registry</bkd>|MMCV 的注册机制|TODO|:hammer_and_wrench: 尚未完成|
@@ -65,6 +65,13 @@
 |2023/10/17|<kbd>SemanticSegmentation/PP-LiteSeg</bkd>|PaddlePaddle 的 PP-LiteSeg|[对应博文](https://blog.csdn.net/weixin_44878336/article/details/132211283)||
 
 </div>
+
+# 其他说明
+
+1. 因为 Github 仓库有最大容量限制，所以会搬运来自我 CSDN 博客上的图片；
+2. 如果文章有问题，请联系我！[^footnote_2]
+
+[^footnote_2]: 请在文末找到对应的联系方式 :zany_face:
 
 # 联系我
 
