@@ -15,9 +15,9 @@
 
 正常插入题注后就可以了。如果一级标题是 “汉字序号”，那么需要对题注进行修改：
 
-从原来的 `图 { STYLEREF 1 \s }-{ SEQ 图 \* ARABIC \s 1 }` 修改为 `图 { Quote “二零二五年一月一日” \@”d” }-{ SEQ 图 \* ARABIC \s 1 }`
+从原来的 `图 { STYLEREF 1 \s }-{ SEQ 图 \* ARABIC \s 1 }` 修改为 `图 { Quote “二零二五年一月{ STYLEREF 1 \s }日” \@”d” }-{ SEQ 图 \* ARABIC \s 1 }`
 
-之后别插入题注了，直接复制粘贴。
+<kbd>注意</kbd>：之后别插入题注了，直接复制粘贴。
 
 > 1. 目前还有很多 Bug :cry:
 > 2. 也可以参考该视频的方法: [优雅搞定论文图片&表格](https://www.bilibili.com/video/BV1iZ4y1P7wa)
