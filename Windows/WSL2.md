@@ -224,7 +224,7 @@ sudo apt update
    python
    ```
 
-   ```
+   ```python
    >>> import torch
    >>> dummpy_tensor = torch.ones((1, 2, 3))
    >>> dummpy_tensor.cuda()
