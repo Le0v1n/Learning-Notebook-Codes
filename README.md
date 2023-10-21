@@ -54,7 +54,7 @@
 |2023/10/17|&emsp;&emsp;<kbd>1. VOCdevkit/</bkd>|Lite 版 VOC 2012|[PASCAL VOC 2012](https://blog.csdn.net/weixin_44878336/article/details/124540069)|[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Datasets/VOCdevkit)|
 |<br>|||| 
 |<b>2023/10/20|<kbd>Linux/</bkd>|<b>Linux 相关||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Linux/)|
-|2023/10/20|&emsp;&emsp;<kbd>1. 配置Anaconda.md</bkd>|配置 Anaconda||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Linux/%E9%85%8D%E7%BD%AEAnaconda.md)|
+|2023/10/20|&emsp;&emsp;<kbd>1. 配置Anaconda.md</bkd>|配置 Anaconda|[WSL2 安装与配置](https://blog.csdn.net/weixin_44878336/article/details/133967607)|[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Linux/%E9%85%8D%E7%BD%AEAnaconda.md)|
 |<br>|||| 
 |<b>2023/10/17|<kbd>ObjectDetection/</bkd>|<b>目标检测相关||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/ObjectDetection/)|
 |2023/10/17|&emsp;&emsp;<kbd>1. YOLOv5/</bkd>|YOLOv5|1. [理论](https://blog.csdn.net/weixin_44878336/article/details/133901265)</br>2. [自建数据集和模型训练](https://blog.csdn.net/weixin_44878336/article/details/133915488)|[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/ObjectDetection/YOLOv5/)|
@@ -63,6 +63,7 @@
 |2023/10/20|&emsp;&emsp;<kbd>1. Registry.md</bkd>|Python 的注册机制|[Python 的注册机制](https://blog.csdn.net/weixin_44878336/article/details/133887655)|[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/Registry/Registry.md)|
 |2023/10/20|&emsp;&emsp;<kbd>2. logging.md</bkd>|Python 的日志|[Python 的 logging](https://blog.csdn.net/weixin_44878336/article/details/133868928)|[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/Python%E7%9A%84logging%E6%A8%A1%E5%9D%97%EF%BC%88%E6%97%A5%E5%BF%97%E3%80%81DEBUG%E3%80%81INFO%E3%80%81WARNING%E3%80%81ERROR%E3%80%81CRITICAL%EF%BC%89.md)|
 |2023/10/20|&emsp;&emsp;<kbd>3. 配置JupyterNotebook.md</bkd>|配置 JupyterNotebook||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/%E9%85%8D%E7%BD%AEJupyterNotebook.md)|
+|2023/10/21|&emsp;&emsp;<kbd>4. requirements.txt</bkd>|Python 第三方库||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/requirements.txt)|
 |<br>|||| 
 |<b>2023/10/17|<kbd>PyTorch/</bkd>|<b>PyTorch 相关||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/PyTorch/)|
 |2023/10/17|&emsp;&emsp;<kbd>1. mmcv_Registry.md</bkd>|MMCV 的注册机制|TODO|:hammer_and_wrench: [站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/PyTorch/mmcv_Registry)|
@@ -72,8 +73,8 @@
 |2023/10/20|&emsp;&emsp;<kbd>1. PP-LiteSeg.md</bkd>|PP-LiteSeg|[PP-LiteSeg](https://blog.csdn.net/weixin_44878336/article/details/132211283)|[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/SemanticSegmentation/PP-LiteSeg.md)|
 |<br>|||| 
 |<b>2023/10/20|<kbd>Windows/</bkd>|<b>Windows 相关||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Windows)|
-|2023/10/19|&emsp;&emsp;<kbd>1. KMS.md</bkd>|KMS 主机配置||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/KMS%20Host.md)|
-|2023/10/19|&emsp;&emsp;<kbd>2. WSL2.md</bkd>|WSL2 的安装||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/WSL2.md)|
+|2023/10/19|&emsp;&emsp;<kbd>1. KMS.md</bkd>|KMS 主机配置|[对应博客](https://blog.csdn.net/weixin_44878336/article/details/133934093)|[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/KMS%20Host.md)|
+|2023/10/19|&emsp;&emsp;<kbd>2. WSL2.md</bkd>|WSL2 的安装|[WSL2 安装与配置](https://blog.csdn.net/weixin_44878336/article/details/133967607)|[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/WSL2.md)|
 |2023/10/20|&emsp;&emsp;<kbd>3. 自用软件 + VSCode插件集合（持续更新...）.md</bkd>||[对应博客](https://blog.csdn.net/weixin_44878336/article/details/133272093)|[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/%E8%87%AA%E7%94%A8%E8%BD%AF%E4%BB%B6%20%2B%20VSCode%E6%8F%92%E4%BB%B6%E9%9B%86%E5%90%88%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0...%EF%BC%89.md)|
 |2023/10/20|&emsp;&emsp;<kbd>4. Office.md</bkd>|Office 技巧||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/Office/Office.md)|
 

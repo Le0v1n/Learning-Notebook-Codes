@@ -1,4 +1,4 @@
-# 安装必要的 Python 库
+# Python 第三方库，命令：pip install -r requirements.txt
 
 # 基础
 numpy
