@@ -1,0 +1,18 @@
+# 安装必要的 Python 库
+
+# 基础
+numpy
+matplotlib
+opencv-python
+Pillow
+scipy
+tqdm
+
+# 深度学习
+thop
+tensorboard
+pandas
+seaborn
+# torch
+# onnx
+# onnxruntime
