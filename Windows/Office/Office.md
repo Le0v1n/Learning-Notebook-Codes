@@ -24,7 +24,12 @@
 
 ## 1.3 论文模板
 
-我自己制作了一个模板，在同文件夹下。
+，链接为：[论文模板.docx](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/Office/%E8%AE%BA%E6%96%87%E6%A8%A1%E6%9D%BF.docx)
+
+<kbd>注意</kbd>：
+
+1. 直接复制这个 `.docx` 文档中的图片和表格的题注是没有任何 Bug 的！
+2. 如果无法交叉沿用，那么请参考下一节内容。
 
 ## 1.4 自动排序的图表无法交叉引用
 
