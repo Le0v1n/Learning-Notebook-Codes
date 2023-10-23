@@ -2,12 +2,18 @@
 
 ## TODO
 
-- [ ] <kbd>2023/10/20</kbd> 暂无
+- [ ] <kbd>2023/10/23</kbd> 暂无
 
 
 ## 1. 简介
 
-这个仓库存放了我日常的笔记。如果你有疑问请联系我:smile:[^footnote_1]。
+这个仓库存放了我日常的笔记。
++ 如果你有疑问请联系我:smile:[^footnote_1]
++ 如果对你有帮助，请 :star: 一下
+
+更多内容请见：
+1. [CSDN 博客-Le0v1n](https://blog.csdn.net/weixin_44878336)：这里有很多有趣的内容
+2. [Bilibili 视频-L0o0v1N](https://space.bilibili.com/13187602)：这里有视频版内容
 
 [^footnote_1]: 请在文末找到对应的联系方式 :zany_face:
 
@@ -37,6 +43,37 @@
 ```
 
 ## 3. 仓库结构
+
+1. [<kbd>root/</kbd>](https://github.com/Le0v1n/Learning-Notebook-Codes): 根目录
+   1. [CSDN封面(480x270).drawio](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/CSDN%E5%B0%81%E9%9D%A2(480x270).drawio): 制作CSDN封面
+2. [<kbd>常用命令/</kbd>](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4): 包含 Linux + Markdown + LaTex 常用命令
+   1. [Linux.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/Linux.md): Linux 相关命令
+   2. [Markdown](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/Markdown.md): Markdown 常用命令
+   3. [LaTex.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/LaTex.md): LaTex 公式常用命令
+3. [<kbd>Dataset/</bkd>](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Datasets): 数据集(均用于演示的小数据集)
+   1. [VOCdevkit/](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Datasets/VOCdevkit): Lite 版 VOC 2012 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/124540069)
+4. [<kbd>Linux/</bkd>](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Linux/): Linux 相关
+   1. [配置Anaconda.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Linux/%E9%85%8D%E7%BD%AEAnaconda.md): 如何在 Linux 中下载、安装、配置 Anaconda | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133967607)
+5. [<kbd>ObjectDetection/</bkd>](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/ObjectDetection/): 目标检测相关
+   1. [YOLOv5/](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/ObjectDetection/YOLOv5/): YOLOv5 相关 | 📚对应博客: [1.理论](https://blog.csdn.net/weixin_44878336/article/details/133901265)；[2.自建数据集和模型训练](https://blog.csdn.net/weixin_44878336/article/details/133915488)
+6. [<kbd>Python/</bkd>](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Python): Python 相关
+   1. [Registry.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/Registry/Registry.md): Python 的注册机制 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133887655)
+   2. [logging.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/Python%E7%9A%84logging%E6%A8%A1%E5%9D%97%EF%BC%88%E6%97%A5%E5%BF%97%E3%80%81DEBUG%E3%80%81INFO%E3%80%81WARNING%E3%80%81ERROR%E3%80%81CRITICAL%EF%BC%89.md): Python 的日志 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133868928)
+   3. [配置JupyterNotebook.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/%E9%85%8D%E7%BD%AEJupyterNotebook.md): 配置 JupyterNotebook
+   4. [requirements.txt](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/requirements.txt): Python 第三方库集合
+7. [<kbd>PyTorch/</bkd>](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/PyTorch/): PyTorch 相关
+   1. [mmcv_Registry.md](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/PyTorch/mmcv_Registry): MMCV 的注册机制（:hammer_and_wrench:尚未完成）
+   2. [PyTorch的hook函数.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/PyTorch/PyTorch%E7%9A%84hook%E5%87%BD%E6%95%B0%EF%BC%88register_hook%E3%80%81register_forward_hook%E3%80%81register_backward_hook%E3%80%81register_forward_pre_hook%EF%BC%89.md): PyTorch 的 hook 函数 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133859089)
+8. [<kbd>SemanticSegmentation/</bkd>](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/SemanticSegmentation/PP-LiteSeg): 语义分割相关
+   1. [PP-LiteSeg.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/SemanticSegmentation/PP-LiteSeg.md)：PP-LiteSeg（百度飞桨）| [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/132211283) | 🎥对应视频：[1.理论](https://www.bilibili.com/video/BV1Xr4y1d7Y2)；[2.代码](https://www.bilibili.com/video/BV18p4y1P7dG)
+9. [<kbd>Windows/</bkd>](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Windows)：Windows 相关
+   1.  [KMS.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/KMS%20Host.md)：KMS 主机配置 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133934093)
+   2.  [WSL2.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/WSL2.md)：WSL2 的安装 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133967607)
+   3.  [自用软件 + VSCode插件集合（持续更新...）.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/%E8%87%AA%E7%94%A8%E8%BD%AF%E4%BB%B6%20%2B%20VSCode%E6%8F%92%E4%BB%B6%E9%9B%86%E5%90%88%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0...%EF%BC%89.md) | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133272093)
+   4.  [Office.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/Office/Office.md)：Office 技巧 | [📚对应博客: TODO]()
+
+
+<details> <summary> 展开/折叠 </summary>
 
 <div align=center>
 
@@ -79,6 +116,8 @@
 |2023/10/20|&emsp;&emsp;<kbd>4. Office.md</bkd>|Office 技巧||[站内链接](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/Office/Office.md)|
 
 </div>
+
+</details>
 
 # 其他说明
 
