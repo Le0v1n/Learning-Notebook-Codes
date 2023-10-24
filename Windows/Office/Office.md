@@ -47,7 +47,7 @@
 
 <div align=center>
     <img src=imgs_markdown\在题注中添加标签.gif
-    width=100%>
+    width=80%>
 </div>
 
 之后我们再次使用交叉沿用，就可以看到刚刚我们新建的 `图`（或者`表`） 了。
@@ -67,14 +67,14 @@
 
 <div align=center>
     <img src=./imgs_markdown/2023-10-24-09-48-29.png
-    width=100%>
+    width=80%>
 </div>
 
 **动图演示**：
 
 <div align=center>
     <img src=./imgs_markdown/连续引用.gif
-    width=100%>
+    width=80%>
 </div>
 
 下面是详细步骤 :smile:。
@@ -92,7 +92,7 @@
 
 <div align=center>
     <img src=./imgs_markdown/2023-10-24-09-50-13.png
-    width=100%>
+    width=80%>
 </div>
 
 ### 1.5.2 Step 2
@@ -111,7 +111,7 @@
 
 <div align=center>
     <img src=./imgs_markdown/2023-10-24-09-55-02.png
-    width=100%>
+    width=80%>
 </div>
 
 ### 1.5.3 Step 3
@@ -120,7 +120,7 @@
 
 <div align=center>
     <img src=./imgs_markdown/2023-10-24-09-56-13.png
-    width=100%>
+    width=80%>
 </div>
 
 为了显示正常，我们可以在 `1` 和 `4` 中间加上 `-` 或 `~`，如下所示：
