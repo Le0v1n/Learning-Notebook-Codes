@@ -61,6 +61,83 @@
 1. 我们的目的是新建一个标签，而不是插入题注，所以题注可以不用真的插进去，标签新建好了就行
 2. 无论是插入图还是表的交叉引用，在正文中引用时，建议“引用内容”修改为“仅标签和编号”，这样得到的是 `图 2.1`，
 
+## 1.5 Word 连续引用 ^[1][3]^ ^→^ ^[1~3]^
+
+如下图所示，我们目前的格式如下：
+
+<div align=center>
+    <img src=./imgs_markdown/2023-10-24-09-48-29.png
+    width=100%>
+</div>
+
+**动图演示**：
+
+<div align=center>
+    <img src=./imgs_markdown/连续引用.gif
+    width=100%>
+</div>
+
+下面是详细步骤 :smile:。
+
+### 1.5.1 Step 1
+
+之后我们选住引用 → <kbd>右键</kbd> → <kbd>切换域代码</kbd>：
+
+<div align=center>
+    <img src=./imgs_markdown/2023-10-24-09-49-40.png
+    width=50%>
+</div>
+
+得到如下所示的域代码：
+
+<div align=center>
+    <img src=./imgs_markdown/2023-10-24-09-50-13.png
+    width=100%>
+</div>
+
+### 1.5.2 Step 2
+
+在第一个`\h `的后面加上`\#"[0"`，在最后一个`\h `的后面加上`\#"0]"`
+
++ **修改前**：
+  ```
+  { REF_Ref149033284 \r \h  \* MERGEFORMAT }{ REF_Ref149033288 \r \h  \* MERGEFORMAT }
+  ```
+
++ **修改后**：
+  ```
+  { REF_Ref149033284 \r \h \#"[0" \* MERGEFORMAT }{ REF_Ref149033288 \r \h \#"0]" \* MERGEFORMAT }
+  ```
+
+<div align=center>
+    <img src=./imgs_markdown/2023-10-24-09-55-02.png
+    width=100%>
+</div>
+
+### 1.5.3 Step 3
+
+再次选中域代码 → 按 <kbd>F9</kbd>
+
+<div align=center>
+    <img src=./imgs_markdown/2023-10-24-09-56-13.png
+    width=100%>
+</div>
+
+为了显示正常，我们可以在 `1` 和 `4` 中间加上 `-` 或 `~`，如下所示：
+
+<div align=center>
+    <img src=./imgs_markdown/2023-10-24-09-58-56.png
+    width=50%>
+</div>
+
+---
+
+<kbd>Note</kbd>:
+
+1. 该方法适用于 ^[1][3]^ ^→^ ^[1~3]^ 外，还适用于 ^[1][2]^ ^→^ ^[1,2]^
+2. 执行完 Step 2 之后，一定要“更新域”
+3. 更新域也可以 <kbd>Ctrl + A</kbd> → <kbd>F9</kbd>，这样会更新整篇论文的“域代码”（包括自动编号的图表题注、MathType、自动生成的目录等）
+
 # 2. Excel
 
 # 3. PowerPoint (PPT)
