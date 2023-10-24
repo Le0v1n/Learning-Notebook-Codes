@@ -72,6 +72,7 @@ def parse_args():
     parser.add_argument('--val_list_name', type=str, default="val.txt", help="验证图片列表名称")
     parser.add_argument('--val_size', type=float, default=0.1, help="验证集比例")
     parser.add_argument('--seed', type=int, default=42, help="随机数种子")
+    parser.add_argument('--no_create_txt_for_pure_negative_sample', action='store_true', help='是否为纯负样本创建txt文件(默认创建)')
     parser.add_argument('--num_classes', type=int, default=20, help="数据集类别数(用于校验)")
     parser.add_argument('--classes', help="数据集具体类别数(用于生成 classes.json 文件)", 
                         default=['aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat',
@@ -148,11 +149,6 @@ def parse_xml_to_dict(xml):
 def translate_info(file_names: list, save_root: str, class_dict: dict, train_val='train', args=None):
     """
     将对应xml文件信息转为yolo中使用的txt文件信息
-    :param file_names:
-    :param save_root:
-    :param class_dict:
-    :param train_val:
-    :return:
     """
     save_txt_path = os.path.join(save_root, train_val, "labels")
     if os.path.exists(save_txt_path) is False:
@@ -162,28 +158,48 @@ def translate_info(file_names: list, save_root: str, class_dict: dict, train_val
         os.makedirs(save_images_path)
 
     for file in tqdm(file_names, desc="translate {} file...".format(train_val)):
-        # 检查下图像文件是否存在
+        # 检查下图像文件是否存在（强报错！）
         img_path = os.path.join(args.voc_images_path, file + ".jpg")
         assert os.path.exists(img_path), "file:{} not exist...".format(img_path)
 
-        # 检查xml文件是否存在
+        # 检查xml文件是否存在（强报错！）
         xml_path = os.path.join(args.voc_xml_path, file + ".xml")
         assert os.path.exists(xml_path), "file:{} not exist...".format(xml_path)
 
-        # read xml
+        # 读取 xml 文件（这里修复了一下）
+        # with open(xml_path) as fid:
+        #     xml_str = fid.read()
+        # xml = etree.fromstring(xml_str)
+
         with open(xml_path) as fid:
             xml_str = fid.read()
-        xml = etree.fromstring(xml_str)
+            
+        # 将XML字符串编码为字节序列
+        xml_bytes = xml_str.encode('utf-8')
+
+        # 使用lxml解析字节序列的XML数据
+        xml = etree.fromstring(xml_bytes)
         data = parse_xml_to_dict(xml)["annotation"]
         img_height = int(data["size"]["height"])
         img_width = int(data["size"]["width"])
 
         # write object info into txt
-        assert "object" in data.keys(), "file: '{}' lack of object key.".format(xml_path)
-        if len(data["object"]) == 0:
-            # 如果xml文件中没有目标就直接忽略该样本
-            print("Warning: in '{}' xml, there are no objects.".format(xml_path))
-            continue
+        # assert "object" in data.keys(), "file: '{}' lack of object key.".format(xml_path)
+        if (not "object" in data.keys()) or (len(data["object"]) == 0):  # 没有目标，说明是纯负样本
+            if args.no_create_txt_for_pure_negative_sample:  # 不为纯负样本创建txt文件
+                continue
+            else:  # 为纯负样本创建txt文件
+                # 把纯负样本图片拷贝到指定为止
+                path_copy_to = os.path.join(save_images_path, img_path.split(os.sep)[-1])
+                if os.path.exists(path_copy_to) is False:
+                    shutil.copyfile(img_path, path_copy_to)
+                
+                # 创建一个空的 .txt 文件
+                with open(os.path.join(save_txt_path, file + ".txt"), "w") as f:
+                    ...
+
+                # 后面的不需要执行
+                continue
                 
         with open(os.path.join(save_txt_path, file + ".txt"), "w") as f:
             for index, obj in enumerate(data["object"]):
@@ -244,12 +260,14 @@ def main(args):
     # 读取train.txt中的所有行信息，删除空行
     with open(args.train_txt_path, "r") as r:
         train_file_names = [i for i in r.read().splitlines() if len(i.strip()) > 0]
+        
     # voc信息转yolo，并将图像文件复制到相应文件夹
     translate_info(train_file_names, args.save_file_root, class_dict, "train", args=args)
 
     # 读取val.txt中的所有行信息，删除空行
     with open(args.val_txt_path, "r") as r:
         val_file_names = [i for i in r.read().splitlines() if len(i.strip()) > 0]
+        
     # voc信息转yolo，并将图像文件复制到相应文件夹
     translate_info(val_file_names, args.save_file_root, class_dict, "val", args=args)
 

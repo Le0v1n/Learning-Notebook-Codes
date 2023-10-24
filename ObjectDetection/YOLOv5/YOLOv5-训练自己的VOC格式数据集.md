@@ -182,6 +182,8 @@ YOLOv3 数据集
 
 ## 1.5 将 PASCAL VOC 数据集转换为 YOLOv5 数据集格式
 
+<details><summary>voc2yolo.py</summary>
+
 ```python
 """
 本脚本有两个功能：
@@ -257,6 +259,7 @@ def parse_args():
     parser.add_argument('--val_list_name', type=str, default="val.txt", help="验证图片列表名称")
     parser.add_argument('--val_size', type=float, default=0.1, help="验证集比例")
     parser.add_argument('--seed', type=int, default=42, help="随机数种子")
+    parser.add_argument('--no_create_txt_for_pure_negative_sample', action='store_true', help='是否为纯负样本创建txt文件(默认创建)')
     parser.add_argument('--num_classes', type=int, default=20, help="数据集类别数(用于校验)")
     parser.add_argument('--classes', help="数据集具体类别数(用于生成 classes.json 文件)", 
                         default=['aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat',
@@ -333,11 +336,6 @@ def parse_xml_to_dict(xml):
 def translate_info(file_names: list, save_root: str, class_dict: dict, train_val='train', args=None):
     """
     将对应xml文件信息转为yolo中使用的txt文件信息
-    :param file_names:
-    :param save_root:
-    :param class_dict:
-    :param train_val:
-    :return:
     """
     save_txt_path = os.path.join(save_root, train_val, "labels")
     if os.path.exists(save_txt_path) is False:
@@ -347,28 +345,48 @@ def translate_info(file_names: list, save_root: str, class_dict: dict, train_val
         os.makedirs(save_images_path)
 
     for file in tqdm(file_names, desc="translate {} file...".format(train_val)):
-        # 检查下图像文件是否存在
+        # 检查下图像文件是否存在（强报错！）
         img_path = os.path.join(args.voc_images_path, file + ".jpg")
         assert os.path.exists(img_path), "file:{} not exist...".format(img_path)
 
-        # 检查xml文件是否存在
+        # 检查xml文件是否存在（强报错！）
         xml_path = os.path.join(args.voc_xml_path, file + ".xml")
         assert os.path.exists(xml_path), "file:{} not exist...".format(xml_path)
 
-        # read xml
+        # 读取 xml 文件（这里修复了一下）
+        # with open(xml_path) as fid:
+        #     xml_str = fid.read()
+        # xml = etree.fromstring(xml_str)
+
         with open(xml_path) as fid:
             xml_str = fid.read()
-        xml = etree.fromstring(xml_str)
+            
+        # 将XML字符串编码为字节序列
+        xml_bytes = xml_str.encode('utf-8')
+
+        # 使用lxml解析字节序列的XML数据
+        xml = etree.fromstring(xml_bytes)
         data = parse_xml_to_dict(xml)["annotation"]
         img_height = int(data["size"]["height"])
         img_width = int(data["size"]["width"])
 
         # write object info into txt
-        assert "object" in data.keys(), "file: '{}' lack of object key.".format(xml_path)
-        if len(data["object"]) == 0:
-            # 如果xml文件中没有目标就直接忽略该样本
-            print("Warning: in '{}' xml, there are no objects.".format(xml_path))
-            continue
+        # assert "object" in data.keys(), "file: '{}' lack of object key.".format(xml_path)
+        if (not "object" in data.keys()) or (len(data["object"]) == 0):  # 没有目标，说明是纯负样本
+            if args.no_create_txt_for_pure_negative_sample:  # 不为纯负样本创建txt文件
+                continue
+            else:  # 为纯负样本创建txt文件
+                # 把纯负样本图片拷贝到指定为止
+                path_copy_to = os.path.join(save_images_path, img_path.split(os.sep)[-1])
+                if os.path.exists(path_copy_to) is False:
+                    shutil.copyfile(img_path, path_copy_to)
+                
+                # 创建一个空的 .txt 文件
+                with open(os.path.join(save_txt_path, file + ".txt"), "w") as f:
+                    ...
+
+                # 后面的不需要执行
+                continue
                 
         with open(os.path.join(save_txt_path, file + ".txt"), "w") as f:
             for index, obj in enumerate(data["object"]):
@@ -429,12 +447,14 @@ def main(args):
     # 读取train.txt中的所有行信息，删除空行
     with open(args.train_txt_path, "r") as r:
         train_file_names = [i for i in r.read().splitlines() if len(i.strip()) > 0]
+        
     # voc信息转yolo，并将图像文件复制到相应文件夹
     translate_info(train_file_names, args.save_file_root, class_dict, "train", args=args)
 
     # 读取val.txt中的所有行信息，删除空行
     with open(args.val_txt_path, "r") as r:
         val_file_names = [i for i in r.read().splitlines() if len(i.strip()) > 0]
+        
     # voc信息转yolo，并将图像文件复制到相应文件夹
     translate_info(val_file_names, args.save_file_root, class_dict, "val", args=args)
 
@@ -452,11 +472,16 @@ if __name__ == "__main__":
     # 执行 .xml 转 .txt
     main(args)
 ```
+</details>
+
 
 我们在运行下面命令即可完成转换：
 
 ```bash
-python voc2yolo.py --voc_root ./VOCdevkit --voc_version VOC2012-Lite
+python voc2yolo.py --voc_root ./VOCdevkit \
+                   --voc_version VOC2012-Lite \
+                   --num_classes 20 \
+                   --save_path VOC2012-YOLO
 ```
 
 转换后的目录结构为：
@@ -616,6 +641,177 @@ plot_results('path/to/results.csv')  # plot 'results.csv' as 'results.png'
     <img src=./imgs_markdown/2023-10-18-21-25-55.png
     width=100%>
 </div>
+
+# 4. <kbd>补充</kbd> 现实场景中数据集构建遇到的问题
+
+## 4.1 数据集中图片和标注数量不一致怎么办？
+
+有时候我们标注完所有的图片后，会手动检查一遍，删除掉一些不合理的图片。删除图片我推荐使用 Windows 自带的图片软件，如下图所示：
+
+<div align=center>
+    <img src=./imgs_markdown/2023-10-24-15-41-02.png
+    width=50%>
+</div>
+
+之后我们打开图片，使用 <kbd>←</kbd><kbd>→</kbd> 方向键即可浏览上一张图片和下一张图片。对于不合理的图片，我们可以直接使用键盘快捷键 <kbd>Delete</kbd> 来删除此时显示的图片。
+
+在删除完所有不合理的图片后，我们会发现，此时图片数量和标注文件数量不一致了，需要进行处理，这里我推荐使用下面的脚本：
+
+> <kbd>Note</kbd>：<font color='red'>在运行下面脚本的时候一定要备份数据集！</font>
+
+```python
+import os
+from tqdm import tqdm
+
+
+# 定义图片文件夹和标签文件夹的路径
+images_folder = '/mnt/c/Users/Le0v1n/Desktop/测试案例/Datasets/exp_1/JPEGImages'
+annotations_folder = '/mnt/c/Users/Le0v1n/Desktop/测试案例/Datasets/exp_1/Annotations'
+
+# 获取images文件夹中的所有图片文件
+image_files = [f for f in os.listdir(images_folder) if f.endswith('.jpg') or f.endswith('.png')]
+
+# 获取annotations文件夹中的所有.xml文件
+annotation_files = [f for f in os.listdir(annotations_folder) if f.endswith('.xml')]
+
+if len(image_files) == len(annotation_files):
+    print(f"两种文件夹中文件数量相同({len(image_files)} v.s. {len(annotation_files)})，程序退出!")
+    exit()
+
+# 获取images文件夹中存在的图片文件的文件名（不包含扩展名）
+existing_image_names = set(os.path.splitext(f)[0] for f in image_files)
+
+# 使用tqdm创建进度条
+deleted_num = 0
+with tqdm(total=len(annotation_files), desc="删除标签文件进度") as pbar:
+    # 遍历annotations文件夹，删除没有对应图片的.xml文件
+    for annotation_file in annotation_files:
+        annotation_name = os.path.splitext(annotation_file)[0]
+        
+        if annotation_name not in existing_image_names:
+            # 构建要删除的.xml文件的完整路径
+            annotation_path = os.path.join(annotations_folder, annotation_file)
+            # 删除文件
+            os.remove(annotation_path)
+            pbar.update(1)  # 更新进度条
+            pbar.set_postfix(deleted=annotation_file)  # 显示已删除的文件名
+            deleted_num += 1
+
+print(f"删除操作完成, 共删除 {deleted_num} 个 .xml 文件")
+
+# 再检查一遍
+# 获取images文件夹中的所有图片文件
+image_files = [f for f in os.listdir(images_folder) if f.endswith('.jpg') or f.endswith('.png')]
+
+# 获取annotations文件夹中的所有.xml文件
+annotation_files = [f for f in os.listdir(annotations_folder) if f.endswith('.xml')]
+
+if len(image_files) == len(annotation_files):
+    print(f"两种文件夹中文件数量相同({len(image_files)} v.s. {len(annotation_files)})，程序退出!")
+else:
+    print(f"两个文件夹数量不相同({len(image_files)} v.s. {len(annotation_files)})，可能存在纯负样本!")
+```
+
+上面的脚本可以检查图片和标注文件，看标注文件是否有对应的图片，如果没有，则删除标注文件。
+
+## 4.2 数据集中有纯负样本怎么办？
+
+在实际任务中，我们难免会有一张图片是负样本的情况，此时这张图片是没有任何 Object 的。我们一般使用 LabelImg 来标注图片，但 LabelImg 不会对没有 Object 的图片生成对应的 `.xml` 文件，此时我们运行上面给的 `voc2yolo.py` 文件就会报错，因为我们断言了 `.xml` 是否存在。那么我们直接 `continue` 可以吗？其实是可以的，但是我们一般是想往数据集中添加一定的纯负样本的，直接 `continue` 就没有办法添加纯负样本了，那我们该怎么办？
+
+其实方法也比较简单，首先为所有的图片生成一个 `.xml` 文件，脚本如下：
+
+```python
+import os
+import xml.dom.minidom
+from tqdm import tqdm
+
+
+# 为哪些图片生成 .xml 文件？
+img_path = '/mnt/c/Users/Le0v1n/Desktop/测试案例/Datasets/exp_1/JPEGImages'
+
+# 将生成的 .xml 文件保存到哪个文件夹下？
+xml_path = '/mnt/c/Users/Le0v1n/Desktop/测试案例/Datasets/exp_1/Empty_Annotations'
+
+# 获取图像文件列表
+img_files = os.listdir(img_path)
+
+# 使用tqdm创建进度条
+for img_file in tqdm(img_files, desc="生成XML文件"):
+    img_name = os.path.splitext(img_file)[0]
+
+    # 创建一个空的DOM文档对象
+    doc = xml.dom.minidom.Document()
+    # 创建名为annotation的根节点
+    annotation = doc.createElement('annotation')
+    # 将根节点添加到DOM文档对象
+    doc.appendChild(annotation)
+
+    # 添加folder子节点
+    folder = doc.createElement('folder')
+    folder_text = doc.createTextNode('VOC2007')
+    folder.appendChild(folder_text)
+    annotation.appendChild(folder)
+
+    # 添加filename子节点
+    filename = doc.createElement('filename')
+    filename_text = doc.createTextNode(img_file)
+    filename.appendChild(filename_text)
+    annotation.appendChild(filename)
+
+    # 添加path子节点
+    path = doc.createElement('path')
+    path_text = doc.createTextNode(img_path + '/' + img_file)  # 修正路径
+    path.appendChild(path_text)
+    annotation.appendChild(path)
+
+    # 添加source子节点
+    source = doc.createElement('source')
+    database = doc.createElement('database')
+    database_text = doc.createTextNode('Unknown')
+    source.appendChild(database)
+    database.appendChild(database_text)
+    annotation.appendChild(source)
+
+    # 添加size子节点
+    size = doc.createElement('size')
+    width = doc.createElement('width')
+    width_text = doc.createTextNode('1280')
+    height = doc.createElement('height')
+    height_text = doc.createTextNode('720')
+    depth = doc.createElement('depth')
+    depth_text = doc.createTextNode('3')
+    size.appendChild(width)
+    width.appendChild(width_text)
+    size.appendChild(height)
+    height.appendChild(height_text)
+    size.appendChild(depth)
+    depth.appendChild(depth_text)
+    annotation.appendChild(size)
+
+    # 添加segmented子节点
+    segmented = doc.createElement('segmented')
+    segmented_text = doc.createTextNode('0')
+    segmented.appendChild(segmented_text)
+    annotation.appendChild(segmented)
+
+    # 将XML写入文件
+    xml_file_path = os.path.join(xml_path, f'{img_name}.xml')
+    with open(xml_file_path, 'w+', encoding='utf-8') as fp:
+        doc.writexml(fp, indent='\t', addindent='\t', newl='\n', encoding='utf-8')
+```
+
+**注意路径**：
+1. `img_path`: 对哪个文件夹下的图片生成 .xml 文件
+2. `xml_path`: 将生成的 .xml 文件放在哪个文件夹里
+
+> 有些同学可能会担心，在 `voc2yolo.py` 中会通过图片的尺寸进行坐标转换，但是你要记住，那是对于有 Object 的图片而言的，对于纯负样本而言，没有任何 Object，也就不会进行坐标转换，所以这里随便写了一个 1280×720 是合理的。
+
+接下来，我们需要将之前标注好的 `.xml` 文件（是自己标注的，不是生成的文件），复制一下，然后粘贴到生成的 `.xml` 文件中。当系统提示有重名文件时，全部覆盖即可。这样，所有的图片都会有自己的 `.xml` 文件了。
+
+
+此时，我们再运行 `voc2yolo.py` 文件，它会对纯负样本生成一个 `.txt` 文件。
+
+> <kbd>Note</kbd>：在 `voc2yolo.py` 脚本中，有一个名为 `--no_create_txt_for_pure_negative_sample` 的参数。当该参数被触发时，脚本不会为纯负样本生成 `.txt` 文件（默认会生成 `.txt` 文件）
 
 # 知识来源
 
