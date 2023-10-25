@@ -7,7 +7,7 @@
 
 <div align=center>
 	<img src=https://img-blog.csdnimg.cn/804fea2cf5024ceeb83dae949d5fc88a.png
-	width=100%>
+	width=80%>
 </div>
 
 目标检测模型通过 pycocotools 在验证集上会得到 COCO 的评价列表，具体参数的含义是什么呢？
@@ -39,40 +39,40 @@ COCO 数据集是一个可用于图像检测（Image Detection），语义分割
 2. **Densepose（密集姿势估计）**：DensePose 任务涉及同时检测人、分割他们的身体并将属于人体的所有图像像素映射到身体的3D表面。用于不可控条件下的密集人体姿态	估计。
    <div align=center>
 		<img src=https://img-blog.csdnimg.cn/502deb566cbb4386b42060356e217586.png
-		width=100%>
+		width=80%>
 	</div>
 
 3. **Key-points detection（关键点检测）**：在任意姿态下对人物的关键点进行定位，该任务包含检测行人及定位到行人的关键点。
 	<div align=center>
 		<img src=https://img-blog.csdnimg.cn/65674dceddda4fb4950966088e1b695f.png
-		width=100%>
+		width=80%>
 	</div>
 
 4. **Stuff Segmentation（材料细分）**：语义分割中针对 stuff class 类的分割（草，墙壁，天空等）
 	<div align=center>
 		<img src=https://img-blog.csdnimg.cn/72843bedec764e61be2f6f87feeae8c7.png
-		width=100%>
+		width=80%>
 	</div>
 
 5. **Panoptic Segmentation（全景分割）**：其目的是生成丰富且完整的连贯场景分割，这是实现自主驾驶或增强现实等真实世界视觉系统的重要一步。
 	<div align=center>
 		<img src=https://img-blog.csdnimg.cn/914dde508f2b4d899186febc9cd61468.png
-		width=100%>
+		width=80%>
 	</div>
 
 6. **image captioning（图像标题生成）**：根据图像生成一段文字。
 	<div align=center>
 		<img src=https://img-blog.csdnimg.cn/871402ff6e8346728d6ce41a46f98b89.png
-		width=100%>
+		width=80%>
 	</div>
 
 ### 0.3.3 COCO 的 80 个类别
 
 <div align=center>
 	<img src=https://img-blog.csdnimg.cn/844ef01914bb43c58d5f5f1db8150dc5.png
-	width=100%>
+	width=80%>
 	<img src=https://img-blog.csdnimg.cn/e37a2608953444118ba73cbc8263c20f.png
-	width=100%>
+	width=80%>
 </div>
 
 <div align=center>
@@ -113,7 +113,7 @@ COCO 数据集是一个可用于图像检测（Image Detection），语义分割
 
 <div align=center>
 	<img src=https://img-blog.csdnimg.cn/fa158de481544a2ea13ed02ff4036573.png
-	width=50%>
+	width=30%>
 </div>
 
 对于这样一张图片，怎样才能算检测正确呢？其中，绿色为 GT，红色为预测框。
@@ -142,7 +142,7 @@ COCO 数据集是一个可用于图像检测（Image Detection），语义分割
 
 <div align=center>
 	<img src=https://img-blog.csdnimg.cn/a9c4a45400334ed382295c0aa32db51f.png
-	width=50%>
+	width=40%>
 </div>
 
 对于张图片来说，<font color='green'>绿色</font> 为 GT，<font color='red'>红色</font> 为模型预测框，IoU 阈值设置为 0.5。
@@ -167,7 +167,7 @@ $$
 
 <div align=center>
 	<img src=https://img-blog.csdnimg.cn/cda6d9a7f9ea4cc2bdfbb1a650d0a8ab.png
-	width=50%>
+	width=45%>
 </div>
 
 > 同样的，绿色的为 Ground Truth，红色的为 预测框。
@@ -199,7 +199,7 @@ $$
 
 <div align=center>
 	<img src=https://img-blog.csdnimg.cn/e27bb97a30214974a185b1eee97a124e.png
-	width=60%>
+	width=50%>
 </div>
 
 这张图片和上一张图片类似，网络总共预测出了 50 个预测框（即 50 个目标）。这 50 个预测框中包括了所有要检测的目标，那么该网络针对这张图片的 Recall 为：
@@ -223,7 +223,7 @@ AP 就是P-R曲线下方的面积，而 P-R 分别为 Precision 和 Recall。
 
 <div align=center>
 	<img src=https://img-blog.csdnimg.cn/bb67f09db0eb41a7806c0d97604b106f.png
-	width=80%>
+	width=70%>
 </div>
 
 #### 1.2.3.1 第一张图片
@@ -362,7 +362,7 @@ $$
 
 <div align=center>
 	<img src=https://img-blog.csdnimg.cn/3dc7ae58f90b4556b4889ca931726ec0.png
-	width=70%>
+	width=60%>
 </div>
 
 **在绘制 P-R 曲线时需注意**：对于 Recall（横坐标）需要滤除一些重复数据（图中用框框住的即为参与计算的点，有两个点没有被框，它俩不参与 AP 的计算）。根据表中的数据可知，Recall=0.57 有 3 个值，此时需保留 Precision 最大的值，即：
@@ -431,14 +431,14 @@ $$
 
 <div align=center>
 	<img src=https://img-blog.csdnimg.cn/44ed716d1e0f4d6a8a7cad7c317e47d3.png
-	width=100%>
+	width=80%>
 </div>
 
 **MS COCO 官网说明**：[https://cocodataset.org/#detection-eval](https://cocodataset.org/#detection-eval)
 
 <div align=center>
 	<img src=https://img-blog.csdnimg.cn/a7fe796cea8f4285abf865df9e9ee697.png
-	width=100%>
+	width=80%>
 </div>
 
 <kbd>Note</kbd>：图片中虽然写的是 AP，但实际上表示的是 mAP。
@@ -469,7 +469,7 @@ $$
 
 <div align=center>
 	<img src=https://img-blog.csdnimg.cn/5d004d65b9c3497ab1fac2849177d875.png
-	width=80%>
+	width=70%>
 </div>
 
 从上图可以看到，$\mathrm{AR^{max}=100}=64\%$，$\mathrm{AR^{max}=10}=63.3\%$，$\mathrm{AR^{max}=1}=45.2\%$。这说明 max 取 100 和取 10 相差不大，进一步说明了，模型训练时使用的数据集**每张图片**中目标（GT）的数目并不是很多，基本上在 10 左右；而当预测框数量限制在 1 时，它的 AR 仅为 45.2%，说明每张图片的目标个数一般是 >1 的。
@@ -488,7 +488,7 @@ $$
 
 <div align=center>
 	<img src=https://img-blog.csdnimg.cn/44ed716d1e0f4d6a8a7cad7c317e47d3.png
-	width=100%>
+	width=80%>
 </div>
 
 ## 3.1 mAP
