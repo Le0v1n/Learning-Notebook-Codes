@@ -138,6 +138,13 @@
 2. 执行完 Step 2 之后，一定要“更新域”
 3. 更新域也可以 <kbd>Ctrl + A</kbd> → <kbd>F9</kbd>，这样会更新整篇论文的“域代码”（包括自动编号的图表题注、MathType、自动生成的目录等）
 
+## 1.6 给页眉添加文武线
+
+<div align=center>
+    <img src=./imgs_markdown/word-添加文武线.gif
+    width=100%>
+</div>
+
 # 2. Excel
 
 # 3. PowerPoint (PPT)
