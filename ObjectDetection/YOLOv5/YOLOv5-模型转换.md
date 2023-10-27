@@ -8,6 +8,8 @@
 
 YOLOv5 推理官方支持 11 种格式：
 
+<div align=center>
+
 | 格式 | 导出 .py 文件 | 模型文件 |
 | :- | :- | :- |
 | <kbd>PyTorch</kbd> | `yolov5s.pt` | `yolov5s.pt` |
@@ -22,6 +24,8 @@ YOLOv5 推理官方支持 11 种格式：
 | TensorFlow Edge TPU | `edgetpu` | `yolov5s_edgetpu.tflite` |
 | TensorFlow.js | `tfjs` | `yolov5s_web_model/` |
 | <kbd>PaddlePaddle</kbd> | `paddle` | `yolov5s_paddle_model/` |
+
+</div>
 
 💡 **Tips**：
 
