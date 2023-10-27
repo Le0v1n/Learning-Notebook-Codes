@@ -90,7 +90,7 @@ python val.py --weights yolov5s.pt                 # PyTorch
                         yolov5s_paddle_model       # PaddlePaddle
 ```
 
-💡 **Tips**：可以查看 `detect.py` 中有哪些参数，写好参数，上面给出的是简化版，并不适用于实际项目。
+💡 **Tips**：可以查看 `val.py` 中有哪些参数，写好参数，上面给出的是简化版，并不适用于实际项目。
 
 # 知识来源
 
