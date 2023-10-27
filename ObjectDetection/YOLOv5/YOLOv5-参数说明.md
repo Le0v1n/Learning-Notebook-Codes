@@ -34,20 +34,20 @@ YOLO 模型的训练设置指的是用于在数据集上训练模型的各种超
 | <kbd>cos_lr</kbd> | `False` | 是否使用余弦学习率调度 |
 | <kbd>close_mosaic</kbd> | 10 | 禁用最后几轮的马赛克增强（0 禁用）|
 | <kbd>resume</kbd> | `False` | 从最后一个检查点恢复训练 |
-| <kbd>amp</kbd> | True | 自动混合精度（AMP）训练，可选项=[True、False] |
+| <kbd>amp</kbd> | True | 自动混合精度（AMP）训练，可选项: `[True, False]` |
 | <kbd>fraction</kbd> | 1.0 | 要训练的数据集比例（默认为 1.0，训练集中的所有图像）|
 | <kbd>profile</kbd> | `False` | 在训练期间为记录器启用 ONNX 和 TensorRT 速度 |
-| <kbd>freeze</kbd> | `None` | 冻结前 n 层（int 或 list，可选）或在训练期间冻结的层索引列表 |
+| <kbd>freeze</kbd> | `None` | 冻结前 `n` 层（`int` 或 `list`，可选）或在训练期间冻结的层索引列表 |
 | <kbd>lr0</kbd> | `0.01` | 初始学习率（例如 `SGD=1E-2`，`Adam=1E-3`）|
-| <kbd>lrf</kbd> | `0.01` | 最终学习率（lr0 * lrf）|
+| <kbd>lrf</kbd> | `0.01` | 最终学习率（`lr0 * lrf`）|
 | <kbd>momentum</kbd> | `0.937` | SGD 动量/Adam beta1 |
 | <kbd>weight_decay</kbd> | `0.0005` | 优化器权重衰减 5e-4 |
-| <kbd>warmup_epochs</kbd> | `3.0` | 预热轮数（允许分数）|
-| <kbd>warmup_momentum</kbd> | `0.8` | 预热初始动量 |
-| <kbd>warmup_bias_lr</kbd> | `0.1` | 预热初始偏置 lr |
-| <kbd>box</kbd> | `7.5` | 框损失增益 |
-| <kbd>cls</kbd> | `0.5` | cls 损失增益（与像素一起缩放）|
-| <kbd>dfl</kbd> | `1.5` | dfl 损失增益 |
+| <kbd>warmup_epochs</kbd> | `3.0` | 热身的 Epoch 数（允许分数）|
+| <kbd>warmup_momentum</kbd> | `0.8` | 热身初始动量 |
+| <kbd>warmup_bias_lr</kbd> | `0.1` | 热身初始偏置 lr |
+| <kbd>box</kbd> [^footnote-box-loss] | `7.5` | Box 损失增益（定位损失权重） |
+| <kbd>cls</kbd> [^footnote-cls-loss] | `0.5` | cls 损失增益（与像素一起缩放）（类别损失权重）|
+| <kbd>dfl</kbd> [^footnote-dfl-loss] | `1.5` | dfl 损失增益 |
 | <kbd>pose</kbd> | `12.0` | 姿势损失增益（仅姿势）|
 | <kbd>kobj</kbd> | `2.0` | 关键点对象损失增益（仅姿势）|
 | <kbd>label_smoothing</kbd> | `0.0` | 标签平滑（分数）|
@@ -66,6 +66,9 @@ YOLO 模型的训练设置指的是用于在数据集上训练模型的各种超
 [^footnote-deterministic]: 请见 [seed](#拓展-seed)
 [^footnote-single-cls]: 请见 [Single Class](#拓展-single-class)
 [^footnote-rect]: 请见 [矩阵训练(rectangular training)](#拓展-矩阵训练rectangular-training)
+[^footnote-box-loss]: 请见 [损失函数权重](#拓展-损失函数权重)
+[^footnote-cls-loss]: 请见 [损失函数权重](#2-cls-损失权重)
+[^footnote-dfl-loss]: 请见 [损失函数权重](#3-dfldistribution-focal-loss损失权重)
 
 ## <kbd>拓展</kbd> Early Stop，早停
 
@@ -341,7 +344,6 @@ def init_seeds(seed=0, deterministic=False):
 <kbd>By the way</kbd>：YOLOv5 官方文档中对 `single_cls` 的描述为“train multi-class data as single-class”，问过大佬，大佬的回答是“**如果开启，应该就直接不计算类别损失了**”。
 
 ## <kbd>拓展</kbd> 矩阵训练（rectangular training）
-
 "矩形训练"是一种优化训练过程的方法，它可以减少在每个批次中的填充(padding)。在传统的训练过程中，我们通常会将所有的输入图片调整为相同的尺寸，例如 $416\times 416$。如果输入图片的原始尺寸不是正方形，那么我们需要通过填充(padding)来将其变为正方形，这个过程称之为 Letter Box。
 
 ### 1. Letter Box
@@ -549,6 +551,23 @@ rectangular: 图像宽度×长度: 352×416
 </div>
 
 <kbd>Note</kbd>: 但是这样做了会引入新的问题 —— 数据集中每个 Batch 中图片的大小不一样，YOLO 的处理是将尺寸接近的放到一起处理，这就导致不能使用 dataloader 中的 `shuffle` 功能。
+
+## <kbd>拓展</kbd> 损失函数权重
+
+### 1. box 损失权重
+
+### 2. cls 损失权重
+
+### 3. dfl（Distribution Focal Loss）损失权重
+
+在 YOLOv5 中，dfl 是一种新的损失函数，其全称为 Distribution Focal Loss。它是在 Focal Loss 的基础上进行了改进，主要解决了类别不平衡问题。在传统的 Focal Loss 中，对于难以分类的样本，损失函数会放大其权重，提升其在训练中的重要性。而在 dfl 中，损失函数不仅考虑了样本的难易程度，还考虑了样本的分布情况。具体来说，dfl 会根据样本的概率分布来计算损失，使得那些分布较为集中的样本（即概率较高或较低的样本）的损失减小，而那些分布较为均匀的样本（即概率接近 0.5 的样本）的损失增大。这样可以使得模型更关注那些不确定性较高的样本，从而提高模型的泛化能力。dfl 损失函数的公式如下：
+
+$$
+\text {DFL} \left (p_ {t}\right)=-\alpha_ {t}\left (1-p_ {t}\right)^ {\gamma} \log \left (p_ {t}\right) \cdot \left (\frac {p_ {t}} {\bar {p}}\right)^ {\beta}
+$$
+
+其中，$p_t$ 是样本的真实概率，$\alpha_t$ 和 $\gamma$ 是 Focal Loss 中的参数，$\bar{p}$ 是所有样本概率的均值，$\beta$ 是一个超参数，用于控制分布因子的影响程度。当 $\beta=0$ 时，dfl 退化为Focal Loss。当 $\beta>0$ 时，dfl 会增加分布较为均匀的样本的损失；当 $\beta<0$ 时，dfl 会增加分布较为集中的样本的损失。
+
 
 
 # 知识来源
