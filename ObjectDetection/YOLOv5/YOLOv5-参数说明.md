@@ -97,7 +97,7 @@ YOLO 模型的训练设置指的是用于在数据集上训练模型的各种超
 | <kbd>--noautoanchor | `action` | | 禁用自动 Anchor |
 | <kbd>--noplots | `action` | | 不保存绘图文件 |
 | <kbd>--evolve</kbd> [^footnote-evolve] | `int` | | 进化超参数的代数 |
-| <kbd>--bucket | `str` | `''` | gsutil 存储桶 |
+| <kbd>--bucket</kbd> [^footnote-bucket] | `str` | `''` | gsutil 存储桶 |
 | <kbd>--cache | `str` | | 图像缓存方式，ram/disk |
 | <kbd>--image-weights | `action` | | 使用加权图像选择进行训练 |
 | <kbd>--device | `str` | `''` | cuda 设备，例如 0 或 0, 1, 2, 3 或 cpu |
@@ -124,7 +124,8 @@ YOLO 模型的训练设置指的是用于在数据集上训练模型的各种超
 
 </div>
 
-[^footnote-evolve]: 请见 []()
+[^footnote-evolve]: 请见 [超参数进化（Hyperparameter Evolution）](#310-超参数进化hyperparameter-evolution)
+[^footnote-bucket]: 请见 [bucket](#311-bucket)
 
 # 3. 拓展知识
 
@@ -716,12 +717,16 @@ mixup: 0.0  # image mixup (probability) | 图像混合 (概率)
 copy_paste: 0.0  # segment copy-paste (probability) | 分割复制粘贴 (概率)
 ```
 
+<details><summary>中文翻译：</summary>
+
+<div align=center>
+
 | 参数 | 英文注释 | 中文翻译 |
 |:-|:-|:-|
 | <kbd>lr0 | initial learning rate (`SGD=1E-2, Adam=1E-3`) | 初始学习率 (`SGD=1E-2, Adam=1E-3`) |
 | <kbd>lrf | final OneCycleLR learning rate (`lr0 * lrf`) | 最终 OneCycleLR 学习率 (`lr0 * lrf`) |
 | <kbd>momentum | SGD momentum/Adam beta1 | SGD 动量/Adam beta1 |
-| <kbd>weight_decay | optimizer weight decay 5e-4 | 优化器权值衰减 5e-4 |
+| <kbd>weight_decay | optimizer weight decay `5e-4` | 优化器权值衰减 `5e-4` |
 | <kbd>warmup_epochs | warmup epochs (fractions ok) | 热身的轮次 (分数也可用) |
 | <kbd>warmup_momentum| warmup initial momentum | 热身的初始动量 |
 | <kbd>warmup_bias_lr | warmup initial bias lr | 热身的初始偏置学习率 |
@@ -747,7 +752,135 @@ copy_paste: 0.0  # segment copy-paste (probability) | 分割复制粘贴 (概率
 | <kbd>mixup | image mixup (probability) | 图像混合 (概率) |
 | <kbd>copy_paste | segment copy-paste (probability) | 分割复制粘贴 (概率) |
 
+</div>
 
+</details>
+
+### 3.10.2 拟合函数
+
+在 YOLOv5 模型中，定义了一个 `fitness` 函数对各项指标进行加权得到当前拟合度：
+
+```python
+def fitness(x):
+    # 定义一个权重列表，用于对不同指标进行加权组合
+    w = [0.0, 0.0, 0.1, 0.9]  # 权重列表，对应指标 [P, R, mAP@0.5, mAP@0.5:0.95]
+
+    # 计算加权组合的适应度分数
+    # x[:, :4] 选择输入矩阵 x 的前 4 列，对应 [P, R, mAP@0.5, mAP@0.5:0.95]
+    # 然后将选定列与权重列表 w 相乘，得到每个指标的加权得分
+    # 最后使用 sum(1) 计算每行的得分总和，作为最终的适应度分数
+    return (x[:, :4] * w).sum(1)
+```
+
+### 3.10.3 超参数进化
+
+`yolov5/train.py` 文件中的超参数进化列表，括号里分别为 <kbd>(突变规模, 最小值, 最大值)</kbd>。
+
+```python
+# Hyperparameter evolution metadata (mutation scale 0-1, lower_limit, upper_limit)
+# 超参数进化元数据（变异范围 0-1，下限，上限）
+meta = {
+ 'lr0': (1, 1e-5, 1e-1), # 初始学习率 (SGD=1E-2, Adam=1E-3)
+ 'lrf': (1, 0.01, 1.0), # 最终的 OneCycleLR 学习率 (lr0 * lrf)
+ 'momentum': (0.3, 0.6, 0.98), # SGD 动量/Adam beta1
+ 'weight_decay': (1, 0.0, 0.001), # 优化器权重衰减
+ 'warmup_epochs': (1, 0.0, 5.0), # 预热周期 (可以是分数)
+ 'warmup_momentum': (1, 0.0, 0.95), # 预热初始动量
+ 'warmup_bias_lr': (1, 0.0, 0.2), # 预热初始偏置学习率
+ 'box': (1, 0.02, 0.2), # 边界框损失增益
+ 'cls': (1, 0.2, 4.0), # 分类损失增益
+ 'cls_pw': (1, 0.5, 2.0), # 分类 BCELoss 正例权重
+ 'obj': (1, 0.2, 4.0), # 目标损失增益 (与像素一起缩放)
+ 'obj_pw': (1, 0.5, 2.0), # 目标 BCELoss 正例权重
+ 'iou_t': (0, 0.1, 0.7), # IoU 训练阈值
+ 'anchor_t': (1, 2.0, 8.0), # 锚点多重阈值
+ 'anchors': (2, 2.0, 10.0), # 每个输出网格的锚点数 (0 表示忽略)
+ 'fl_gamma': (0, 0.0, 2.0), # 焦点损失 gamma (efficientDet 默认 gamma=1.5)
+ 'hsv_h': (1, 0.0, 0.1), # 图像 HSV-Hue 增强 (分数)
+ 'hsv_s': (1, 0.0, 0.9), # 图像 HSV 饱和度增强 (分数)
+ 'hsv_v': (1, 0.0, 0.9), # 图像 HSV 值增强 (分数)
+ 'degrees': (1, 0.0, 45.0), # 图像旋转 (+/-度)
+ 'translate': (1, 0.0, 0.9), # 图像平移 (+/-分数)
+ 'scale': (1, 0.0, 0.9), # 图像缩放 (+/-增益)
+ 'shear': (1, 0.0, 10.0), # 图像剪切 (+/-度)
+ 'perspective': (0, 0.0, 0.001), # 图像透视 (+/-分数)，范围为 0-0.001
+ 'flipud': (1, 0.0, 1.0), # 图像上下翻转 (概率)
+ 'fliplr': (0, 0.0, 1.0), # 图像左右翻转 (概率)
+ 'mosaic': (1, 0.0, 1.0), # 图像混合 (概率)
+ 'mixup': (1, 0.0, 1.0), # 图像混合 (概率)
+ 'copy_paste': (1, 0.0, 1.0)} # 分割复制粘贴 (概率)
+```
+
+### 3.10.4 超参数进化算法
+
+下面这段代码的目的是使用进化算法来优化 YOLOv5 的超参数，具体步骤如下：
+
+- 首先，检查是否存在 `evolve.csv` 文件，该文件记录了之前的变异结果和评估指标。如果存在，就从中选择最佳的超参数作为父代。
+- 然后，根据父代的超参数和一定的概率和标准差，对每个超参数进行随机变异，得到一个新的子代。变异时要保证超参数在一定的范围内，并且要确保变异后的超参数和父代有所不同。
+- 最后，使用子代的超参数进行训练和评估，并将结果保存到 `evolve.csv` 文件中，以便下一次变异使用。
+
+```python
+for _ in range(opt.evolve):  # 进化的代数
+    if evolve_csv.exists():  # 如果存在 evolve.csv：选择最佳超参数并进行变异
+        # Select parent(s) | 选择父代
+        parent = 'single'  # 父代选择方法：'single' 或 'weighted'
+        x = np.loadtxt(evolve_csv, ndmin=2, delimiter=',', skiprows=1)
+        n = min(5, len(x))  # 考虑的先前结果数量
+        x = x[np.argsort(-fitness(x))][:n]  # 前 n 个变异结果
+        w = fitness(x) - fitness(x).min() + 1E-6  # 权重（总和 > 0）
+
+        # 根据不同进化方法获得 base hyp
+        if parent == 'single' or len(x) == 1:
+            # x = x[random.randint(0, n - 1)]  # 随机选择
+            x = x[random.choices(range(n), weights=w)[0]]  # 基于权重的选择
+        elif parent == 'weighted':
+            x = (x * w.reshape(n, 1)).sum(0) / w.sum()  # 基于权重的组合
+
+        # Mutate | 变异
+        mp, s = 0.8, 0.2  # 变异概率，标准差
+        npr = np.random
+        npr.seed(int(time.time()))
+        g = np.array([meta[k][0] for k in hyp.keys()])  # 增益 0-1
+        ng = len(meta)
+        v = np.ones(ng)
+        while all(v == 1):  # 变异直到发生变化（防止重复）
+            v = (g * (npr.random(ng) < mp) * npr.randn(ng) * npr.random() * s + 1).clip(0.3, 3.0)
+        for i, k in enumerate(hyp.keys()):  # plt.hist(v.ravel(), 300)
+            hyp[k] = float(x[i + 7] * v[i])  # 变异
+```
+
+<kbd>代码流程</kbd>：
+
+- 从一个初始的超参数集合开始，每次训练一个代数（epoch）。
+- 在每个代数结束后，根据模型在验证集上的表现（如 mAP）评估超参数的适应度（fitness）。
+- 从历史记录中选择一个或多个父代（parent），并对其进行变异（mutation），得到一个新的超参数集合，作为下一个代数的子代（offspring）。
+- 重复上述过程，直到达到预设的进化代数（`opt.evolve`）或满足其他停止条件。
+
+<kbd>关键变量和函数</kbd>：
+- `evolve_csv`：一个文件名，用于存储每个代数的超参数和适应度值。
+- `hyp`：一个字典，用于存储当前代数的超参数值，其键是超参数的名称，如 `lr0`, `momentum`, `box` 等，其值是浮点数。
+- `meta`：一个字典，用于存储每个超参数的元信息，如增益（gain），范围（range），类型（type）等。
+- `fitness(x)`：一个函数，用于计算给定超参数集合 `x` 的适应度值，通常是 mAP 或 P + R。
+- `x`：一个二维数组，用于存储历史记录中的超参数集合和适应度值，每一行对应一个代数，前七列是时间戳、批次大小、图片大小、代数、最佳适应度、最佳代数和平均适应度，后面是各个超参数的值。
+- `n`：一个整数，用于指定考虑的先前结果数量，即从历史记录中选择多少个父代进行变异。
+- `w`：一个一维数组，用于存储每个父代的权重，根据其适应度值计算得到，适应度越高，权重越大。
+- `parent`：一个字符串，用于指定父代选择方法，有两种可选：'single'表示只选择一个父代；'weighted'表示根据权重选择多个父代，并对它们进行加权平均。
+- `mp, s`：两个浮点数，用于控制变异的概率和标准差，即每个超参数有 mp 的概率发生变异，变异后的值服从均值为 1、标准差为 s 的正态分布，并乘以原来的值。
+- `g`：一个一维数组，用于存储每个超参数的增益，即该超参数对模型性能的影响程度，增益越大，变异幅度越大。
+- `v`：一个一维数组，用于存储每个超参数的变异因子，即变异后的值与原来的值之比。
+
+---
+
+1. 根据之前训练时的 `hyp` 来确定一个 `base`
+2. `hyp` 再进行突变：通过之前每次进化得到的 `results` 来确定之前每个 `hyp` 的权重，得到每个 `hyp` 和每个 `hyp` 的权重之后有两种进化方式：
+   1. 根据每个 `hyp` 的权重随机选择一个之前的 `hyp` 作为 `base hyp`：`random.choices(range(n), weights=w)`
+   2. 根据每个 `hyp` 的权重对之前所有的 `hyp` 进行融合获得一个` base hyp`：`(x * w.reshape(n, 1)).sum(0) / w.sum()`
+3. `evolve.txt` 会记录每次进化之后的 `results + hyp`，每次进化时，`hyp` 会根据之前的 `results` 进行从大到小的排序，再根据 `fitness` 函数计算之前每次进化得到的 `hyp` 的权重；
+4. 再确定哪一种进化方式，从而进行进化。
+
+## 3.11 bucket
+
+在 YOLOv5 中，`--bucket`参数用于指定一个开放的（公共读/写权限）存储桶/目录字符串，该字符串位于 GCP 上，例如 `gs://bucket/dir/subidir`。这个参数在执行 `python train.py --bucket BUCKET --evolve` 命令时使用。这样可以方便地在 Google Cloud Platform（GCP）上存储和访问模型训练过程中生成的数据。
 
 
 # 知识来源
@@ -756,4 +889,3 @@ copy_paste: 0.0  # segment copy-paste (probability) | 分割复制粘贴 (概率
 2. [cfg-train](https://docs.ultralytics.com/usage/cfg/#train)
 3. [rectangular training 矩阵训练](https://blog.csdn.net/REstrat/article/details/126851437)
 4. [算法教学：YOLOv5（v6.1）解析（四）超参数进化](https://blog.csdn.net/faalasou/article/details/132511720)
-5. 
