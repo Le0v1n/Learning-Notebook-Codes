@@ -19,7 +19,7 @@
 17. <kbd>截屏</kbd>：[Snipaste](https://www.snipaste.com/)
 18. <kbd>Office 公式编写</kbd>：MathType
 19. <kbd>邮箱</kbd>：[网易邮箱大师](https://dashi.163.com/download.html)
-20. <kbd>本地搜索文件</kbd>：[Everthing](https://www.voidtools.com/zh-cn/)
+20. <kbd>本地搜索文件</kbd>：[Everything](https://www.voidtools.com/zh-cn/)
 21. <kbd>音乐播放下载器</kbd>：[lx-music-desktop](https://github.com/lyswhut/lx-music-desktop)
 22. <kbd>视频播放器</kbd>：:star:[VLC](https://www.videolan.org/) | [PotPlayer](http://www.potplayercn.com/download)
 23. <kbd>桌面助手</kbd>：[360桌面助手](http://www.360.cn/desktop/)
