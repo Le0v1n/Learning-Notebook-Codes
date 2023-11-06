@@ -15,22 +15,23 @@
 13. <kbd>将图片转换为图标</kbd>：[image2ico](https://github.com/Le0v1n/image2ico)
 14. <kbd>模型权重查看</kbd>：[Netron(客户端)](https://github.com/lutzroeder/netron) | [Netron(Web版)](https://netron.app/)
 15. <kbd>图形绘制</kbd>：[draw.io(客户端)](https://github.com/jgraph/drawio/releases) | [draw.io(Web)](https://app.diagrams.net/)
-16. <kbd>剪切板历史</kbd>：[Ditto](https://ditto-cp.sourceforge.io/)
-17. <kbd>截屏</kbd>：[Snipaste](https://www.snipaste.com/)
-18. <kbd>Office 公式编写</kbd>：MathType
-19. <kbd>邮箱</kbd>：[网易邮箱大师](https://dashi.163.com/download.html)
-20. <kbd>本地搜索文件</kbd>：[Everything](https://www.voidtools.com/zh-cn/)
-21. <kbd>音乐播放下载器</kbd>：[lx-music-desktop](https://github.com/lyswhut/lx-music-desktop)
-22. <kbd>视频播放器</kbd>：:star:[VLC](https://www.videolan.org/) | [PotPlayer](http://www.potplayercn.com/download)
-23. <kbd>桌面助手</kbd>：[360桌面助手](http://www.360.cn/desktop/)
-24. <kbd>云盘</kbd>：[阿里云盘](https://www.aliyundrive.com/)
-25. <kbd>远程连接</kbd>：[To Desk](https://www.todesk.com/)
-26. <kbd>待办事项</kbd>：[滴答清单(Web)](https://www.dida365.com/webapp/#q/all/tasks) | [滴答清单(客户端)](https://www.dida365.com/about/download)
-27. <kbd>铃声制作</kbd>：[酷狗铃声制作专家(需下载酷狗音乐)](https://download.kugou.com/)
-28. <kbd>视频剪辑</kbd>：[剪映专业版](https://www.capcut.cn/)
-29. <kbd>手机与电脑传输文件</kbd>：[KDE Connect](https://kdeconnect.kde.org/) | [LANDrop](https://landrop.app/#downloads)
-30. <kbd>平板充当电脑副屏</kbd>：[SpaceDesk](https://www.spacedesk.net/zh/)
-31. <kbd>按空格快速预览文件</kbd>：[QuickLook](https://github.com/QL-Win/QuickLook)
+16. <kbd>图片查看</kbd>[JPEGView](https://github.com/sylikc/jpegview#formats-supported)
+17. <kbd>剪切板历史</kbd>：[Ditto](https://ditto-cp.sourceforge.io/)
+18. <kbd>截屏</kbd>：[Snipaste](https://www.snipaste.com/)
+19. <kbd>Office 公式编写</kbd>：MathType
+20. <kbd>邮箱</kbd>：[网易邮箱大师](https://dashi.163.com/download.html)
+21. <kbd>本地搜索文件</kbd>：[Everything](https://www.voidtools.com/zh-cn/)
+22. <kbd>音乐播放下载器</kbd>：[lx-music-desktop](https://github.com/lyswhut/lx-music-desktop)
+23. <kbd>视频播放器</kbd>：:star:[VLC](https://www.videolan.org/) | [PotPlayer](http://www.potplayercn.com/download)
+24. <kbd>桌面助手</kbd>：[360桌面助手](http://www.360.cn/desktop/)
+25. <kbd>云盘</kbd>：[阿里云盘](https://www.aliyundrive.com/)
+26. <kbd>远程连接</kbd>：[To Desk](https://www.todesk.com/)
+27. <kbd>待办事项</kbd>：[滴答清单(Web)](https://www.dida365.com/webapp/#q/all/tasks) | [滴答清单(客户端)](https://www.dida365.com/about/download)
+28. <kbd>铃声制作</kbd>：[酷狗铃声制作专家(需下载酷狗音乐)](https://download.kugou.com/)
+29. <kbd>视频剪辑</kbd>：[剪映专业版](https://www.capcut.cn/)
+30. <kbd>手机与电脑传输文件</kbd>：[KDE Connect](https://kdeconnect.kde.org/) | [LANDrop](https://landrop.app/#downloads)
+31. <kbd>平板充当电脑副屏</kbd>：[SpaceDesk](https://www.spacedesk.net/zh/)
+32. <kbd>按空格快速预览文件</kbd>：[QuickLook](https://github.com/QL-Win/QuickLook)
 32. <kbd>右键管理</kbd>：[ContextMenuManager](https://github.com/BluePointLilac/ContextMenuManager)
 33. <kbd>Windows 10 音量模块修改</kbd>（<font color='red'>有 Bug：多媒体暂停和继续播放无效</font>）：[ModernFlyouts](https://github.com/ModernFlyouts-Community/ModernFlyouts)
 34. <kbd>Windows 10 任务栏居中</kbd>：[StartIsBack++](https://www.ghxi.com/startisback.html)
@@ -110,7 +111,7 @@ VSCode 中的 Python 格式化默认使用 autopep8 格式化代码，默认长�
 
 打开 VSCode 设置，搜索 `Explorer:Compact Folders`，将勾选取消。
 
-# 3. 其他软件
+# 3. 软件配置
 ## 3.1 draw.io 字体设置
 
 ```
@@ -121,4 +122,20 @@ Consolas, Monaco, "Courier New", monospace, Consolas, "Courier New", monospace
 <img src=https://img-blog.csdnimg.cn/3e2ae95b8ec14a9986aa74eb8db78293.png
 width=40%>
 </div>
+
+## 3.2 JPEGView 取消打开自动全屏
+
+1. 找到 JPEGView 的路径；
+2. 编辑 `JPEGView.ini` 文件；
+3. 在 `WINDOW BEHAVIOR OPTIONS` 中修改 `ShowFullScreen` 为 `false`:
+   ```
+    ; -----------------------------------------------
+    ; - WINDOW BEHAVIOR OPTIONS
+    ; -----------------------------------------------
+
+    ; Start in full screen or windowed mode
+    ; 'true' or 'false' to always start in full screen, respectively windowed mode
+    ; 'auto' to choose best mode depending on image size of first image - windowed when it is small, full screen when it is large
+    ShowFullScreen=false
+   ```
 
