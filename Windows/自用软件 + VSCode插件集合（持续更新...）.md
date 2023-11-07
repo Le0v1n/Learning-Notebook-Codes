@@ -23,13 +23,14 @@
 21. <kbd>本地搜索文件</kbd>：[Everything](https://www.voidtools.com/zh-cn/)
 22. <kbd>音乐播放下载器</kbd>：[lx-music-desktop](https://github.com/lyswhut/lx-music-desktop)
 23. <kbd>视频播放器</kbd>：:star:[VLC](https://www.videolan.org/) | [PotPlayer](http://www.potplayercn.com/download)
-24. <kbd>桌面助手</kbd>：[360桌面助手](http://www.360.cn/desktop/)
-25. <kbd>云盘</kbd>：[阿里云盘](https://www.aliyundrive.com/)
-26. <kbd>远程连接</kbd>：[To Desk](https://www.todesk.com/)
-27. <kbd>SSH 远程连接</kbd>：[VSCode](https://code.visualstudio.com/) | [MobaXterm](https://mobaxterm.mobatek.net/) | [MobaXterm-汉化版](https://github.com/RipplePiam/MobaXterm-Chinese-Simplified)
-28. <kbd>待办事项</kbd>：[滴答清单(Web)](https://www.dida365.com/webapp/#q/all/tasks) | [滴答清单(客户端)](https://www.dida365.com/about/download)
-29. <kbd>铃声制作</kbd>：[酷狗铃声制作专家(需下载酷狗音乐)](https://download.kugou.com/)
-30. <kbd>视频剪辑</kbd>：[剪映专业版](https://www.capcut.cn/)
+24. <kbd>视频剪切</kbd>：[FFmpeg](https://github.com/BtbN/FFmpeg-Builds)
+25. <kbd>桌面助手</kbd>：[360桌面助手](http://www.360.cn/desktop/)
+26. <kbd>云盘</kbd>：[阿里云盘](https://www.aliyundrive.com/)
+27. <kbd>远程连接</kbd>：[To Desk](https://www.todesk.com/)
+28. <kbd>SSH 远程连接</kbd>：[VSCode](https://code.visualstudio.com/) | [MobaXterm](https://mobaxterm.mobatek.net/) | [MobaXterm-汉化版](https://github.com/RipplePiam/MobaXterm-Chinese-Simplified)
+29. <kbd>待办事项</kbd>：[滴答清单(Web)](https://www.dida365.com/webapp/#q/all/tasks) | [滴答清单(客户端)](https://www.dida365.com/about/download)
+30. <kbd>铃声制作</kbd>：[酷狗铃声制作专家(需下载酷狗音乐)](https://download.kugou.com/)
+31. <kbd>视频剪辑</kbd>：[剪映专业版](https://www.capcut.cn/)
 31. <kbd>手机与电脑传输文件</kbd>：[KDE Connect](https://kdeconnect.kde.org/) | [LANDrop](https://landrop.app/#downloads)
 32. <kbd>平板充当电脑副屏</kbd>：[SpaceDesk](https://www.spacedesk.net/zh/)
 33. <kbd>按空格快速预览文件</kbd>：[QuickLook](https://github.com/QL-Win/QuickLook)
@@ -140,3 +141,38 @@ width=40%>
     ShowFullScreen=false
    ```
 
+# 4. 软件使用
+
+## 4.1 FFmpeg
+
+### 4.1.1 压缩视频
+
+在视频文件夹下打开 `terminal`，开始压缩视频：
+
+```bash
+ffmpeg -i 需要压缩的视频路径和名字.视频格式 -fs 30MB  保存视频的路径和名字.视频格式
+```
+
+举个例子：
+
+```bash
+ffmpeg -i Video.avi -fs 30MB  save-name.mp4
+```
+
+### 4.1.2 截取视频的片段
+
+```bash
+ffmpeg -ss 00:00:00 -to 00:05:23 -i input.mp4 -y -f mp4 -vcodec copy -acodec copy -q:v 1 output.mp4
+```
+
+其中：
+1. `-ss`：指定要截取的视频的起始时间。
+2. `-to`：指定要截取的视频的终止时间。
+3. `-i`：输入文件，这里指的就是视频文件。
+4. `-y`：表示无需询问，直接覆盖输出文件（如果有原文件的话）。
+5. `-f`：指定输出视频的格式。
+6. `-acodec`：指定音频编码格式。copy表示编码格式不发生改变，直接复制原来的编码格式，这样会大大提升速度。
+7. `-vcodec`：指定视频编码格式。copy表示编码格式不发生改变，直接复制原来的编码格式，这样会大大提升速度。
+8. `-q:v 1`：
+   1. `q` 是质量
+   2. `v` 是视频，`v` 的取值范围是 `[1, 35]`，取值 `1` 的时候，对应着最佳的视频质量。
