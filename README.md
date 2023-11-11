@@ -78,8 +78,8 @@
     4.  [Office.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/Office/Office.md)：Office 技巧 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133986172)
 10. <kbd>常用配置文件</kbd>: 存放了常用的配置文件
     1.  [PotPlayerMini64.reg](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/PotPlayerMini64.reg): PotPlayer 配置文件
-    2.  [JPEGView.ini](): JPEGView 配置文件
-    3.  [KeyMap.txt.default](): JPEGView 配置文件（键盘映射）
+    2.  [JPEGView.ini](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/JPEGView.ini): JPEGView 配置文件
+    3.  [KeyMap.txt.default](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/KeyMap.txt.default): JPEGView 配置文件（键盘映射）
 
 # 其他说明
 
