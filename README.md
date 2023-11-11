@@ -76,6 +76,10 @@
     2.  [WSL2.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/WSL2.md)：WSL2 的安装 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133967607)
     3.  [自用软件 + VSCode插件集合（持续更新...）.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/%E8%87%AA%E7%94%A8%E8%BD%AF%E4%BB%B6%20%2B%20VSCode%E6%8F%92%E4%BB%B6%E9%9B%86%E5%90%88%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0...%EF%BC%89.md) | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133272093)
     4.  [Office.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/Office/Office.md)：Office 技巧 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133986172)
+10. <kbd>常用配置文件</kbd>: 存放了常用的配置文件
+    1.  [PotPlayerMini64.reg](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/PotPlayerMini64.reg): PotPlayer 配置文件
+    2.  [JPEGView.ini](): JPEGView 配置文件
+    3.  [KeyMap.txt.default](): JPEGView 配置文件（键盘映射）
 
 # 其他说明
 
