@@ -47,13 +47,13 @@
 1. <kbd>root</kbd>: 根目录
    1. [CSDN封面(480x270).drawio](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/CSDN%E5%B0%81%E9%9D%A2(480x270).drawio): 制作CSDN封面
 2. LaTex-and-Markdown: LaTex 和 Markdown 相关
-   1. [LaTex常用命令.md](): LaTex 的常用命令
-   2. [Markdown常用命令.md](): Markdown 的常用命令
+   1. [LaTex常用命令.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/LaTex-and-Markdown/LaTex%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4.md): LaTex 的常用命令
+   2. [Markdown常用命令.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/LaTex-and-Markdown/Markdown%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4.md): Markdown 的常用命令
 3. <kbd>Dataset</kbd>: 数据集(均用于演示的小数据集)
    1. [VOCdevkit/](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Datasets/VOCdevkit): Lite 版 VOC 2012 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/124540069)
 4. <kbd>Linux</kbd>: Linux 相关
    1. [配置Anaconda.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Linux/%E9%85%8D%E7%BD%AEAnaconda.md): 如何在 Linux 中下载、安装、配置 Anaconda | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133967607)
-   2. [Linux常用命令.md](): Linux 常用命令
+   2. [Linux常用命令.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Linux/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4.md): Linux 常用命令
 5. <kbd>ObjectDetection</kbd>: 目标检测相关
    1. [YOLOv5/](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/ObjectDetection/YOLOv5/): YOLOv5 相关 | 📚对应博客: [1.理论](https://blog.csdn.net/weixin_44878336/article/details/133901265)；[2.自建数据集和模型训练](https://blog.csdn.net/weixin_44878336/article/details/133915488)
    2. [目标检测模型性能衡量指标、MS COCO数据集的评价标准以及不同指标的选择推荐.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ObjectDetection/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E6%A8%A1%E5%9E%8B%E6%80%A7%E8%83%BD%E8%A1%A1%E9%87%8F%E6%8C%87%E6%A0%87%E3%80%81MS%20COCO%E6%95%B0%E6%8D%AE%E9%9B%86%E7%9A%84%E8%AF%84%E4%BB%B7%E6%A0%87%E5%87%86%E4%BB%A5%E5%8F%8A%E4%B8%8D%E5%90%8C%E6%8C%87%E6%A0%87%E7%9A%84%E9%80%89%E6%8B%A9%E6%8E%A8%E8%8D%90.md): MS COCO、目标检测数据集 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/124650328)
