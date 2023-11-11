@@ -72,10 +72,10 @@
 8. <kbd>SemanticSegmentation</kbd>: 语义分割相关
    1. [PP-LiteSeg.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/SemanticSegmentation/PP-LiteSeg.md)：PP-LiteSeg（百度飞桨）| [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/132211283) | 🎥对应视频：[1.理论](https://www.bilibili.com/video/BV1Xr4y1d7Y2)；[2.代码](https://www.bilibili.com/video/BV18p4y1P7dG)
 9.  <kbd>Windows</kbd>：Windows 相关
-   1.  [KMS.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/KMS%20Host.md)：KMS 主机配置 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133934093)
-   2.  [WSL2.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/WSL2.md)：WSL2 的安装 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133967607)
-   3.  [自用软件 + VSCode插件集合（持续更新...）.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/%E8%87%AA%E7%94%A8%E8%BD%AF%E4%BB%B6%20%2B%20VSCode%E6%8F%92%E4%BB%B6%E9%9B%86%E5%90%88%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0...%EF%BC%89.md) | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133272093)
-   4. [Office.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/Office/Office.md)：Office 技巧 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133986172)
+    1.  [KMS.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/KMS%20Host.md)：KMS 主机配置 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133934093)
+    2.  [WSL2.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/WSL2.md)：WSL2 的安装 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133967607)
+    3.  [自用软件 + VSCode插件集合（持续更新...）.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/%E8%87%AA%E7%94%A8%E8%BD%AF%E4%BB%B6%20%2B%20VSCode%E6%8F%92%E4%BB%B6%E9%9B%86%E5%90%88%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0...%EF%BC%89.md) | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133272093)
+    4.  [Office.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/Office/Office.md)：Office 技巧 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133986172)
 
 # 其他说明
 
