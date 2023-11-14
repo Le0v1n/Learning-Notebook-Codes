@@ -586,8 +586,529 @@ names:
 download: https://ultralytics.com/assets/coco128.zip
 ```
 
-
 此时我们就可以使用这个数据集进行 YOLOv5 的模型训练了！
+
+## 1.7 【补充】如果标签格式为 .json
+
+### 1.7.1 将负样本放在正样本所属文件夹下
+
+**说明**：我们应该把正负样本放在同一个文件夹下，如 `JPEGImages`，这样我们再为没有标签文件的负样本生成 .json 文件。
+
+> 单独为负样本生成 .json 文件，之后再合并也是可以的。
+
+```python
+"""
+    描述：
+        1. 检查负样本数量是否正确；
+        2. 检查正样本数量是否正确；
+        3. 检查Annotations数量是否正确
+"""
+import os
+import shutil
+import tqdm
+
+
+"""============================ 需要修改的地方 ==================================="""
+# 数据所在路径
+BASE_PATH = 'EXAMPLE_DATASET/DATASET_A'
+CHECK_NUM = False  # 是否检查样本数量
+POS_SAMPLE_NUM = 6914  # 正样本数量 -> 6914
+NEG_SAMPLE_NUM = 515  # 负样本数量 -> 515
+"""==============================================================================="""
+
+# 组合路径
+source_path = os.path.join(BASE_PATH, "VOC2007")  # EXAMPLE_DATASET/VOC2007
+pos_image_path = os.path.join(source_path, "JPEGImages")  # EXAMPLE_DATASET/VOC2007/JPEGImages
+annotation_path = os.path.join(source_path, "Annotations")  # EXAMPLE_DATASET/VOC2007/Annotations
+neg_image_path = os.path.join(source_path, "neg_samples")  # EXAMPLE_DATASET/VOC2007/neg_samples
+
+# 获取所有图片和标签
+pos_image_list = os.listdir(pos_image_path)
+annotation_list = os.listdir(annotation_path)
+neg_image_list = os.listdir(neg_image_path)
+
+# 过滤只包括特定类型的图像文件（这里是.jpg和.png）
+pos_image_list = [file for file in pos_image_list if file.lower().endswith(('.jpg', '.png'))]
+annotation_list = [file for file in annotation_list if file.lower().endswith(('.json', '.xml'))]
+neg_image_list = [file for file in neg_image_list if file.lower().endswith(('.jpg', '.png'))]
+
+# 记录实际数据数量
+POS_IMG_NUM = len(pos_image_list)
+ANNOTATIONS_NUM = len(annotation_list)
+NEG_IMG_NUM = len(neg_image_list)
+
+# 检查数据是否正确
+if CHECK_NUM:
+    assert POS_SAMPLE_NUM == POS_IMG_NUM, f"\033[1;31m正样本数量({POS_SAMPLE_NUM})和实际正样本数量({POS_IMG_NUM})不一致！\033[0m"
+    assert CHECK_NUM and POS_IMG_NUM == ANNOTATIONS_NUM, f"\033[1;31m实际正样本数量({POS_IMG_NUM})和实际标签数量({ANNOTATIONS_NUM})不一致！\033[0m"
+    assert CHECK_NUM and NEG_SAMPLE_NUM == NEG_IMG_NUM, f"\033[1;31m负样本数量({NEG_SAMPLE_NUM})和实际负样本数量({NEG_IMG_NUM})不一致！\033[0m"
+else:
+    print("\033[1;31m💡请注意：跳过了数据检查！\033[0m")
+
+SKIP_NUM = 0
+SUCCEED_NUM = 0
+
+# 创建进度条
+progress_bar = tqdm.tqdm(total=NEG_IMG_NUM, desc="Copy neg2pos", unit=" img")
+for neg_image_name in neg_image_list:
+    # 分离文件名和后缀
+    image_pre, image_ext = os.path.splitext(neg_image_name)
+
+    # 确定图片的路径 -> EXAMPLE_DATASET/VOC2007/neg_samples/xxxx_yyyy_xxxx_yyyy.jpg
+    src_img_path = os.path.join(neg_image_path, neg_image_name)
+    # 确定保存的路径 -> EXAMPLE_DATASET/VOC2007/JPEGImages/xxxx_yyyy_xxxx_yyyy.jpg
+    target_img_path = os.path.join(pos_image_path, neg_image_name)
+
+    # 判断对应的json文件是否存在
+    if os.path.exists(target_img_path):
+        SKIP_NUM += 1
+        progress_bar.update(1)
+        continue
+    
+    # 开始复制
+    shutil.copy(src=src_img_path, dst=target_img_path)
+    SUCCEED_NUM += 1
+    progress_bar.update(1)
+
+print(f"SUCCEED NUM: {SUCCEED_NUM}/{NEG_IMG_NUM}")
+print(f"SKIP NUM: {SKIP_NUM}/{NEG_IMG_NUM}")
+
+if SUCCEED_NUM + SKIP_NUM == NEG_SAMPLE_NUM:
+    print("\n\033[1;36mNo Problems in Copying\033[0m\n")
+    # 再次检查数据数量
+    if POS_SAMPLE_NUM + NEG_SAMPLE_NUM == POS_IMG_NUM + SUCCEED_NUM:
+        print(f"\n\033[1;36m👌预想正负样本数量({POS_SAMPLE_NUM} + {NEG_SAMPLE_NUM}) == 实际的正负样本数量({POS_IMG_NUM} + {SUCCEED_NUM})\033[0m\n")
+    else:
+        print(f"\n\033[1;31m🤡出现了问题：预想正负样本数量({POS_SAMPLE_NUM} + {NEG_SAMPLE_NUM}) != 实际的正负样本数量({POS_IMG_NUM} + {SUCCEED_NUM})\033[0m\n")
+else:
+    print(f"\n\033[1;31m🤡有问题: 成功/负样本数量 -> {SUCCEED_NUM}/{NEG_SAMPLE_NUM}\033[0m\n")
+```
+
+### 1.7.2 为负样本生成空的 .json 文件
+
+没啥好说的，直接生成就行了。
+
+```python
+"""
+    描述：为所有图片创建空的json文件（如果json文件存在则跳过）
+    作用：为负样本生成对应的json文件
+"""
+
+import numpy as np
+import os
+import cv2
+import json
+import tqdm
+
+
+"""============================ 需要修改的地方 ==================================="""
+# 图片所在文件夹路径
+source_folder_path = 'EXAMPLE_DATASET/VOC2007/JPEGImages'
+
+# json文件路径
+target_folder_path = 'EXAMPLE_DATASET/VOC2007/Annotations'
+
+# 负样本数量
+NEG_SAMPLE_NUM = 1024
+"""==============================================================================="""
+
+# 获取所有图片
+image_list = os.listdir(source_folder_path)
+# 过滤只包括特定类型的图像文件（这里是.jpg和.png）
+image_list = [file for file in image_list if file.lower().endswith(('.jpg', '.png'))]
+TOTAL_NUM = len(image_list)
+SKIP_NUM = 0
+SUCCEED_NUM = 0
+
+# 创建进度条
+progress_bar = tqdm.tqdm(total=len(image_list), desc="json2yolo", unit=" .json")
+for image_name in image_list:
+    # 分离文件名和后缀
+    image_pre, image_ext = os.path.splitext(image_name)
+
+    # 确定保存的路径
+    target_path = os.path.join(target_folder_path, image_pre) + '.json'
+    # 确定图片的路径
+    img_file = os.path.join(source_folder_path, image_name)
+
+    # 判断对应的json文件是否存在
+    if os.path.exists(target_path):
+        SKIP_NUM += 1
+        progress_bar.update(1)
+        continue
+
+    img = cv2.imdecode(np.fromfile(img_file, dtype=np.uint8), cv2.IMREAD_COLOR)
+    height, width, _ = img.shape
+    content = {"version": "0.2.2",
+               "flags": {},
+               "shapes": [],
+               "imagePath": "{}.jpg".format(image_pre),
+               "imageData": None,
+               "imageHeight": height,
+               "imageWidth": width
+               }
+    if not os.path.exists(target_folder_path):
+        os.makedirs(target_folder_path)
+
+    with open(target_path, 'w') as f:
+        json.dump(content, f, indent=2)
+    SUCCEED_NUM += 1
+    progress_bar.update(1)
+
+print(f"SUCCEED NUM: {SUCCEED_NUM}/{TOTAL_NUM}")
+print(f"SKIP NUM: {SKIP_NUM}/{TOTAL_NUM}")
+
+if SUCCEED_NUM == NEG_SAMPLE_NUM:
+    print("\n\033[1;36m👌No Problems\033[0m\n")
+else:
+    print(f"\n\033[1;31m🤡有问题: 成功/负样本数量 -> {SUCCEED_NUM}/{NEG_SAMPLE_NUM}\033[0m\n")
+```
+
+### 1.7.3 json 转 yolo 的 txt
+
+```python
+"""
+    json转yolo的txt
+"""
+
+import os
+import cv2
+import json
+import numpy as np
+import tqdm
+
+"""============================ 需要修改的地方 ==================================="""
+# 标签字典
+label_dict = {'cls_1': 0,
+              'cls_2': 1,
+              }
+# 文件夹路径
+base_path = 'EXAMPLE_DATASET/VOC2007'
+
+OVERRIDE = False  # 是否要覆盖已存在txt文件
+use_kpt_check = False
+"""==============================================================================="""
+
+path = os.path.join(base_path, 'Annotations')
+all_json_list = os.listdir(path)
+TOTAL_NUM = len(all_json_list)
+SUCCESSES_NUM = 0
+SKIP_NUM = 0
+ERROR_NUM = 0
+ERROR_LIST = []
+
+# 创建进度条
+progress_bar = tqdm.tqdm(total=len(all_json_list), desc="json2yolo", unit=" .txt")
+
+for idx, anno_name in enumerate(all_json_list):  # anno_json = 'xxxxxx_yyyyyyy_ccccc.json'
+    target_path = os.path.join(base_path, 'labels', anno_name.replace('.json', '.txt'))
+    if not OVERRIDE and os.path.exists(target_path):
+        SKIP_NUM += 1
+        continue
+
+    progress_bar.set_description(f"\033[1;31m{anno_name}\033[0m")
+
+    with open(os.path.join(path, anno_name), 'r') as fr:
+        result = json.load(fr)
+
+    img = cv2.imread(os.path.join(base_path, 'JPEGImages',
+                     anno_name).replace('.json', '.jpg'))
+    h_, w_ = img.shape[0:2]
+    object_info = result['shapes']
+
+    # exist_ok=True 表示如果目标目录已存在，则不会引发异常，而是默默地跳过创建该目录的步骤
+    os.makedirs(os.path.join(base_path, 'labels'), exist_ok=True)
+    with open(target_path, 'w') as target_file:
+        try:
+            for line in object_info:
+                label = label_dict[line['label']]
+                # label = 0 if line['label'] == 'chepai' else 1
+                kpt = np.array(line['points'])
+                if use_kpt_check and (kpt[1][0] > kpt[3][0] and kpt[1][1] > kpt[3][1]):
+                    continue
+                else:
+                    x1, y1, x2, y2 = kpt[0][0], kpt[0][1], kpt[1][0], kpt[1][1]
+                    xc, yc, w, h = x1 + (x2-x1)/2, y1 + (y2-y1)/2, x2-x1, y2-y1
+
+                    line = '{} {} {} {} {}'.format(
+                        label, xc/w_, yc/h_, w/w_, h/h_)
+                    target_file.write(line+'\n')
+            SUCCESSES_NUM += 1
+
+        except:
+            ERROR_NUM += 1
+            ERROR_LIST.append(os.path.join(path, anno_name))
+
+    progress_bar.update(1)
+progress_bar.close()
+
+for _ef in ERROR_LIST:
+    print(_ef)
+
+print(f"json2yolo已完成，详情如下：\n\t"
+      f"👌成功: {SUCCESSES_NUM}/{TOTAL_NUM}\n\t"
+      f"👌跳过: {SKIP_NUM}/{TOTAL_NUM}\n\t"
+      f"🤡失败: {ERROR_NUM}/{TOTAL_NUM}")
+```
+
+### 1.7.4 划分数据，并生成数据集
+
+```python
+"""
+    生成数据集
+"""
+# 导入所需库
+import os
+from sklearn.model_selection import train_test_split
+import shutil
+import tqdm
+
+
+"""============================ 需要修改的地方 ==================================="""
+test_size = 0.01
+OVERRIDE = False
+
+# 图片文件夹路径
+target_image_folder = "EXAMPLE_DATASET/VOC2007/JPEGImages"
+
+# txt文件夹路径
+target_label_folder = "EXAMPLE_DATASET/VOC2007/labels"
+
+# 输入文件夹路径
+output_folder = "EXAMPLE_DATASET"
+"""==============================================================================="""
+
+# 读取所有.txt文件
+labels = [label for label in os.listdir(target_label_folder) if label.endswith(".txt")]
+
+TOTAL_NUM = len(labels)
+
+print(f"预计验证集样本数量为: \033[1;31m{round(TOTAL_NUM * test_size)}\033[0m，请输入 \033[1;31myes\033[0m 继续 | 输入其他退出")
+
+_INPUT = input()
+if _INPUT != "yes":
+    exit()
+
+# 使用sklearn进行数据集划分
+train_list, val_list = train_test_split(labels, test_size=test_size, random_state=42)
+print(f"训练集大小: {len(train_list)}/{TOTAL_NUM} | 验证集大小: {len(val_list)}/{TOTAL_NUM}")
+
+# 定义保存训练集和验证集的文件夹路径
+train_image_folder = os.path.join(output_folder, "train", "images")
+train_label_folder = os.path.join(output_folder, "train", "labels")
+val_image_folder = os.path.join(output_folder, "val", "images")
+val_label_folder = os.path.join(output_folder, "val", "labels")
+print(f"train_image_folder: {train_image_folder}")
+print(f"train_label_folder: {train_label_folder}")
+print(f"val_image_folder: {val_image_folder}")
+print(f"val_label_folder: {val_label_folder}")
+
+# 创建保存文件夹
+os.makedirs(train_image_folder, exist_ok=True)
+os.makedirs(train_label_folder, exist_ok=True)
+os.makedirs(val_image_folder, exist_ok=True)
+os.makedirs(val_label_folder, exist_ok=True)
+
+print("=" * 50)
+
+# 将训练集的图片和标签拷贝到对应文件夹
+progress_bar = tqdm.tqdm(total=len(train_list), desc="Copying in \033[1;31mtrain\033[0m", unit=" file")
+TRAIN_SUCCESSES_NUM = 0
+TRAIN_SKIP_NUM = 0
+for label in train_list:
+    label_path = os.path.join(target_label_folder, label)
+    image_path = os.path.join(target_image_folder, label.replace(".txt", ".jpg"))
+    
+    # 定义目标路径
+    target_img = os.path.join(train_image_folder, label.replace(".txt", ".jpg"))
+    target_label = os.path.join(train_label_folder, label)
+    if not OVERRIDE and os.path.exists(target_img) and target_label:
+        TRAIN_SKIP_NUM += 1
+        progress_bar.update(1)
+        continue
+
+    shutil.copy(image_path, target_img)
+    shutil.copy(label_path, target_label)
+    TRAIN_SUCCESSES_NUM += 1
+    progress_bar.update(1)
+progress_bar.close()
+
+# 将验证集的图片和标签拷贝到对应文件夹
+progress_bar = tqdm.tqdm(total=len(train_list), desc="Copying in \033[1;31mvalidation\033[0m", unit=" file")
+VAL_SUCCESSES_NUM = 0
+VAL_SKIP_NUM = 0
+for label in val_list:
+    label_path = os.path.join(target_label_folder, label)
+    image_path = os.path.join(target_image_folder, label.replace(".txt", ".jpg"))
+
+    # 定义目标路径
+    target_img = os.path.join(val_image_folder, label.replace(".txt", ".jpg"))
+    target_label = os.path.join(val_label_folder, label)
+    
+    if not OVERRIDE and os.path.exists(target_img) and target_label:
+        VAL_SKIP_NUM += 1
+        progress_bar.update(1)
+        continue
+
+    shutil.copy(image_path, target_img)
+    shutil.copy(label_path, target_label)
+    VAL_SUCCESSES_NUM += 1
+    progress_bar.update(1)
+progress_bar.close()
+
+print(
+    f"\n数据集创建完毕，详情如下：\n\t"
+    f"训练集:\n\t\t"
+    f"图片路径: {train_image_folder}\n\t\t"
+    f"标签路径: {train_label_folder}\n\t\t\t"
+    f"👌成功: {TRAIN_SUCCESSES_NUM}/{len(train_list)}\n\t\t\t"
+    f"👌跳过: {TRAIN_SKIP_NUM}/{len(train_list)}\n\t"
+    
+    f"验证集:\n\t\t"
+    f"图片路径: {val_image_folder}\n\t\t"
+    f"标签路径: {val_label_folder}\n\t\t\t"
+    f"👌成功: {VAL_SUCCESSES_NUM}/{len(val_list)}\n\t\t\t"
+    f"👌跳过: {VAL_SKIP_NUM}/{len(val_list)}"
+)
+```
+
+## 1.8 【补充】随机挑选数据组成测试集
+
+如果我们有一批模型从来没有见过的（差异非常大）的数据，那么我们可以随机挑选数据组成测试集，从而快速测试。
+
+```python
+import os
+import tqdm
+import random
+import shutil
+import subprocess
+
+
+"""============================ 需要修改的地方 ==================================="""
+# 源视频路径
+src_folder = 'Addition_dataset'
+
+# 保存的路径
+dst_folder_origin = 'data-test'
+
+TEST_IMG_NUM = 100  # 测试图片数量
+record_time = "20231114"  # 时间
+other_content = ""  # 其他备注
+"""==============================================================================="""
+
+# 读取目标文件夹中的图片
+imgs_list = os.listdir(src_folder)
+# 过滤只包括特定类型的图像文件（这里是.jpg和.png）
+imgs_list = [file for file in imgs_list if file.lower().endswith(('.jpg', '.png'))]
+
+# 随机数组
+random.shuffle(imgs_list)  # in-place操作
+
+# 组成路径并创建文件夹
+if other_content:
+    dst_folder = dst_folder_origin + f"-{record_time}-{other_content}"
+else:    
+    dst_folder = dst_folder_origin + f"-{record_time}"
+if not os.path.exists(dst_folder):
+    os.makedirs(dst_folder, exist_ok=True)
+
+# 创建一个tqdm进度条对象
+progress_bar = tqdm.tqdm(total=TEST_IMG_NUM, desc="随机抽取图片组成测试集", unit="img")
+for count, img_name in enumerate(imgs_list):
+    if count >= TEST_IMG_NUM:
+        break
+    progress_bar.set_description(f"selected \033[1;31m{img_name}\033[0m")
+    
+    # 确定路径
+    src_path = os.path.join(src_folder, img_name)
+    dst_path = os.path.join(dst_folder, img_name)
+    
+    # 开始复制
+    shutil.copy(src=src_path, dst=dst_path)
+    
+    progress_bar.update(1)
+progress_bar.close()
+
+# 压缩文件夹
+# 切换当前工作目录到源文件夹所在的位置
+os.chdir(dst_folder_origin)
+
+if other_content:
+    zip_file_name = f"{record_time}-{other_content}.7z"
+else:
+    zip_file_name = f"{record_time}.7z"
+zip_command = f"7z a {zip_file_name} {dst_folder.split('/')[-1]}/*"
+
+subprocess.run(zip_command, shell=True)
+
+print(f"复制完成，一共获得了 {TEST_IMG_NUM} 张测试图片，路径为: {dst_folder}")
+print(f"压缩完成，压缩包路径为: {os.path.join(dst_folder_origin, zip_file_name)}")
+```
+
+在 Linux 中，如果最后的压缩程序没有运行，请安装 `7zip`：
+
+```bash
+sudo apt install p7zip-full
+```
+
+## 1.9 【补充】如果数据集有好几部分 | 合并多个训练文件夹
+
+有时候我们的数据集是由好几部分组成的，比如：
+1. `DATASET_PART_A`
+2. `DATASET_PART_B`
+3. `DATASET_PART_C`
+
+<kbd>Q</kbd>：那么我们需要把它们合在一起组成 `DATASET_PART_FULL` 吗？
+<kbd>A</kbd>：说实话，我之前一直是这样做的，那是我发现这样是非常蠢的 —— 数据集耦合性拉满，而且原来的碎片也不能丢掉（当做备份）。在 YOLOv5 中，其实是支持多个文件夹的，具体如下：
+
+```yaml
+path: ../datasets/coco
+train: train2017.txt
+val: val2017.txt
+test: test-dev2017.txt
+
+# Classes
+names:
+  0: person
+  1: bicycle
+  2: car
+  ...
+```
+
+上面是 `coco.yaml` 文件的内容，这里我们假设我们的数据也保存在 `../datasets/coco` 中，但有 3 个子文件夹：
+
+1. `../datasets/coco/partA`
+2. `../datasets/coco/partB`
+3. `../datasets/coco/partC`
+
+此时我们可以将 yaml 文件改为如下所示的：
+
+```yaml
+path: ../datasets/coco
+train: 
+  - partA/train2017.txt
+  - partB/train2017.txt
+  - partC/train2017.txt
+val:
+  - partA/val2017.txt
+  - partB/val2017.txt
+  - partC/val2017.txt
+test:
+  - partA/test-dev2017.txt
+  - partB/test-dev2017.txt
+  - partC/test-dev2017.txt
+
+# Classes
+names:
+  0: person
+  1: bicycle
+  2: car
+  ...
+```
+
+这样 YOLOv5 在加载数据集的时候会将三部分的数据都加载上。三个不同的数据集也更加方便管理。
+
+**注意**：YOLOv5 默认会为数据集保留一个 `.cache` 文件，以便下次快速加载数据集，由于我们的数据集分为三个部分，因此 `.cache` 只会保存在第一个文件夹中，即 `partA` 文件夹下。
 
 # 2. 模型选择
 
