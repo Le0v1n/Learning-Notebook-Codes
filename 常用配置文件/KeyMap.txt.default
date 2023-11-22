@@ -6,8 +6,10 @@
 //Esc                     IDM_EXIT
 PgDn                    IDM_NEXT
 Right                   IDM_NEXT
+D                   IDM_NEXT
 Left                    IDM_PREV
 PgUp                    IDM_PREV
+A                    IDM_PREV
 Ctrl+Left               IDM_TOGGLE
 Ctrl+Right              IDM_TOGGLE
 Home                    IDM_FIRST
@@ -68,7 +70,7 @@ Z                       IDM_SORT_RANDOM
 Ctrl+S                  IDM_SAVE_ALLOW_NO_PROMPT
 Ctrl+Shift+S            IDM_SAVE_SCREEN
 S                       IDM_SAVE_PARAM_DB
-D                       IDM_CLEAR_PARAM_DB
+//D                       IDM_CLEAR_PARAM_DB
 Ctrl+Shift+E            IDM_TOUCH_IMAGE_EXIF
 Ctrl+O                  IDM_OPEN
 Ctrl+P                  IDM_PRINT
