@@ -66,6 +66,7 @@
    4. [requirements.txt](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/requirements.txt): Python 第三方库集合
    5. [Matplotlib.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/Matplotlib.md): Matplotlib 库的使用
    6. [rich 库](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/Rich-%E7%BE%8E%E5%8C%96/rich-%E7%BE%8E%E5%8C%96-%E5%BA%93.md)：Python 输出的美化工具
+   7. [常用脚本](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Python/%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC): 常用的一些脚本
 7. <kbd>PyTorch</kbd>: PyTorch 相关
    1. [mmcv_Registry.md](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/PyTorch/mmcv_Registry): MMCV 的注册机制（:hammer_and_wrench:尚未完成）
    2. [PyTorch的hook函数.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/PyTorch/PyTorch%E7%9A%84hook%E5%87%BD%E6%95%B0%EF%BC%88register_hook%E3%80%81register_forward_hook%E3%80%81register_backward_hook%E3%80%81register_forward_pre_hook%EF%BC%89.md): PyTorch 的 hook 函数 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133859089)
