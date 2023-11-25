@@ -3,8 +3,9 @@
 + 用途：统一数据集图片的格式
 + 要求：无
 + 注意：
-  1. 不需要转换的则跳过
-  2. 不是图片的文件会扔到指定位置 RECYCLE_BIN_PATH
+  1. in-place操作
+  2. 不需要转换的则跳过
+  3. 不是图片的文件会扔到指定位置 RECYCLE_BIN_PATH
 """
 import os
 import tqdm
