@@ -60,8 +60,8 @@ for name_B in files_B_list:
 process_bar.close()
 
 print(f"👌 冗余的B文件删除已完成!"
-      f"\n\t删除文件数量/文件B数量 = {SUCCEED_NUM}/{NUM_B}"
-      f"\n\t跳过文件数量/文件B数量 = {SKIP_NUM}/{NUM_B}")
+      f"\n\t删除文件数量/文件B数量 = \033[1;31m{SUCCEED_NUM}\033[0m/{NUM_B}"
+      f"\n\t跳过文件数量/文件B数量 = \033[1;32m{SKIP_NUM}\033[0m/{NUM_B}")
 
 if SUCCEED_NUM + SKIP_NUM == NUM_B:
     print("👌 No Problems")
