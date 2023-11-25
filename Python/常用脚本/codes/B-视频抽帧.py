@@ -1,3 +1,10 @@
+"""
++ 脚本说明：根据帧间隔对某个文件夹下指定类型的视频文件进行抽帧，得到系列图片。
+  + 视频文件所在文件夹名称: `EXAMPLE_FOLDER`
+  + 抽帧得到的文件夹名称: `EXAMPLE_FOLDER/extract_frames_results/test_vid_0001.jpg`
++ 用途：将拍摄得到的视频转换为常用的数据集
++ 要求：无
+"""
 import cv2
 import os
 import tqdm
