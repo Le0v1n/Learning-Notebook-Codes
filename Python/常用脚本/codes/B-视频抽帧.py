@@ -16,7 +16,7 @@ SRC_PATH = "Python/常用脚本/EXAMPLE_FOLDER"  # 原始视频路径
 frame_interval = 10  # 视频采样间隔，越小采样率越高 -> 60 | 30 | 15 | 10
 video_type = ['.mp4', '.avi']  # 视频格式(.mp4 | .avi)
 
-DST_PATH = "extract_frames_results"  # 保存图片文件夹名称
+DST_PATH = f"extract_frames_results-{frame_interval}"  # 保存图片文件夹名称
 save_img_format = '.jpg'  # 保存的图片格式(.jpg | .png)
 """==============================================================================="""
 
@@ -41,7 +41,9 @@ _INPUT = input()
 if _INPUT != "yes":
     exit()
     
-create_folder(results_imgs_path, verbose=True)  # 创建文件夹
+# 创建文件夹
+if not os.path.exists(results_imgs_path):
+    os.mkdir(results_imgs_path)
 
 # 创建一个tqdm进度条对象
 progress_bar = tqdm.tqdm(total=len(video_list), desc="视频拆帧...", unit="vid")
