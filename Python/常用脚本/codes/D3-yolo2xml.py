@@ -1,7 +1,7 @@
 """
-+ 脚本说明：将yolo格式txt标注文件转换为voc格式xml标注文件
-+ 用途：将 YOLO 格式的标签文件还原为 xml 格式
-+ 要求：图片和yolo标签应该有相同的名字（后缀不同）
++ 脚本说明：目标检测中yolo标注文件转换为xml格式
++ 用途：YOLO 模型推理得到 txt 文件 -> 转换为 xml 标注文件。
++ 要求：要有对应的图片文件，这样读取到的尺寸信息是最准确的。
 """
 from xml.dom.minidom import Document
 import os
@@ -11,11 +11,10 @@ import tqdm
 
 """============================ 需要修改的地方 ==================================="""
 IMAGE_PATH = "EXAMPLE_FOLDER/images"  # 原图文件夹路径
-TXT_PATH = "EXAMPLE_FOLDER/labels-yolo"  # 原txt标签文件夹路径
-XML_PATH = "EXAMPLE_FOLDER/labels-xml"  # 保存xml文件夹路径
+TXT_PATH = "EXAMPLE_FOLDER/labels"  # 原txt标签文件夹路径
+XML_PATH = "EXAMPLE_FOLDER/annotations-xml"  # 保存xml文件夹路径
 image_type = '.jpg'
 create_empty_xml_for_neg = True  # 是否为负样本生成对应的空的xml文件
-
 
 classes_dict = {
     '0': "cat",
@@ -25,16 +24,17 @@ classes_dict = {
 
 os.makedirs(XML_PATH) if not os.path.exists(XML_PATH) else None
 
-txt_file_list = [file for file in os.listdir(TXT_PATH) if file.endswith(".txt") and file != 'classes.txt']
+txt_file_list = [file for file in os.listdir(TXT_PATH) if file.endswith("txt") and file != 'classes.txt']
 
 "------------计数------------"
 TOTAL_NUM = len(txt_file_list)
 SUCCEED_NUM = 0  # 成功创建xml数量
 SKIP_NUM = 0  # 跳过创建xml文件数量
 OBJECT_NUM = 0  # object数量
+ERROR_NUM = 0  # 没有对应图片
 "---------------------------"
 
-process_bar = tqdm.tqdm(total=TOTAL_NUM, desc="yolo2xml", unit='.txt')
+process_bar = tqdm.tqdm(toal=TOTAL_NUM, desc="yolo2xml", unit='.txt')
 for i, txt_name in enumerate(txt_file_list):
     process_bar.set_description(f"Process in \033[1;31m{txt_name}\033[0m")
     txt_pre, txt_ext = os.path.splitext(txt_name)  # 分离前缀和后缀
@@ -51,8 +51,12 @@ for i, txt_name in enumerate(txt_file_list):
         SKIP_NUM += 1
         process_bar.update()
         continue
-        
+    
     # 读取图片
+    if not os.path.exists(os.path.join(IMAGE_PATH, txt_pre) + image_type):
+        ERROR_NUM += 1
+        process_bar.update()
+        continue
     img = cv2.imread(os.path.join(IMAGE_PATH, txt_pre) + image_type)
     H, W, C = img.shape
     
@@ -89,7 +93,10 @@ for i, txt_name in enumerate(txt_file_list):
     # 读取 txt 内容，生成 xml 文件内容
     for line in txtList:  # 正样本(txt内容不为空)
         # .strip()去除行首和行尾的空白字符（如空格和换行符）
-        oneline = line.strip().split(" ")  # oneline是一个list, e.g. ['0', '0.31188484251968507', '0.6746135899679205', '0.028297244094488208', '0.04738990959463407']
+        oneline = line.strip().split(" ")  # oneline是一个list, e.g. ['0', '0.31188484251968507', 
+                                           #                         '0.6746135899679205', 
+                                           #                         '0.028297244094488208', 
+                                           #                         '0.04738990959463407']
 
         # 开始 object 标签
         object = xmlBuilder.createElement("object")  # object 标签
@@ -122,28 +129,28 @@ for i, txt_name in enumerate(txt_file_list):
         bndbox = xmlBuilder.createElement("bndbox")  
         ## 5.1 xmin标签
         xmin = xmlBuilder.createElement("xmin")  
-        mathData = int(((float(oneline[1])) * W + 1) - (float(oneline[3])) * 0.5 * W)
+        mathData = float(((float(oneline[1])) * W + 1) - (float(oneline[3])) * 0.5 * W)
         xminContent = xmlBuilder.createTextNode(str(mathData))
         xmin.appendChild(xminContent)
         bndbox.appendChild(xmin)  # xmin标签结束
 
         ## 5.2 ymin标签
         ymin = xmlBuilder.createElement("ymin")  # ymin标签
-        mathData = int(((float(oneline[2])) * H + 1) - (float(oneline[4])) * 0.5 * H)
+        mathData = float(((float(oneline[2])) * H + 1) - (float(oneline[4])) * 0.5 * H)
         yminContent = xmlBuilder.createTextNode(str(mathData))
         ymin.appendChild(yminContent)
         bndbox.appendChild(ymin)  # ymin标签结束
         
         ## 5.3 xmax标签
         xmax = xmlBuilder.createElement("xmax")  # xmax标签
-        mathData = int(((float(oneline[1])) * W + 1) + (float(oneline[3])) * 0.5 * W)
+        mathData = float(((float(oneline[1])) * W + 1) + (float(oneline[3])) * 0.5 * W)
         xmaxContent = xmlBuilder.createTextNode(str(mathData))
         xmax.appendChild(xmaxContent)
         bndbox.appendChild(xmax)  # xmax标签结束
 
         ## 5.4 ymax标签
         ymax = xmlBuilder.createElement("ymax")  # ymax标签
-        mathData = int(
+        mathData = float(
             ((float(oneline[2])) * H + 1) + (float(oneline[4])) * 0.5 * H)
         ymaxContent = xmlBuilder.createTextNode(str(mathData))
         ymax.appendChild(ymaxContent)
@@ -170,7 +177,9 @@ print(f"👌yolo2xml已完成, 详情如下:"
       f"\n\t成功转换文件数量/总文件数量 = \033[1;32m{SUCCEED_NUM}\033[0m/{TOTAL_NUM}"
       f"\n\t跳过转换文件数量/总文件数量 = \033[1;31m{SKIP_NUM}\033[0m/{TOTAL_NUM}"
       f"\n\t所有样本的 object 数量/总文件数量 = \033[1;32m{OBJECT_NUM}\033[0m/{TOTAL_NUM}"
-      f"\n\t平均每个xml文件中object的数量为: {int(OBJECT_NUM / SUCCEED_NUM)}")
+      f"\n\t平均每个xml文件中object的数量为: {int(OBJECT_NUM / SUCCEED_NUM)}"
+      f"\n\t没有对应图片的数量为: {ERROR_NUM}"
+      f"\n\t结果保存路径为: {XML_PATH}")
 
 if SUCCEED_NUM + SKIP_NUM == TOTAL_NUM:
     print(f"\n👌 \033[1;32mNo Problem\033[0m")
