@@ -24,7 +24,6 @@ classes_dict = {
 # Json 文件基础信息
 __version = "0.2.2"
 __flags = {},
-__shapes = [],
 __imageData = None
 """==============================================================================="""
 
@@ -53,7 +52,7 @@ if _INPUT != "yes":
 if not os.path.exists(JSON_PATH):
     os.makedirs(JSON_PATH)
 
-process_bar = tqdm.tqdm(toal=TOTAL_NUM, desc="yolo2json", unit='.txt')
+process_bar = tqdm.tqdm(total=TOTAL_NUM, desc="yolo2json", unit='.txt')
 for i, txt_name in enumerate(txt_file_list):
     process_bar.set_description(f"Process in \033[1;31m{txt_name}\033[0m")
     txt_pre, txt_ext = os.path.splitext(txt_name)  # 分离前缀和后缀
@@ -84,7 +83,7 @@ for i, txt_name in enumerate(txt_file_list):
     # 创建 Json 文件的内容
     json_data = {"version": __version,
                "flags": __flags,
-               "shapes": __shapes,
+               "shapes": [],
                "imagePath": f"{txt_pre + IMAGE_TYPE}",
                "imageData": __imageData,
                "imageHeight": height,
@@ -98,7 +97,7 @@ for i, txt_name in enumerate(txt_file_list):
                                            #                         '0.028297244094488208', 
                                            #                         '0.04738990959463407']
         # 获取坐标并转换为左上和右下的形式
-        x_center, y_center, w, h = oneline[1], oneline[2], oneline[3], oneline[4]
+        x_center, y_center, w, h = float(oneline[1]), float(oneline[2]), float(oneline[3]), float(oneline[4])
         
         xmin = x_center - w/2
         ymin = y_center - h/2
