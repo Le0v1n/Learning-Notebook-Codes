@@ -34,7 +34,7 @@ OBJECT_NUM = 0  # object数量
 ERROR_NUM = 0  # 没有对应图片
 "---------------------------"
 
-process_bar = tqdm.tqdm(toal=TOTAL_NUM, desc="yolo2xml", unit='.txt')
+process_bar = tqdm.tqdm(total=TOTAL_NUM, desc="yolo2xml", unit='.txt')
 for i, txt_name in enumerate(txt_file_list):
     process_bar.set_description(f"Process in \033[1;31m{txt_name}\033[0m")
     txt_pre, txt_ext = os.path.splitext(txt_name)  # 分离前缀和后缀
