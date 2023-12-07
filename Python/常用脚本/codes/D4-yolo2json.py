@@ -13,7 +13,9 @@ import json
 IMAGE_PATH = "EXAMPLE_FOLDER/images"  # 原图文件夹路径
 TXT_PATH = "EXAMPLE_FOLDER/labels"  # 原txt标签文件夹路径
 JSON_PATH = "EXAMPLE_FOLDER/annotations-json"  # 保存json文件夹路径
-IMAGE_TYPE = '.jpg'
+
+DECIMAL_PLACES = 6  # 标签保留几位小数, 默认为6
+IMAGE_TYPE = '.jpg'  # 图片类型
 create_empty_json_for_neg = True  # 是否为负样本生成对应的空的json文件
 
 classes_dict = {
@@ -23,7 +25,6 @@ classes_dict = {
 
 # Json 文件基础信息
 __version = "0.2.2"
-__flags = {},
 __imageData = None
 """==============================================================================="""
 
@@ -71,42 +72,48 @@ for i, txt_name in enumerate(txt_file_list):
         process_bar.update()
         continue
     
-    # 读取图片
-    if not os.path.exists(image_path):
+    # 如果图片不存在 -> 报错且跳过
+    if not os.path.exists(image_path):  
         ERROR_NUM += 1
         ERROR_LIST.append(txt_path)
         process_bar.update()
         continue
+    
+    # 读取图片
     img = cv2.imread(image_path)
-    height, width, channel = img.shape
+    height, width, channel = img.shape  # 获取图片尺寸
     
     # 创建 Json 文件的内容
+    _relative_image_path = f'../{os.path.join(os.path.basename(IMAGE_PATH), os.path.basename(image_path))}'
     json_data = {"version": __version,
-               "flags": __flags,
-               "shapes": [],
-               "imagePath": f"{txt_pre + IMAGE_TYPE}",
-               "imageData": __imageData,
-               "imageHeight": height,
-               "imageWidth": width
-               }
+                 "flags": {},
+                 "shapes": [],
+                 "imagePath": _relative_image_path,  # 图片路径
+                 "imageData": __imageData,
+                 "imageHeight": height,
+                 "imageWidth": width
+                }
     
     # 读取 txt 内容，追加 json 文件的 shapes 内容
     for line in txtList:  # 正样本(txt内容不为空)
-        oneline = line.strip().split(" ")  # oneline是一个list, e.g. ['0', '0.31188484251968507', 
-                                           #                         '0.6746135899679205', 
-                                           #                         '0.028297244094488208', 
-                                           #                         '0.04738990959463407']
+        # oneline: ['0', '0.660937', '0.161111', '0.0625', '0.107407'] -> [标签索引, x_center, y_center, w, h]
+        oneline = line.strip().split(" ")
+        
         # 获取坐标并转换为左上和右下的形式
         x_center, y_center, w, h = float(oneline[1]), float(oneline[2]), float(oneline[3]), float(oneline[4])
         
-        xmin = x_center - w/2
-        ymin = y_center - h/2
-        xmax = x_center + w/2
-        ymax = y_center + h/2
+        # 将归一化的坐标还原为真实坐标
+        x_center, y_center = x_center * width, y_center * height  # 还原中心点坐标
+        w, h = w * width, h * height  # 还原宽度和高度
+        
+        xmin = round(x_center - w / 2, DECIMAL_PLACES)
+        ymin = round(y_center - h / 2, DECIMAL_PLACES)
+        xmax = round(x_center + w / 2, DECIMAL_PLACES)
+        ymax = round(y_center + h / 2, DECIMAL_PLACES)
         
         # 添加到 shapes 列表中
         json_data["shapes"].append({
-            "label": oneline[0],
+            "label": classes_dict[oneline[0]],
             "text": "",
             "points": [
                 [xmin, ymin],
@@ -139,7 +146,7 @@ print(f"👌yolo2json已完成, 详情如下:"
       f"\n\t没有对应图片的数量为: {ERROR_NUM}"
       f"\n\t结果保存路径为: {JSON_PATH}")
 
-if SUCCEED_NUM + SKIP_NUM == TOTAL_NUM:
+if SUCCEED_NUM + SKIP_NUM + ERROR_NUM == TOTAL_NUM:
     print(f"\n👌 \033[1;32mNo Problem\033[0m")
 else:
     print(f"\n🤡 \033[1;31m貌似有点问题, 请仔细核查!\033[0m")
