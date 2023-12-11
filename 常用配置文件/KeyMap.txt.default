@@ -28,7 +28,7 @@ Ctrl+Minus              IDM_CONTRAST_DEC
 Shift+Minus             IDM_GAMMA_DEC
 Alt+Minus               IDM_SHARPEN_DEC
 I                      IDM_SHOW_FILEINFO
-Ctrl+F2                 IDM_SHOW_FILENAME
+Ctrl+I                 IDM_SHOW_FILENAME
 F3                      IDM_TOGGLE_RESAMPLING_QUALITY
 F4                      IDM_KEEP_PARAMETERS
 F5                      IDM_AUTO_CORRECTION
