@@ -37,7 +37,8 @@
 34. <kbd>右键管理</kbd>：[ContextMenuManager](https://github.com/BluePointLilac/ContextMenuManager)
 35. <kbd>Windows 10 音量模块修改</kbd>（<font color='red'>有 Bug：多媒体暂停和继续播放无效</font>）：[ModernFlyouts](https://github.com/ModernFlyouts-Community/ModernFlyouts)
 36. <kbd>Windows 10 任务栏居中</kbd>：[StartIsBack++](https://www.ghxi.com/startisback.html)
-37. <kbd>哔哩哔哩视频下载</kbd>：[BBDown](https://github.com/nilaoda/BBDown)
+37. <kbd>Windows 10/11 资源监控</kbd>：[TrafficMonitor](https://github.com/zhongyang219/TrafficMonitor)（下载 x64 即可）
+38. <kbd>哔哩哔哩视频下载</kbd>：[BBDown](https://github.com/nilaoda/BBDown)
 
 
 # 2. VSCode 配置
