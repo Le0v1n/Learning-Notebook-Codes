@@ -9,6 +9,7 @@ import cv2
 import os
 import tqdm
 from utils import create_folder
+import tabulate
 
 
 """============================ 需要修改的地方 ==================================="""
@@ -32,11 +33,44 @@ SUCCEED_NUM = 0  # 完成视频的个数
 TOTAL_IMG_NUM = 0  # 统计得到的所有图片数量
 "---------------------------"
 
-print(f"\033[1;31m[SRC]视频路径为: {SRC_PATH}\033[0m"
-      f"\n\t\033[1;32m视频个数: {TOTAL_VID_NUM}\033[0m"
-      f"\n\033[1;31m[DST]图片保存路径为: {DST_PATH}\033[0m"
-      f"\n\t\033[1;32m保存的图片格式为: {save_img_format}\033[0m"
-      f"\n\n请输入 \033[1;31m'yes'\033[0m 继续，输入其他停止")
+def calculate_video_duration(video_list):
+    total_duration = 0
+
+    # 使用tqdm库创建一个进度条
+    for file_name in tqdm.tqdm(video_list, desc='计算视频时长', unit='个'):
+        file_path = os.path.join(SRC_PATH, file_name)
+        
+        # 使用OpenCV读取视频文件
+        video_capture = cv2.VideoCapture(file_path)  
+        
+        # 获取视频的帧数和帧率
+        frame_count = int(video_capture.get(cv2.CAP_PROP_FRAME_COUNT))
+        frame_rate = video_capture.get(cv2.CAP_PROP_FPS)
+
+        # 计算视频时长（单位：秒）
+        duration = frame_count / frame_rate
+        total_duration += duration  # 累加到总时长
+        
+        video_capture.release()  # 释放视频捕获对象
+    return total_duration
+
+# 调用函数计算总时长
+total_duration = calculate_video_duration(video_list)
+
+_str = [
+    ["[SRC]视频路径为", SRC_PATH],
+    ["视频个数", TOTAL_VID_NUM],
+    ["视频总时长", f"{total_duration:.2f} 秒"],
+    ['',''],
+    ["[DST]图片保存路径为", results_imgs_path],
+    ["保存的图片格式为", save_img_format],
+]
+
+_str = tabulate.tabulate(_str, headers=["Key", "Value"], tablefmt='pipe')
+
+print(f"\n{_str}\n\n"
+      f"请输入 'yes' 继续，输入其他停止")
+
 _INPUT = input()
 if _INPUT != "yes":
     exit()
@@ -95,15 +129,14 @@ for vid_name in video_list:  # 遍历所有的视频
     progress_bar.update()  
 progress_bar.close()
 
-print("------------------------------------------------------------------")
-_cont = 0
+_str = []
+_cont = 1
 for k, v in statistics_dict.items():
-    print(f"\033[1;34m"
-          f"👌 1. [{k}] 得到 frame 个数 -> {v}"
-          f"\033[0m")
+    _str.append([_cont, k, v])  # 序号 | 视频名称 | 得到图片数量
     _cont += 1
-print()
-print(f"\033[1;31m"
-      f"👌👌👌 视频拆帧 ({TOTAL_VID_NUM}个)完成，总共得到[{TOTAL_IMG_NUM}]张{save_img_format}图片!"
-      f"\033[0m")
-print("------------------------------------------------------------------")
+
+_str.append(['', f"视频拆帧 ({TOTAL_VID_NUM}个)完成", f"得到[{TOTAL_IMG_NUM}]张[{save_img_format}]图片!"])
+_str.append(['', "结果保存路径", results_imgs_path])
+
+_str = tabulate.tabulate(_str, headers=['No', 'Video Name', 'Obtained Images Number'])
+print(_str)
