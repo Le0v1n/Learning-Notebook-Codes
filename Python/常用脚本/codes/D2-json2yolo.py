@@ -309,15 +309,22 @@ if CREATE_TXT_4_NEG:
             NEG_NUM += 1
             logger.warning(msg=f"[负样本] [{NEG_NUM}] {image_path}")
 
-_str = (f"json2yolo已完成，详情如下：\n\t"
-        f"👌成功: {SUCCEED_NUM}/{TOTAL_NUM}\n\t"
-        f"👌跳过: {SKIP_NUM}/{TOTAL_NUM}\n\t"
-        f"负样本数量: {NEG_NUM}\n\t"
-        f"Object数量: {OBJ_NUM}\n\t"
-        f"每张图片平均Object数量: {OBJ_NUM/TOTAL_NUM:.2f}\n\t"
-        f"坏点的数量为: {ERROR_POINT_NUM}\n\n"
-        f"结果保存在: {LABELS_PATH}\n"
-        f"日志保存在: {log_file_path}")
+_str = [
+    ["json2yolo", "已完成!"],
+    ["成功转换数量", {SUCCEED_NUM}/{TOTAL_NUM}],
+    ["跳过转换数量", {SKIP_NUM}/{TOTAL_NUM}],
+    ["负样本数量", NEG_NUM],
+    ["负样本数量", NEG_NUM],
+    ["", ""],
+    ["Object数量", OBJ_NUM],
+    ["每张图片平均Object数量", f"{OBJ_NUM/TOTAL_NUM:.2f}"],
+    ["坏点的数量为", ERROR_POINT_NUM],
+    ["", ""],
+    ["结果保存路径", LABELS_PATH],
+    ["日志保存路径", log_file_path],
+]
+
+_str = tabulate(_str, headers=["PARAMs", "VALUE"], tablefmt="pipe")
 
 logger.info(_str)
 print(_str) if not VERBOSE else ...
