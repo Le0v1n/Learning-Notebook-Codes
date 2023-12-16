@@ -34,18 +34,17 @@ CLIP_OUT_OF_BOUNDARY = True  # 对于 xmin 或 ymin < 0 的情况，直接截断
 VERBOSE = False  # 终端不会打印日志了（日志仍会生成）
 """==============================================================================="""
 
-class_dict = {v: k for k, v in class_dict.items()} if CONVERT_CLASS_DICT else ... # 翻转字典
+label_dict = {v: k for k, v in label_dict.items()}  # 翻转字典
 
 "---------------------------------------日志---------------------------------------"
-# 获取当前时间
-current_time = datetime.datetime.now()  
-formatted_time = current_time.strftime("%Y%m%d%H%M%S")  # 格式化为指定格式
-
 script_path = os.path.abspath(__file__)  # 获取当前脚本的绝对路径
-script_folder = os.path.dirname(script_path)  # 获取当前脚本所在的文件夹名
-script_name = os.path.splitext(os.path.basename(script_path))[0]
-log_filename = os.path.join('local-log', formatted_time + '-' + script_name + '.log')   # 获取文件夹名并拼接日志文件名
-log_file_path = os.path.join(script_folder, log_filename)  # 拼接日志文件的完整路径
+script_name = os.path.splitext(os.path.basename(script_path))[0]  # 当前脚本的名称(没有.py后缀)
+script_folder_path = os.path.dirname(script_path)  # 获取当前脚本所在的文件夹名
+log_folder_path = os.path.join(script_folder_path, LOG_FOLDER_NAME)  # 存放log的文件夹路径
+
+formatted_time = datetime.datetime.now().strftime("%Y%m%d-%H_%M_%S")  # 获取当前时间并格式化为指定格式
+log_filename = os.path.join(log_folder_path, formatted_time + '-' + script_name + '.log')   # 获取文件夹名并拼接日志文件名
+log_file_path = os.path.join(script_folder_path, log_filename)  # 拼接日志文件的完整路径
 "---------------------------------------------------------------------------------"
 
 # 读取所有 .json 文件
@@ -84,7 +83,17 @@ _str = [
     ["💡 日志是否在终端显示", VERBOSE],
 ]
 
-_str = tabulate(_str, headers=["PARAMs", "VALUE"], tablefmt="pipe")
+# 添加类别字典
+_str.append([])
+for count, (key, value) in enumerate(label_dict.items()):
+    if key.isdigit():  # 如果是数字
+        _str.append([f"类别-{count}", value])
+    elif value.isdigit():
+        _str.append([f"类别-{count}", key])
+    else:  # 类别字典有问题，直接kv显示
+        _str.append([key, value])
+
+_str = tabulate(_str, headers=["PARAMs", "VALUE"], tablefmt="outline")
 print(f"{_str}\n\n"
       f"请输入 'yes' 继续，输入其他停止")
     
@@ -93,13 +102,14 @@ if _INPUT != "yes":
     exit()
 
 # 配置日志输出的格式和级别
+os.mkdir(log_folder_path) if not os.path.exists(log_folder_path) else ...
 logging.basicConfig(filename=log_file_path, 
                     level=logging.INFO, 
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
 # 创建日志记录器
 logger = logging.getLogger()
-logger.info(_str)
+logger.info(f"\n{_str}")
 
 if VERBOSE:
     # 创建控制台处理器并添加到日志记录器
@@ -311,9 +321,8 @@ if CREATE_TXT_4_NEG:
 
 _str = [
     ["json2yolo", "已完成!"],
-    ["成功转换数量", {SUCCEED_NUM}/{TOTAL_NUM}],
-    ["跳过转换数量", {SKIP_NUM}/{TOTAL_NUM}],
-    ["负样本数量", NEG_NUM],
+    ["成功转换数量", f"{SUCCEED_NUM}/{TOTAL_NUM}"],
+    ["跳过转换数量", f"{SKIP_NUM}/{TOTAL_NUM}"],
     ["负样本数量", NEG_NUM],
     ["", ""],
     ["Object数量", OBJ_NUM],
@@ -324,9 +333,9 @@ _str = [
     ["日志保存路径", log_file_path],
 ]
 
-_str = tabulate(_str, headers=["PARAMs", "VALUE"], tablefmt="pipe")
+_str = tabulate(_str, headers=["PARAMs", "VALUE"], tablefmt="outline")
 
-logger.info(_str)
+logger.info(f"\n{_str}")
 print(_str) if not VERBOSE else ...
 
 if SUCCEED_NUM + SKIP_NUM == TOTAL_NUM:
