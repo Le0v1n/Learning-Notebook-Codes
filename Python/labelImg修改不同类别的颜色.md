@@ -87,6 +87,22 @@ class Shape(object):
 
 💡 **Tips**：要想让每一个框在旁边显示其类别，可以使用快捷键 <kbd>ctrl + shift + p</kbd>。
 
-# 4. [补充] RBGA 颜色大全
+# 4. 修改 [显示类别] 的文字大小
+
+在 `labelImg.py` 中，修改：
+
+```python
+def paint_canvas(self):
+    assert not self.image.isNull(), "cannot paint null image"
+    self.canvas.scale = 0.01 * self.zoom_widget.value()
+    self.canvas.overlay_color = self.light_widget.color()
+    self.canvas.label_font_size = int(0.02 * max(self.image.width(), self.image.height()))
+    self.canvas.adjustSize()
+    self.canvas.update()
+```
+
+将 `self.canvas.label_font_size = int(0.02 * max(self.image.width(), self.image.height()))` 中的 `0.02` 改成为 `0.01` 或其他你想要的大小。
+
+# 5. [补充] RBGA 颜色大全
 
 [RGB颜色大全（HEX、对照表、Matplotlib、plt、好看的颜色）](https://blog.csdn.net/weixin_44878336/article/details/135003274)
