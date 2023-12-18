@@ -82,7 +82,7 @@ class Shape(object):
     point_type = P_ROUND
     point_size = 8  # 点的大小
     scale = 1.0
-    label_font_size = 6  # 标签的字体大小
+    label_font_size = 8  # 标签的字体大小
 ```
 
 💡 **Tips**：要想让每一个框在旁边显示其类别，可以使用快捷键 <kbd>ctrl + shift + p</kbd>。
