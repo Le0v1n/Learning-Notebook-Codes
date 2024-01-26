@@ -1,5 +1,8 @@
 
 *.bkp
 *.pyc
+*.pt
+*.pth
+*.onnx
 
 __pycache__
