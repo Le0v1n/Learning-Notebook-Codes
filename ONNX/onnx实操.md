@@ -401,8 +401,8 @@ input_img.shape: (1, 3, 256, 256)
 
 ## 1.9 ONNX Runtime 和 PyTorch 速度对比
 
-1. 不同尺度下单张图片推理 --> [对比代码链接]()
-2. 不同尺度下多张图片推理 --> [对比代码链接]()
+1. 不同尺度下单张图片推理 --> [对比代码链接](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ONNX/codes/onnx%E5%AE%9E%E6%93%8D/%E9%80%9F%E5%BA%A6%E5%AF%B9%E6%AF%94/No1-%E4%B8%8D%E5%90%8C%E5%B0%BA%E5%BA%A6%E4%B8%8B%E5%8D%95%E5%BC%A0%E5%9B%BE%E7%89%87%E6%8E%A8%E7%90%86/run.sh)
+2. 不同尺度下多张图片推理 --> [对比代码链接](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ONNX/codes/onnx%E5%AE%9E%E6%93%8D/%E9%80%9F%E5%BA%A6%E5%AF%B9%E6%AF%94/No2-%E4%B8%8D%E5%90%8C%E5%B0%BA%E5%BA%A6%E4%B8%8B%E5%A4%9A%E5%BC%A0%E5%9B%BE%E7%89%87%E6%8E%A8%E7%90%86/run.sh)
 
 **实验环境**：
 - CPU：Intel i7-7700 @ 3.60GHz
@@ -411,6 +411,8 @@ input_img.shape: (1, 3, 256, 256)
 - OS: Windows 10 (WSL)
 - Device: CPU
 - 模型推理次数: 50
+
+### 1.9.1 ResNet-18
 
 **实验结果**
 
@@ -457,6 +459,7 @@ input_img.shape: (1, 3, 256, 256)
 - 在使用 CPU 进行推理时，PyTorch 比 ONNX 要慢（即便当图片尺寸比较小的时候）
 - 因为 PyTorch 没有完成 `[18, 3, 1024, 1024]` 的结果，可以说明 PyTorch 在推理时需要的资源比 ONNX 要多
 
+### 1.9.2 MobileNetV3-Small
 
 
 
