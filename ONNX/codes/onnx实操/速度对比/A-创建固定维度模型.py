@@ -1,23 +1,33 @@
 import torch
 from torchvision import models
 import onnx
+import argparse
+
+
+def parse_list(s):
+    try:
+        return list(map(int, s.strip('[]').split(',')))
+    except ValueError:
+        raise argparse.ArgumentTypeError('Invalid list format. Must be comma-separated integers.')
 
 
 # ==================================== 参数 ==================================== 
-img_shape = [1, 3, 1024, 1024]
-_shape = "x".join(map(str, img_shape))
+parser = argparse.ArgumentParser()
+parser.add_argument('--input-shape', type=parse_list, default=[1, 3, 640, 640], help='The shape of input')
+parser.add_argument('--device', type=str, default='cpu', help='The shape of input')
+parser.add_argument('--verbose', action='store_true', help='')
+args = parser.parse_args()  # 解析命令行参数
+
+_shape = "x".join(map(str, args.input_shape))
 onnx_save_path = f'ONNX/saves/model-fix_dims-{_shape}.onnx'  # 导出的ONNX模型路径 
 # ==============================================================================
 
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-print(f"正在使用的设备: {device}")
-
 # 创建一个训练好的模型
-model = models.resnet18(pretrained=True)  # ImageNet 预训练权重
-model = model.eval().to(device)
+model = models.mobilenet_v3_small(pretrained=True)  # ImageNet 预训练权重
+model = model.eval().to(args.device)
 
 # 构建一个输入
-dummy_input = torch.randn(size=img_shape).to(device)  # [N, B, H, W]
+dummy_input = torch.randn(size=args.input_shape).to(args.device)  # [N, B, H, W]
 
 # 让模型推理
 # output = model(dummy_input)
@@ -31,7 +41,7 @@ with torch.no_grad():
         f=onnx_save_path,                       # 导出的ONNX模型路径 
         input_names=['input'],                  # ONNX模型输入的名字(自定义)
         output_names=['output'],                # ONNX模型输出的名字(自定义)
-        opset_version=11,                       # Opset算子集合的版本（默认为17）
+        opset_version=17,                       # Opset算子集合的版本（默认为17）
     )
     
 print(f"ONNX 模型导出成功，路径为：{onnx_save_path}\n")
@@ -43,4 +53,4 @@ onnx_model = onnx.load(onnx_save_path)
 # 检查模型是否正常
 onnx.checker.check_model(onnx_model)
 
-print(f"模型导出正常!")
+print(f"{_shape}模型已导出!")

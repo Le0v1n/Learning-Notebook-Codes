@@ -120,3 +120,5 @@ def get_file_size(file_path):
 
 print(f"\tAverage infer time: {np.average(cost_times):.4f}s\n")
     #   f"\tFile size:          {get_file_size(onnx_weights_path):.4f}MB")
+with open("ONNX/saves/Speed_record-ResNet18.txt", 'a') as f:
+    f.write(f"{np.average(cost_times):.4f}s|")

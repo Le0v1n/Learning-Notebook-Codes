@@ -397,17 +397,19 @@ input_img.shape: (1, 3, 256, 256)
 ```
 
 > 💡 图片链接：[Web/images](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Datasets/Web/images)
+> 
 > 💡 ImageNet 类别文件链接：[imagenet_classes_indices.csv](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Datasets/imagenet_classes_indices.csv)
 
 ## 1.9 ONNX Runtime 和 PyTorch 速度对比
 
-1. 不同尺度下单张图片推理 --> [对比代码链接](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ONNX/codes/onnx%E5%AE%9E%E6%93%8D/%E9%80%9F%E5%BA%A6%E5%AF%B9%E6%AF%94/No1-%E4%B8%8D%E5%90%8C%E5%B0%BA%E5%BA%A6%E4%B8%8B%E5%8D%95%E5%BC%A0%E5%9B%BE%E7%89%87%E6%8E%A8%E7%90%86/run.sh)
-2. 不同尺度下多张图片推理 --> [对比代码链接](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ONNX/codes/onnx%E5%AE%9E%E6%93%8D/%E9%80%9F%E5%BA%A6%E5%AF%B9%E6%AF%94/No2-%E4%B8%8D%E5%90%8C%E5%B0%BA%E5%BA%A6%E4%B8%8B%E5%A4%9A%E5%BC%A0%E5%9B%BE%E7%89%87%E6%8E%A8%E7%90%86/run.sh)
+1. 不同尺度下单张图片推理 --> [对比代码链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/ONNX/codes/onnx%E5%AE%9E%E6%93%8D/%E9%80%9F%E5%BA%A6%E5%AF%B9%E6%AF%94/No1-%E4%B8%8D%E5%90%8C%E5%B0%BA%E5%BA%A6%E4%B8%8B%E5%8D%95%E5%BC%A0%E5%9B%BE%E7%89%87%E6%8E%A8%E7%90%86)
+2. 不同尺度下多张图片推理 --> [对比代码链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/ONNX/codes/onnx%E5%AE%9E%E6%93%8D/%E9%80%9F%E5%BA%A6%E5%AF%B9%E6%AF%94/No2-%E4%B8%8D%E5%90%8C%E5%B0%BA%E5%BA%A6%E4%B8%8B%E5%A4%9A%E5%BC%A0%E5%9B%BE%E7%89%87%E6%8E%A8%E7%90%86)
 
 **实验环境**：
-- CPU：Intel i7-7700 @ 3.60GHz
+- CPU：Intel i5-10400F @ 2.90   GHz
 - Memory: 8 x 2 = 16GB
 - Disk: SSD
+- GPU: RTX 3070 O8G
 - OS: Windows 10 (WSL)
 - Device: CPU
 - 模型推理次数: 50
@@ -416,81 +418,175 @@ input_img.shape: (1, 3, 256, 256)
 
 **实验结果**
 
-|Input Shape|ONNX(固定维度)|ONNX(固定维度+简化)|ONNX(动态维度)|ONNX(动态维度+简化)|PyTorch|
-|:-|:-|:-|:-|:-|:-|
-|[1, 3, 32, 32]      |0.0658s|0.0679s|0.0669s|0.0667s|0.0740s |
-|[1, 3, 64, 64]      |0.0683s|0.0701s|0.0684s|0.0694s|0.0734s |
-|[1, 3, 128, 128]    |0.0747s|0.0728s|0.0732s|0.0755s|0.0784s |
-|[1, 3, 256, 256]    |0.0893s|0.0901s|0.0883s|0.0901s|0.1070s |
-|[1, 3, 512, 512]    |0.1484s|0.1486s|0.1544s|0.1485s|0.1906s |
-|[1, 3, 640, 640]    |0.1983s|0.1947s|0.1946s|0.1935s|0.2561s |
-|[1, 3, 768, 768]    |0.2529s|0.2488s|0.2535s|0.2555s|0.3303s |
-|[1, 3, 1024, 1024]  |0.3888s|0.3959s|0.4008s|0.3996s|0.5216s |
-|[18, 3, 32, 32]     |0.3252s|0.3255s|0.3268s|0.3262s|0.3357s |
-|[18, 3, 64, 64]     |0.3468s|0.3509s|0.3504s|0.3554s|0.3653s |
-|[18, 3, 128, 128]   |0.4244s|0.4295s|0.4297s|0.4269s|0.4806s |
-|[18, 3, 256, 256]   |0.6910s|0.6859s|0.7005s|0.7020s|0.8770s |
-|[18, 3, 512, 512]   |1.7164s|1.7125s|1.7420s|1.7531s|3.6240s |
-|[18, 3, 640, 640]   |2.4357s|2.4594s|2.4750s|2.5205s|4.3787s |
-|[18, 3, 768, 768]   |3.5806s|3.5368s|3.6693s|3.6110s|10.3582s|
-|[18, 3, 1024, 1024] |6.0836s|6.1163s|6.2694s|6.3470s|OOM     |
+|Input Shape|ONNX(固定维度)|ONNX(固定维度+简化)|ONNX(动态维度)|ONNX(动态维度+简化)|PyTorch(CPU)|PyTorch(GPU)|
+|:-|:-:|:-:|:-:|:-:|:-:|:-:|
+|[1, 3, 32, 32]      |0.0577s|0.0597s|0.0592s|0.0585s|0.0688s|0.0787s|
+|[1, 3, 64, 64]      |0.0605s|0.0593s|0.0588s|0.0621s|0.0700s|0.0723s|
+|[1, 3, 128, 128]    |0.0705s|0.0686s|0.0699s|0.0694s|0.0762s|0.0760s|
+|[1, 3, 256, 256]    |0.0784s|0.0811s|0.0797s|0.0789s|0.0949s|0.0813s|
+|[1, 3, 512, 512]    |0.1249s|0.1241s|0.1251s|0.1256s|0.1686s|0.0996s|
+|[1, 3, 640, 640]    |0.1569s|0.1525s|0.1572s|0.1579s|0.2242s|0.0863s|
+|[1, 3, 768, 768]    |0.1986s|0.1946s|0.1985s|0.2038s|0.2933s|0.0956s|
+|[1, 3, 1024, 1024]  |0.2954s|0.2957s|0.3094s|0.3045s|0.4871s|0.1047s|
+|[16, 3, 32, 32]     |0.2540s|0.2545s|0.2558s|0.2498s|0.2570s|0.2473s|
+|[16, 3, 64, 64]     |0.2811s|0.2745s|0.2696s|0.2655s|0.2824s|0.2553s|
+|[16, 3, 128, 128]   |0.3595s|0.3181s|0.3143s|0.3544s|0.3817s|0.3518s|
+|[16, 3, 256, 256]   |0.7315s|0.7112s|0.6767s|0.6122s|0.7169s|0.3469s|
+|[16, 3, 512, 512]   |1.3042s|1.2586s|1.1813s|1.1949s|1.6609s|0.4270s|
+|[16, 3, 640, 640]   |1.6340s|1.6429s|1.6659s|1.6693s|2.3923s|0.5292s|
+|[16, 3, 768, 768]   |2.2843s|2.2830s|2.3325s|2.3303s|3.9278s|1.7851s|
+|[16, 3, 1024, 1024] |3.9132s|3.9742s|3.9668s|3.9104s|6.7532s|3.6507s|
 
 **画图结果**
 
-> ⚠️ 在 `[18, 3, 1024, 1024]` 时，PyTorch 因为内存不足导致无法完成，这里用的是 `[18, 3, 768, 768]` 的数据
+> ⚠️ 在 `[18, 3, 768, 768]`、 时，PyTorch(CPU) 因为内存不足导致只能推理 1 次而非 50 次
+> 
+> ⚠️ 在 `[18, 3, 1024, 1024]`、 时，PyTorch(CPU) 和 PyTorch(GPU) 因为内存不足导致只能推理 1 次而非 50 次
 
 <div align=center>
-    <img src=./imgs_markdown/speed_comparison-full.jpg
+    <img src=./imgs_markdown/ResNet18-Speed-Comparison-of-Different-Models-Full-Data.jpg
     width=100%>
 </div>
 
 <div align=center>
-    <img src=./imgs_markdown/speed_comparison-single_batch.jpg
+    <img src=./imgs_markdown/ResNet18-Speed-Comparison-of-Different-Models-Single-Batch.jpg
     width=100%>
 </div>
 
 <div align=center>
-    <img src=./imgs_markdown/speed_comparison-multi_batch.jpg
+    <img src=./imgs_markdown/ResNet18-Speed-Comparison-of-Different-Models-Multi-Batch.jpg
     width=100%>
 </div>
 
-可以看到：
-- 静态维度和动态维度相差不大
-- 在使用 CPU 进行推理时，PyTorch 比 ONNX 要慢（即便当图片尺寸比较小的时候）
-- 因为 PyTorch 没有完成 `[18, 3, 1024, 1024]` 的结果，可以说明 PyTorch 在推理时需要的资源比 ONNX 要多
+<div align=center>
+    <img src=./imgs_markdown/ResNet18-Speed-Comparison-of-Different-Models-Sim.jpg
+    width=100%>
+</div>
+
+<kbd>结论</kbd>：
+- 〔<font color='green'><b>单 Batch</b></font>〕
+    - 静态维度和动态维度相差不大
+    - 当图片尺寸在 [32, 32] ~ [256, 256] 之间时，ONNX 速度比 PyTorch-GPU 速度要快；当图片尺寸大于 [256, 256] 时，PyTorch-GPU 拥有绝对的优势
+    - 当图片尺寸小于 [64, 64] 时，PyTorch-CPU 速度快于 PyTorch-GPU；当图片尺寸大于 [64, 64] 时，PyTorch-GPU 速度快于 PyTorch-CPU
+    - 无论在什么时候，ONNX 速度均快于 PyTorch-CPU
+- 〔<font color='blue'><b>多 Batch</b></font>〕
+    - 静态维度和动态维度相差不大
+    - 当图片尺寸小于 [128, 128] 时，ONNX、PyTorch-CPU、PyTorch-GPU 三者很难有区别（实际上 PyTorch-GPU 速度要慢一些，因为要将模型和输入放到 GPU 中，这部分会划分几秒钟的时间）
+    - 当图片尺寸大于 [128, 128] 时，GPU 逐渐扩大优势（由于 OOM 的原因，[18, 3, 1024, 1024] 下 PyTorch-GPU 只推理了一次，因此速度被拉平了很多。在显存足够充裕的情况下，PyTorch-GPU 的速度是碾压其他方法的）
+    - 当图片尺寸大于 [256, 256] 时，PyTorch-CPU 的速度远远慢于 ONNX
+- 〔<font color='purple'><b>Sim 前后</b></font>〕
+    - 可以发现，在使用 `python -m onnxsim` 前后差距不大
+- 〔<font color='red'><b>总结</b></font>〕
+    - 在使用 CPU 进行推理时，建议使用 ONNX 进行，因为不光速度有优势，而且对内存的占用也比 PyTorch-CPU 要小的多
+    - 在进行多 Batch 推理时，如果有 GPU 还是使用 PyTorch-GPU，这样会缩减大量的时间（⚠️ GPU 在加载模型和输入时可能会比较耗时）
+    - ⚠️ 在使用 `python -m onnxsim` 前后差距不大
 
 ### 1.9.2 MobileNetV3-Small
 
+接下来我们在 MobileNetV3-Small 上也进行相同的实验。
+
+> ⚠️ 因为 `opset=11` 不支持 `hardsigmoid` 算子，在官网上查询后，我们使用 `opset=17`
+> 
+> ⚠️ 在使用 `opset=17` 时可能会报错，报错原因一般是当前 PyTorch 版本低导致的，可以创建一个新的环境，使用最新的 PyTorch（也可以不实验，直接看我得结论就行 :joy:）
+
+|Input Shape|ONNX(固定维度)|ONNX(动态维度)|PyTorch(CPU)|PyTorch(GPU)|
+|:-|:-:|:-:|:-:|:-:|
+|[1, 3, 32, 32]     |0.0575s|0.0619s|0.0636s|0.0731s|
+|[1, 3, 64, 64]     |0.0585s|0.0591s|0.0643s|0.0701s|
+|[1, 3, 128, 128]   |0.0611s|0.0597s|0.0629s|0.0700s|
+|[1, 3, 256, 256]   |0.0627s|0.0622s|0.0690s|0.0731s|
+|[1, 3, 512, 512]   |0.0714s|0.0703s|0.0841s|0.0765s|
+|[1, 3, 640, 640]   |0.0776s|0.0785s|0.0975s|0.0823s|
+|[1, 3, 768, 768]   |0.0867s|0.0861s|0.1138s|0.0851s|
+|[1, 3, 1024, 1024] |0.1103s|0.1126s|0.1630s|0.0958s|
+|[16, 3, 32, 32]    |0.2410s|0.2295s|0.2538s|0.2446s|
+|[16, 3, 64, 64]    |0.2443s|0.2421s|0.2576s|0.2481s|
+|[16, 3, 128, 128]  |0.2618s|0.2576s|0.2804s|0.2727s|
+|[16, 3, 256, 256]  |0.3097s|0.3131s|0.3502s|0.3043s|
+|[16, 3, 512, 512]  |0.5556s|0.5873s|0.7655s|0.3970s|
+|[16, 3, 640, 640]  |0.7191s|0.7130s|0.8988s|0.4877s|
+|[16, 3, 768, 768]  |0.9293s|0.9285s|1.5091s|0.5754s|
+|[16, 3, 1024, 1024]|1.4768s|1.4945s|3.3530s|1.1316s|
 
 
+**画图结果**
 
+> ⚠️ 在 `[18, 3, 1024, 1024]`、 时，PyTorch(CPU) 因为内存不足导致只能推理 1 次而非 50 次
 
+<div align=center>
+    <img src=./imgs_markdown/MobileNetV3-Small-Speed-Comparison-of-Different-Models-Full-Data.jpg
+    width=100%>
+</div>
 
+<div align=center>
+    <img src=./imgs_markdown/MobileNetV3-Small-Speed-Comparison-of-Different-Models-Single-Batch.jpg
+    width=100%>
+</div>
 
+<div align=center>
+    <img src=./imgs_markdown/MobileNetV3-Small-Speed-Comparison-of-Different-Models-Multi-Batch.jpg
+    width=100%>
+</div>
 
+其实可以发现，与 ResNet18 的结论是一致的。
 
+### 1.9.3 为什么 `python -m onnxsim` 没有效果
 
+我们看一下这个过程：
 
+<font color='green'> <b> -------------- ResNet-18 -------------- </b></font>
 
+```bash
+python -m onnxsim ONNX/saves/resnet18-dynamic_dims.onnx ONNX/saves/resnet18-dynamic_dims-sim.onnx
+```
 
+```
+Simplifying...
+Finish! Here is the difference:
+┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓
+┃                   ┃ Original Model ┃ Simplified Model ┃
+┡━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩
+│ Add               │ 8              │ 8                │
+│ Constant          │ 42             │ 42               │
+│ Conv              │ 20             │ 20               │
+│ Flatten           │ 1              │ 1                │
+│ Gemm              │ 1              │ 1                │
+│ GlobalAveragePool │ 1              │ 1                │
+│ MaxPool           │ 1              │ 1                │
+│ Relu              │ 17             │ 17               │
+│ Model Size        │ 44.6MiB        │ 44.6MiB          │
+└───────────────────┴────────────────┴──────────────────┘
+```
 
+<font color='green'> <b> -------------- MobileNetV3-Small -------------- </b></font>
 
+```bash
+python -m onnxsim ONNX/saves/mobilenetv3small-dynamic_dims.onnx ONNX/saves/mobilenetv3small-dynamic_dims-sim.onnx
+```
 
+```
+Simplifying...
+Finish! Here is the difference:
+┏━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━┓
+┃                   ┃ Original Model ┃ Simplified Model ┃
+┡━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━┩
+│ Add               │ 6              │ 6                │
+│ Constant          │ 108            │ 108              │
+│ Conv              │ 52             │ 52               │
+│ Flatten           │ 1              │ 1                │
+│ Gemm              │ 2              │ 2                │
+│ GlobalAveragePool │ 10             │ 10               │
+│ HardSigmoid       │ 9              │ 9                │
+│ HardSwish         │ 19             │ 19               │
+│ Mul               │ 9              │ 9                │
+│ Relu              │ 14             │ 14               │
+│ Model Size        │ 9.7MiB         │ 9.7MiB           │
+└───────────────────┴────────────────┴──────────────────┘
+```
 
+可以看到，其实根本没有变化，所以速度也没有提升。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+> ⚠️ ONNX 文件变大了可能是因为 `onnxsim` 放了一些东西在模型中，但对模型性能没有影响。
 
 # 知识来源
 

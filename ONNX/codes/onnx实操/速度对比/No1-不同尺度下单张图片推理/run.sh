@@ -1,5 +1,5 @@
 #!/bin/bash
-shape=[1,3,1024,1024]  # 输入图片shape
+shape=[1,3,32,32]  # 输入图片shape
 test_times=50  # 测试次数
 warm_up=no  # 是否开启热身
 

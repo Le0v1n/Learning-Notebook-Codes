@@ -35,7 +35,7 @@ onnx_weights_path = f'ONNX/saves/model-fix_dims-{_shape}-sim.onnx'
 # 加载 ONNX 模型，创建推理会话
 ort_session = onnxruntime.InferenceSession(path_or_bytes=onnx_weights_path)  # ort -> onnxruntime
 
-if args.warm_up:
+if args.warm_up == 'yes':
     dummy_input = np.random.randn(args.input_shape[0], args.input_shape[1], args.input_shape[2], args.input_shape[3]).astype(np.float32)
     ort_inputs = {'input': dummy_input}
     ort_output = ort_session.run(output_names=['output'], input_feed=ort_inputs)[0]  # 输出被[]包围了，所以需要取出来
@@ -122,3 +122,5 @@ def get_file_size(file_path):
 
 print(f"\tAverage infer time: {np.average(cost_times):.4f}s\n")
     #   f"\tFile size:          {get_file_size(onnx_weights_path):.4f}MB")
+with open("ONNX/saves/Speed_record-ResNet18.txt", 'a') as f:
+    f.write(f"{np.average(cost_times):.4f}s|")

@@ -9,7 +9,7 @@ onnx_save_path = f'ONNX/saves/model-dynamic_dims.onnx'  # 导出的ONNX模型路
 # ==============================================================================
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-print(f"正在使用的设备: {device}")
+# print(f"正在使用的设备: {device}")
 
 # 创建一个训练好的模型
 model = models.resnet18(pretrained=True)  # ImageNet 预训练权重
@@ -30,7 +30,7 @@ with torch.no_grad():
         f=onnx_save_path,                       # 导出的ONNX模型路径 
         input_names=['input'],                  # ONNX模型输入的名字(自定义)
         output_names=['output'],                # ONNX模型输出的名字(自定义)
-        opset_version=11,                       # Opset算子集合的版本（默认为17）
+        opset_version=17,                       # Opset算子集合的版本（默认为17）
         dynamic_axes={                          # 修改某一个维度为动态
             'input': {0: 'B', 2: 'H', 3: 'W'},  # 将原本的 [1, 3, 256, 256] 修改为 [B, 3, H, W]
             'output': {0: 'B'}                  # 将原本的 [Gemmoutput_dim_0,1000] 修改为 [B, 1000]
