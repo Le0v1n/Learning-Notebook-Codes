@@ -1,8 +1,8 @@
-# 1. 图像分类模型部署: PyTorch -> ONNX
+<center><b><font size=12>图像分类模型部署: PyTorch -> ONNX</font></b></center>
 
-## 1.1 模型部署介绍
+# 1. 模型部署介绍
 
-### 1.1.1 人工智能开发部署全流程
+## 1.1 人工智能开发部署全流程
 
 ```mermaid
 graph LR
@@ -38,7 +38,7 @@ step3 --> 部署 --> 手机/平板
 部署 --> 嵌入式开发板
 ```
 
-### 1.1.2 模型部署平台和芯片介绍
+## 1.2 模型部署平台和芯片介绍
 
 - **设备**：PC、浏览器、APP、小程序、服务器、嵌入式开发板、无人车、无人机、Jetson Nano、树莓派、机械臂、物联网设备
 - **厂商**：
@@ -61,7 +61,7 @@ step3 --> 部署 --> 手机/平板
 |DSP|Digital Signal Processor(DSP)|数字信号处理器|德州仪器、高通等|数字信号处理、音频信号处理|否|是|中等|中等|
 |FPGA|Field-Programmable Gate Array(FPGA)|现场可编程门阵列|英特尔、赛灵思等|可编程硬件加速器|是|是|高|中等|
 
-### 1.1.3 模型部署的通用流程
+## 1.3 模型部署的通用流程
 
 ```mermaid
 graph LR
@@ -91,7 +91,7 @@ PaddlePaddle --> 训练框架
 推理框架/引擎/后端 --> PPL
 ```
 
-## 1.2 使用 ONNX 的意义
+# 2. 使用 ONNX 的意义
 
 <div align=center>
     <img src=./imgs_markdown/2024-01-25-10-49-51.png
@@ -105,18 +105,19 @@ PaddlePaddle --> 训练框架
 
 从这两张图可以很明显的看到，当有了中间表示 ONNX 后，从原来的 $M \times N$ 变为了 $M + N$，让模型部署的流程变得简单。
 
-## 1.3 ONNX 的介绍
+# 3. ONNX 的介绍
 
 开源机器学习<font color='blue'>通用中间格式</font>，由微软、Facebook（Meta）、亚马逊、IBM 共同发起的。<font color='green'>它可以兼容各种深度学习框架，也可以兼容各种推理引擎和终端硬件、操作系统</font>。
 
-## 1.4 ONNX 环境安装
+# 4. ONNX 环境安装
 
 ```bash
 pip install onnx -i https://pypi.tuna.tsinghua.edu.cn/simple
 pip install onnxruntime -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
-## 1.5 将一个分类模型转换为 ONNX
+# 5. PyTorch → ONNX
+## 5.1 将一个分类模型转换为 ONNX
 
 ```python
 import torch
@@ -176,9 +177,10 @@ ONNX 模型导出成功，路径为：ONNX/saves/resnet18_imagenet.onnx
 </div>
 
 > 1. 原图链接为：[resnet18_imagenet.png](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ONNX/imgs_markdown/resnet18_imagenet.png)
+> 
 > 2. ImageNet 数据集有 1000 个类别
 
-## 1.6 检查一个模型导出是否正确
+## 5.2 检查一个模型导出是否正确
 
 ```python
 import onnx
@@ -198,9 +200,9 @@ print(f"模型导出正常!")
 模型导出正常!
 ```
 
-> 我们在《onnx基础》中已经讲过 `check_model()` 这个函数，它可以检查 ONNX 模型，如果该函数发现模型错误，则会抛出异常，
+> 我们在《[onnx基础](https://blog.csdn.net/weixin_44878336/article/details/135820896)》中已经讲过 `check_model()` 这个函数，它可以检查 ONNX 模型，如果该函数发现模型错误，则会抛出异常，
 
-## 1.7 修改动态维度
+## 5.3 修改动态维度
 
 前面我们导出的 ONNX 模型中，输入的维度是固定的：`[1, 3, 256, 256]`，那么此时这个 ONNX 的输入就被限制了：
 - 如果我们想要多 Batch 的输入 → 不行
@@ -288,7 +290,7 @@ ONNX 模型导出成功，路径为：ONNX/saves/resnet18_imagenet-with_dynamic_
 
 可以看到，输入的 Batch、Height、Width 均变为了动态维度，<font color='green'>即只有当模型运行的时候才知道输入的这三个维度具体的值</font>。
 
-## 1.8 ONNX Runtime 部署：推理单张图片
+# 6. ONNX Runtime 部署：推理单张图片
 
 ```python
 import os
@@ -400,7 +402,7 @@ input_img.shape: (1, 3, 256, 256)
 > 
 > 💡 ImageNet 类别文件链接：[imagenet_classes_indices.csv](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Datasets/imagenet_classes_indices.csv)
 
-## 1.9 ONNX Runtime 和 PyTorch 速度对比
+# 7. ONNX Runtime 和 PyTorch 速度对比
 
 1. 不同尺度下单张图片推理 --> [对比代码链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/ONNX/codes/onnx%E5%AE%9E%E6%93%8D/%E9%80%9F%E5%BA%A6%E5%AF%B9%E6%AF%94/No1-%E4%B8%8D%E5%90%8C%E5%B0%BA%E5%BA%A6%E4%B8%8B%E5%8D%95%E5%BC%A0%E5%9B%BE%E7%89%87%E6%8E%A8%E7%90%86)
 2. 不同尺度下多张图片推理 --> [对比代码链接](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/ONNX/codes/onnx%E5%AE%9E%E6%93%8D/%E9%80%9F%E5%BA%A6%E5%AF%B9%E6%AF%94/No2-%E4%B8%8D%E5%90%8C%E5%B0%BA%E5%BA%A6%E4%B8%8B%E5%A4%9A%E5%BC%A0%E5%9B%BE%E7%89%87%E6%8E%A8%E7%90%86)
@@ -414,7 +416,7 @@ input_img.shape: (1, 3, 256, 256)
 - Device: CPU
 - 模型推理次数: 50
 
-### 1.9.1 ResNet-18
+## 7.1 ResNet-18
 
 **实验结果**
 
@@ -481,7 +483,7 @@ input_img.shape: (1, 3, 256, 256)
     - 在进行多 Batch 推理时，如果有 GPU 还是使用 PyTorch-GPU，这样会缩减大量的时间（⚠️ GPU 在加载模型和输入时可能会比较耗时）
     - ⚠️ 在使用 `python -m onnxsim` 前后差距不大
 
-### 1.9.2 MobileNetV3-Small
+## 7.2 MobileNetV3-Small
 
 接下来我们在 MobileNetV3-Small 上也进行相同的实验。
 
@@ -530,7 +532,7 @@ input_img.shape: (1, 3, 256, 256)
 
 其实可以发现，与 ResNet18 的结论是一致的。
 
-### 1.9.3 为什么 `python -m onnxsim` 没有效果
+## 7.3 为什么 `python -m onnxsim` 没有效果
 
 我们看一下这个过程：
 
@@ -588,6 +590,195 @@ Finish! Here is the difference:
 
 > ⚠️ ONNX 文件变大了可能是因为 `onnxsim` 放了一些东西在模型中，但对模型性能没有影响。
 
-# 知识来源
+# 8. ONNX 与 PyTorch 精度对比
+
+我们现在有如下的模型：
+
+- `weights.pth`: PyTorch 权重
+- `weights.onnx`: ONNX 权重
+- `weights-sim.onnx`: ONNX 精简后的权重
+
+模型的关系如下：
+
+```mermaid
+graph LR
+
+style weights.pth fill:transparent,stroke:#FF0F50,stroke-width:2px;
+style weights-sim.onnx fill:transparent,stroke:#4CAF50,stroke-width:2px;
+style weights.onnx fill:transparent,stroke:#2196F3,stroke-width:2px;
+
+weights.pth --> |torch.onnx.export| weights.onnx --> |python -m onnxsim| weights-sim.onnx
+```
+
+现在我们想要搞清楚，这样转换后的模型精度是怎么样的？
+
+```python
+import os
+import argparse
+import numpy as np
+import pandas as pd
+from PIL import Image
+import onnxruntime
+import torch
+import torch.nn.functional as F
+from torchvision import transforms, models
+from rich.progress import track
+
+
+# ==================================== 参数 ==================================== 
+parser = argparse.ArgumentParser()
+parser.add_argument('--image_folder_path', type=str, default='Datasets/Web/images', help='图片路径')
+parser.add_argument('--input-shape', type=int, nargs=2, default=[256, 256])
+parser.add_argument('--verbose', action='store_true', help='')
+args = parser.parse_args()  # 解析命令行参数
+
+onnx_weights = 'ONNX/saves/model-dynamic_dims.onnx'
+onnx_weights_sim = 'ONNX/saves/model-dynamic_dims-sim.onnx'
+# ==============================================================================
+
+# 定义模型
+onnx_model = onnxruntime.InferenceSession(path_or_bytes=onnx_weights)
+onnx_model_sim = onnxruntime.InferenceSession(path_or_bytes=onnx_weights_sim)
+pytorch_model = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1).eval()  # ⚠️ 一定要 .eval
+# pytorch_model = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
+
+# 定义预处理函数
+img_transform = transforms.Compose([
+    transforms.Resize(args.input_shape[-1]),
+    transforms.CenterCrop(args.input_shape[-1]),
+    transforms.ToTensor(),
+    transforms.Normalize(
+        mean=[0.485, 0.456, 0.406],  # imagenet专用
+        std=[0.229, 0.224, 0.225]),  # imagenet专用
+])
+
+image_list = [os.path.join(args.image_folder_path, img) for img in os.listdir(args.image_folder_path) \
+               if img.lower().endswith(('.jpg', '.jpeg', '.png', '.webp'))]
+
+for img_idx, image_path in track(enumerate(image_list), description='Precision Comparison'):
+    # 读取图片
+    img = Image.open(fp=image_path)  # 读取图片
+    input_img = img_transform(img)
+    input_img = input_img.unsqueeze(0)
+    print(f"inputs.type: {type(input_img)}") if args.verbose else ...
+    print(f"inputs.shape: {input_img.shape}") if args.verbose else ...
+
+    model_ls = ['pt', 'onnx', 'onnx-sim']
+    for model_name in model_ls:
+        if model_name != 'pt':
+            if not isinstance(input_img, np.ndarray):
+                input_img = input_img.numpy()
+            model_input = {'input': input_img, }
+            model_result = onnx_model.run(output_names=['output'], input_feed=model_input)[0]
+        else:
+            model_result = pytorch_model(input_img)
+        
+        if not isinstance(model_result, torch.Tensor):
+            model_result = torch.from_numpy(model_result)
+        
+        model_result_softmax = F.softmax(input=model_result, dim=1)  # [1, 1000]
+
+        # 取概率最大的前 n 个结果
+        n = 3
+        top_n = torch.topk(input=model_result_softmax, k=n, dim=1)
+
+        probs = top_n.values.detach().numpy()[0]  # torch.Size([18, 3])
+        indices = top_n.indices.detach().numpy()[0]  # torch.Size([18, 3])
+        print(f"probs: {probs}") if args.verbose else ...
+        print(f"indices: {indices}") if args.verbose else ...
+
+        df = pd.read_csv('Datasets/imagenet_classes_indices.csv')
+
+        idx2labels = {}
+        for _, row in df.iterrows():
+            idx2labels[row['ID']] = row['Chinese']  # 中文标签
+
+        print(f"============================== 推理结果-{model_name} ==============================")  if args.verbose else ...
+        
+        _results = []
+        for i, (prob, idx) in enumerate(zip(probs, indices)):
+            class_name = idx2labels[idx]
+            text = f"No.{i}: {class_name:<30} --> {prob:>.5f}"  if args.verbose else ...
+            _results.append(prob)
+            print(text)
+        print(f"=====================================================================")  if args.verbose else ...
+
+        with open("ONNX/saves/Precision-comparison.txt", 'a') as f:
+            if model_name == 'pt':
+                f.write(f"|[{img_idx+1}] {os.path.basename(image_path)}"
+                        f"|{_results[0]:>.5f}</br>{_results[1]:>.5f}</br>{_results[2]:>.5f}")
+            elif model_name == 'onnx':
+                f.write(f"|{_results[0]:>.5f}</br>{_results[1]:>.5f}</br>{_results[2]:>.5f}")
+            else:
+                f.write(f"|{_results[0]:>.5f}</br>{_results[1]:>.5f}</br>{_results[2]:>.5f}|\n")
+```
+
+**实验结果**：
+
+|图片名称|PyTorch|ONNX|ONNX-sim|
+|:-|:-:|:-:|:-:|
+|[1] book.jpg|0.73973</br>0.05049</br>0.02358|0.73973</br>0.05049</br>0.02358|0.73973</br>0.05049</br>0.02358|
+|[2] butterfly.jpg|0.89704</br>0.04772</br>0.01542|0.89704</br>0.04772</br>0.01542|0.89704</br>0.04772</br>0.01542|
+|[3] camera.jpg|0.27658</br>0.17709</br>0.10925|0.27658</br>0.17709</br>0.10925|0.27658</br>0.17709</br>0.10925|
+|[4] cat.jpg|0.27773</br>0.18393</br>0.17254|0.27773</br>0.18393</br>0.17254|0.27773</br>0.18393</br>0.17254|
+|[5] dog.jpg|0.51787</br>0.25384</br>0.05929|0.51787</br>0.25384</br>0.05929|0.51787</br>0.25384</br>0.05929|
+|[6] dogs_orange.jpg|0.35289</br>0.30114</br>0.07791|0.35289</br>0.30114</br>0.07791|0.35289</br>0.30114</br>0.07791|
+|[7] female.jpg|0.15600</br>0.08031</br>0.04808|0.15600</br>0.08031</br>0.04808|0.15600</br>0.08031</br>0.04808|
+|[8] free-images.jpg|0.45595</br>0.17626</br>0.08414|0.45595</br>0.17626</br>0.08414|0.45595</br>0.17626</br>0.08414|
+|[9] gull.jpg|0.64711</br>0.23324</br>0.04430|0.64711</br>0.23324</br>0.04430|0.64711</br>0.23324</br>0.04430|
+|[10] laptop-phone.jpg|0.49379</br>0.35405</br>0.06063|0.49379</br>0.35405</br>0.06063|0.49379</br>0.35405</br>0.06063|
+|[11] monitor.jpg|0.51678</br>0.44193</br>0.02232|0.51678</br>0.44193</br>0.02232|0.51678</br>0.44193</br>0.02232|
+|[12] motorcycle.jpg|0.31712</br>0.22435</br>0.15631|0.31712</br>0.22435</br>0.15631|0.31712</br>0.22435</br>0.15631|
+|[13] mouse.jpg|0.99473</br>0.00074</br>0.00052|0.99473</br>0.00074</br>0.00052|0.99473</br>0.00074</br>0.00052|
+|[14] panda.jpg|0.94559</br>0.03199</br>0.00561|0.94559</br>0.03199</br>0.00561|0.94559</br>0.03199</br>0.00561|
+|[15] share_flower_fullsize.jpg|0.78806</br>0.05691</br>0.02483|0.78806</br>0.05691</br>0.02483|0.78806</br>0.05691</br>0.02483|
+|[16] tiger.jpeg|0.61749</br>0.38001</br>0.00052|0.61749</br>0.38001</br>0.00052|0.61749</br>0.38001</br>0.00052|
+
+可以看到，转换前后模型并没有精度的丢失。
+
+# 9. 〔拓展知识〕为什么 `.pt` 模型在推理时一定要 `.eval()`？
+
+在PyTorch中，`.eval()` 是一个用于将模型切换到评估（inference）模式的方法。在评估模式下，模型的行为会有所变化，主要体现在两个方面：**Dropout** 和 **Batch Normalization**。
+
+1. **Dropout：**
+   - 在训练阶段，为了防止过拟合，通常会使用 dropout 策略，即在每个训练步骤中，以一定的概率随机丢弃某些神经元的输出。
+   - 在推理阶段，我们希望获得模型的确定性输出，而不是在每次推理时都丢弃不同的神经元。因此，在推理时应该关闭 dropout。通过调用 `.eval()`，PyTorch 会将所有 dropout 层设置为评估模式，即不进行随机丢弃。
+
+2. **Batch Normalization：**
+   - Batch Normalization（批标准化）在训练时通过对每个 mini-batch 进行标准化来加速训练，但在推理时，我们通常不是基于 mini-batch 进行预测，因此需要使用整个数据集的统计信息进行标准化。
+   - 在 `.eval()` 模式下，Batch Normalization 会使用训练时计算的移动平均和方差，而不是使用当前 mini-batch 的统计信息。
+
+因此，为了确保在推理时得到一致和可靠的结果，需要在推理之前调用 `.eval()` 方法，以确保模型处于评估模式，关闭了 dropout，并使用适当的 Batch Normalization 统计信息。
+
+---
+
+举个例子，对于一张猫咪图片而言，如果我们的 `.pt` 模型没有开启 `.eval()` 就进行推理，那么得到的结果如下：
+
+```
+============================== 推理结果-pt ==========================
+No.0: 桶                                --> 0.00780
+No.1: 手压皮碗泵                        --> 0.00680
+No.2: 钩爪                              --> 0.00601
+====================================================================
+probs: [0.27773306 0.18392678 0.17254312]
+indices: [281 285 287]
+============================== 推理结果-onnx ========================
+No.0: 虎斑猫                            --> 0.27773
+No.1: 埃及猫                            --> 0.18393
+No.2: 猞猁,山猫                         --> 0.17254
+====================================================================
+probs: [0.27773306 0.18392678 0.17254312]
+indices: [281 285 287]
+============================== 推理结果-onnx-sim ====================
+No.0: 虎斑猫                            --> 0.27773
+No.1: 埃及猫                            --> 0.18393
+No.2: 猞猁,山猫                         --> 0.17254
+====================================================================
+```
+
+可以看到，对于 ONNX 模型而言，推理相对来说是比较正确的。但对于 PyTorch 模型，推理与猫无关了，所以 ⚠️ 在推理时开启 `.eval()` 是非常重要的！
+
+# 参考
 
 1. [图像分类模型部署-Pytorch转ONNX](https://www.bilibili.com/video/BV1cM4y187Xc)
+2. [Pytorch图像分类模型部署-ONNX Runtime本地终端推理](https://www.bilibili.com/video/BV1AM4y187yR)
