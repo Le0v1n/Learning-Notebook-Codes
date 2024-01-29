@@ -434,7 +434,7 @@ input_img.shape: (1, 3, 256, 256)
 
 <div align=center>
 
-|Input Shape|ONNX(固定维度)|ONNX(固定维度+简化)|ONNX(动态维度)|ONNX(动态维度+简化)|PyTorch(CPU)|PyTorch(GPU)|
+|Input Shape|ONNX(fix)|ONNX(fix+sim)|ONNX(dyn)|ONNX(dyn+sim)|PyTorch(CPU)|PyTorch(GPU)|
 |:-|:-:|:-:|:-:|:-:|:-:|:-:|
 |[1, 3, 32, 32]      |0.0577s|0.0597s|0.0592s|0.0585s|0.0688s|0.0787s|
 |[1, 3, 64, 64]      |0.0605s|0.0593s|0.0588s|0.0621s|0.0700s|0.0723s|
@@ -509,7 +509,7 @@ input_img.shape: (1, 3, 256, 256)
 
 <div align=center>
 
-|Input Shape|ONNX(固定维度)|ONNX(动态维度)|PyTorch(CPU)|PyTorch(GPU)|
+|Input Shape|ONNX(fix)|ONNX(dyn)|PyTorch(CPU)|PyTorch(GPU)|
 |:-|:-:|:-:|:-:|:-:|
 |[1, 3, 32, 32]     |0.0575s|0.0619s|0.0636s|0.0731s|
 |[1, 3, 64, 64]     |0.0585s|0.0591s|0.0643s|0.0701s|
