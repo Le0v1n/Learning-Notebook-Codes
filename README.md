@@ -95,9 +95,11 @@
 1.  [PotPlayerMini64.reg](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/PotPlayerMini64.reg): PotPlayer 配置文件
 2.  [JPEGView.ini](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/JPEGView.ini): JPEGView 配置文件
 3.  [KeyMap.txt.default](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/KeyMap.txt.default): JPEGView 配置文件（键盘映射）
+4.  [搜狗输入法-PhraseEdit.txt](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/%E6%90%9C%E7%8B%97%E8%BE%93%E5%85%A5%E6%B3%95-PhraseEdit.txt): 搜狗输入法自定义短语配置文件
 
 ### 〔11〕ONNX --> ONNX 相关
-1. [onnx基础.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ONNX/onnx%E5%9F%BA%E7%A1%80.md)：onnx 基础知识 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/135820896)
+1.  [onnx基础.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ONNX/onnx%E5%9F%BA%E7%A1%80.md)：onnx 基础知识 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/135820896)
+2.  [PyTorch2ONNX-分类模型.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ONNX/PyTorch2ONNX-%E5%88%86%E7%B1%BB%E6%A8%A1%E5%9E%8B.md)：PyTorch2ONNX实战（分类网络） | [📚对应博客]()
 
 # 其他说明
 
