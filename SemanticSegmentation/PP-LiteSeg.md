@@ -155,8 +155,6 @@ FLD（Flexible and Lightweight Decoder）相比传统的 Encoder-Decoder 结构�
 
 作者基于此提出了一个统一注意力融合模块 (UAFM)，它利用空间和通道注意力机制（两种注意力机制），生成一个权重矩阵 $\alpha$，并将输入特征与权重矩阵相乘，得到融合后的特征。这样可以使模型更好地捕获图像中的关键语义信息，提高分割精度。UAFM 如下图所示。
 
-![在这里插入图片描述]( =x400)
-
 <div align=center>
 	<img src=https://img-blog.csdnimg.cn/5eea7267ad444040bcbf378f404ec52b.png
 	width=100%>
