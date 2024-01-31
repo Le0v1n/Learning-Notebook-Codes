@@ -353,45 +353,67 @@ def parse_model(d, ch):  # model_dict, input_channels(3)
     no = na * (nc + 5)  # number of outputs = anchors * (classes + 5)
 
     layers, save, c2 = [], [], ch[-1]  # layers, savelist, ch out
-    for i, (f, n, m, args) in enumerate(d["backbone"] + d["head"]):  # from, number, module, args
-        m = eval(m) if isinstance(m, str) else m  # eval strings
+    # 对 backbone 和 head 中的所有层进行遍历
+    for i, (f, n, m, args) in enumerate(d["backbone"] + d["head"]):  
+        # f <-> from：表示输入的来源。-1 表示前一层的输出作为输入。
+        # n <-> number：表示重复使用该模块的次数。
+        # m <-> module：表示使用的特征提取模块类型。
+        # args：表示模块的参数：
+
+        # 将字符串转换为对应的代码名称（不懂的看一下 eval 函数）
+        m = eval(m) if isinstance(m, str) else m  
+
+        # 遍历每一层的参数args
         for j, a in enumerate(args):
+            # j: 参数的索引
+            # a: 具体的参数
             with contextlib.suppress(NameError):
+                # 将数字或字符长转换为代码
                 args[j] = eval(a) if isinstance(a, str) else a  # eval strings
 
+        # 先将所有的 number 乘上 深度系数
         n = n_ = max(round(n * gd), 1) if n > 1 else n  # depth gain
-        if m in {
-            Conv,
-            GhostConv,
-            Bottleneck,
-            GhostBottleneck,
-            SPP,
-            SPPF,
-            DWConv,
-            MixConv2d,
-            Focus,
-            CrossConv,
-            BottleneckCSP,
-            C3,
-            C3TR,
-            C3SPP,
-            C3Ghost,
-            nn.ConvTranspose2d,
-            DWConvTranspose2d,
-            C3x,
-        }:
-            c1, c2 = ch[f], args[0]
-            if c2 != no:  # if not output
-                c2 = make_divisible(c2 * gw, ch_mul)
 
-            args = [c1, c2, *args[1:]]
+        # 判断当前模块是否在这个字典中
+        if m in {
+            Conv,  # 普通的卷积层
+            GhostConv,  # 华为在 GhostNet 中提出的Ghost卷积
+            Bottleneck,  # ResNet同款
+            GhostBottleneck,  # 将其中的3x3卷积替换为GhostConv
+            SPP,  # Spatial Pyramid Pooling
+            SPPF,  # SPP + Conv
+            DWConv,  # 深度卷积
+            MixConv2d,  # 一种多尺度卷积层，可以在不同尺度上进行卷积操作。它使用多个不同大小的卷积核对输入特征图进行卷积，并将结果进行融合
+            Focus,  # 一种特征聚焦层，用于减少计算量并增加感受野。它通过将输入特征图进行通道重排和降采样操作，以获取更稠密和更大感受野的特征图
+            CrossConv,  # 一种交叉卷积层，用于增加特征图的多样性。它使用不同大小的卷积核对输入特征图进行卷积，并将结果进行融合
+            BottleneckCSP,  # 一种基于残差结构的卷积块，由连续的Bottleneck模块和CSP（Cross Stage Partial）结构组成，用于构建深层网络，提高特征提取能力
+            C3,  # 一种卷积块，由三个连续的卷积层组成。它用于提取特征，并增加网络的非线性能力
+            C3TR,  # C3TR是C3的变体，它在C3的基础上添加了Transpose卷积操作。Transpose卷积用于将特征图的尺寸进行上采样
+            C3SPP,  # C3SPP是C3的变体，它在C3的基础上添加了SPP操作。这样可以在不同尺度上对特征图进行池化，并增加网络的感受野
+            C3Ghost,  # C3Ghost是一种基于C3模块的变体，它使用GhostConv代替传统的卷积操作
+            nn.ConvTranspose2d,  # 转置卷积
+            DWConvTranspose2d,  # DWConvTranspose2d是深度可分离的转置卷积层，用于进行上采样操作。它使用逐点卷积进行特征图的通道之间的信息整合，以减少计算量
+            C3x,  # C3x是一种改进的C3模块，它在C3的基础上添加了额外的操作，如注意力机制或其他模块。这样可以进一步提高网络的性能
+        }:
+            c1, c2 = ch[f], args[0]  # c1: 卷积的输入通道数, c2: 卷积的输出通道数 | ch[f] 上一次的输出通道数（即本层的输入通道数），args[0]：配置文件中想要的输出通道数
+            if c2 != no:  # if not output
+                c2 = make_divisible(c2 * gw, ch_mul)  # 让输出通道数*width_multiple
+
+            args = [c1, c2, *args[1:]]  # 此时的c2已经是修改后的c2乘上width_multiple的c2了 | *args[1:]将其他非输出通道数的参数解包
+
+            # 如果当前层是 BottleneckCSP, C3, C3TR, C3Ghost, C3x 中的一种（这些结构都有 Bottleneck 结构）
             if m in {BottleneckCSP, C3, C3TR, C3Ghost, C3x}:
-                args.insert(2, n)  # number of repeats
-                n = 1
+                args.insert(2, n)  # number of repeats | 需要让Bottleneck重复n次
+                n = 1  # 重置n（其他层没有 Bottleneck 的模块不需要重复）
+        # 如果是BN层
         elif m is nn.BatchNorm2d:
-            args = [ch[f]]
+            args = [ch[f]]  # 确定输出通道数
+        
+        # 如果是 Concat 层
         elif m is Concat:
-            c2 = sum(ch[x] for x in f)
+            c2 = sum(ch[x] for x in f)  # Concat是按着通道维度进行的，所以通道会增加
+        
+        # 如果模块在检测任务或者分割任务中
         # TODO: channel, gw, gd
         elif m in {Detect, Segment}:
             args.append([ch[x] for x in f])
@@ -406,9 +428,16 @@ def parse_model(d, ch):  # model_dict, input_channels(3)
         else:
             c2 = ch[f]
 
+        # 将所有的模块都解包出来，用nn.Sequential接收
         m_ = nn.Sequential(*(m(*args) for _ in range(n))) if n > 1 else m(*args)  # module
+
+        # 将模块名字中__main__.字符长删除
         t = str(m)[8:-2].replace("__main__.", "")  # module type
+        
+        # 统计模块中的参数数量
         np = sum(x.numel() for x in m_.parameters())  # number params
+        
+        # 修改nn.Sequential格式的模块的属性
         m_.i, m_.f, m_.type, m_.np = i, f, t, np  # attach index, 'from' index, type, number params
         LOGGER.info(f"{i:>3}{str(f):>18}{n_:>3}{np:10.0f}  {t:<40}{str(args):<30}")  # print
         save.extend(x % i for x in ([f] if isinstance(f, int) else f) if x != -1)  # append to savelist

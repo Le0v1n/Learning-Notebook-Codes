@@ -1,9 +1,14 @@
 # YOLOv5 🚀 by Ultralytics, AGPL-3.0 license
 
 # Parameters
-nc: 80 # number of classes
-depth_multiple: 0.33 # model depth multiple
-width_multiple: 0.50 # layer channel multiple
+nc: 80 # number of classes | 类别数
+depth_multiple: 0.33 # model depth multiple | 模型深度: 控制 BottleneckCSP 数
+width_multiple: 0.50 # layer channel multiple | 模型宽度: 控制 Conv 通道个数（卷积核数量）
+# depth_multiple表示BottleneckCSP模块的层缩放因子，将所有的BottleneckCSP模块的Bottleneck乘上该参数得到最终的个数
+# width_multipl表示卷积通道的缩放因子，就是将配置里的backbone和head部分有关Conv的通道都需要乘上该系数
+# 通过depth_multiple和width_multiple参数可以实现不同复杂度的模型设计：s, m, x, xxl, ...
+
+
 anchors:
   - [10, 13, 16, 30, 33, 23] # P3/8
   - [30, 61, 62, 45, 59, 119] # P4/16

@@ -335,6 +335,7 @@ class Concat(nn.Module):
         self.d = dimension
 
     def forward(self, x):
+        # 这里的 x 是一个 list，所以可以有多个 Tensor 进行拼接
         return torch.cat(x, self.d)
 
 
