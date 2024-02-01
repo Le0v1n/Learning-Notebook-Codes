@@ -832,3 +832,258 @@ style C3 fill:transparent,stroke:#0000FF,stroke-width:2px;
 
 在 YOLOv5 中，SPP（Spatial Pyramid Pooling）是一种用于提取多尺度特征的技术，它有助于网络对不同尺度的目标进行检测。SPP 通过在不同大小的网格上进行池化操作，从而在不引入额外参数的情况下，捕捉输入特征图的不同尺度上的语义信息。
 
+> 将 SPP 块添加到 CSP 之上，因为它显著增加了感受野，分离出最重要的上下文特征，并且几乎不会降低网络操作速度 —— [YOLOv4 论文](https://arxiv.org/pdf/2004.10934.pdf)
+
+<div align=center>
+    <img src=./imgs_markdown/2024-02-01-17-47-49.png
+    width=50%>
+    <center>YOLOv4-SPP</center>
+</div>
+
+<div align=center>
+    <img src=./imgs_markdown/2024-02-01-17-44-23.png
+    width=50%>
+    <center>YOLOv5-SPP</center>
+</div>
+
+在 YOLOv4-SPP 中，进行了 5x5, 7x7, 13x13 的 MaxPooling，而在 YOLOv5-SPP 中，进行了 5x5, 9x9, 13x13 的 MaxPooling。通过 YOLOv4-SPP 中特征图变化可以看到，在进行了 MaxPooling 后特征图的 shape 并没有发生变化。我们看一下 YOLOv5-SPP 的源码：
+
+```python
+class SPP(nn.Module):
+    # Spatial Pyramid Pooling (SPP) layer https://arxiv.org/abs/1406.4729
+    def __init__(self, c1, c2, k=(5, 9, 13)):
+        super().__init__()
+        c_ = c1 // 2  # hidden channels
+        self.cv1 = Conv(c1, c_, 1, 1)
+        self.cv2 = Conv(c_ * (len(k) + 1), c2, 1, 1)  # 根据MaxPooling的个数自动调整，假设有3个MaxPooling则3+1=4
+        self.m = nn.ModuleList([nn.MaxPool2d(kernel_size=x, stride=1, padding=x // 2) for x in k])
+
+    def forward(self, x):
+        x = self.cv1(x)  # 先经过一个 1x1 卷积调整通道数
+        _maxpools = [m(x) for m in self.m]  # 经过一些列MaxPooling
+        _concat = torch.cat([x] + _maxpools, 1)  # 将x与MaxPooling沿着通道维度拼接
+        _conv2 = self.cv2(_concat)  # 最后经过一个1x1卷积调整通道数
+            return _conv2
+```
+
+不难理解，需要注意的是：
+
+1. 有 n 个 MaxPooling 层，Concat 后维度就会 x(n+1)；
+2. SPP 中的池化层不会对特征图进行下采样
+
+SPP 的流程图如下：
+
+<div align=center>
+
+```mermaid
+graph TB
+
+FeatureMap -->       |1x1x26x26| 1x1-Conv-C1
+1x1-Conv-C1 -->      |1x1x13x13| 5x5-MaxPooling
+1x1-Conv-C1 -->      |1x1x13x13| 9x9-MaxPooling
+1x1-Conv-C1 -->      |1x1x13x13| 13x13-MaxPooling
+1x1-Conv-C1 ==>      |X=1x1x13x13| Concat
+5x5-MaxPooling -->   |Y=1x1x13x13| Concat
+9x9-MaxPooling -->   |Y=1x1x13x13| Concat
+13x13-MaxPooling --> |Y=1x1x13x13| Concat
+Concat -->           |1x4x13x13| 1x1-Conv-C2
+1x1-Conv-C2 -->      |1xC2x13x13| Out
+
+style FeatureMap fill:transparent,stroke:#000000,stroke-width:2px;
+style 1x1-Conv-C1 fill:transparent,stroke:#008080,stroke-width:2px;
+style 5x5-MaxPooling fill:transparent,stroke:#0000FF,stroke-width:2px;
+style 9x9-MaxPooling fill:transparent,stroke:#FFA500,stroke-width:2px;
+style 13x13-MaxPooling fill:transparent,stroke:#808080,stroke-width:2px;
+style Concat fill:transparent,stroke:#FF0F50,stroke-width:2px;
+style 1x1-Conv-C2 fill:transparent,stroke:#FF4500,stroke-width:2px;
+style Out fill:transparent,stroke:#000000,stroke-width:2px;
+```
+
+</div>
+
+## 3.5 SPPF（Spatial Pyramid Pooling with Fixed）
+
+SPP（Spatial Pyramid Pooling）和 SPPF（Spatial Pyramid Pooling with Fixed）都是在卷积神经网络（CNN）中使用的池化操作，旨在处理不同尺寸的输入图像，并生成固定大小的输出。
+
+1. **SPP（Spatial Pyramid Pooling）**：SPP 是由 Kaiming He 等人于 2014 年提出的，主要用于解决卷积神经网络在处理不同尺寸的输入图像时所面临的问题。在传统的 CNN 中，全连接层的输入大小是固定的，但是输入图像的大小可能会有所不同。SPP 的目标是通过不同大小的池化窗口，使网络能够接受不同尺寸的输入，并生成固定长度的特征向量。
+
+2. **SPPF（Spatial Pyramid Pooling with Fixed）**：SPPF 是在 SPP 的基础上进行改进的。SPPF 通过<font color='blue'>引入一个固定的金字塔级别（pyramid level），使得对输入图像的池化操作具有固定的感受野大小</font>。这有助于在训练和推理中保持一致的输入特征大小。
+
+总的来说，SPP 是一种池化策略，允许 CNN 处理不同尺寸的输入，而 SPPF 是对 SPP 的一种改进，引入了固定的金字塔级别，以提高输入和输出的一致性。这两者都在图像识别和目标检测等任务中取得了一定的成功。
+
+我们看一下 SPPF 的源码：
+
+```python
+class SPPF(nn.Module):
+    # Spatial Pyramid Pooling - Fast (SPPF) layer for YOLOv5 by Glenn Jocher
+    def __init__(self, c1, c2, k=5):  # equivalent to SPP(k=(5, 9, 13))
+        super().__init__()
+        c_ = c1 // 2  # hidden channels
+        self.cv1 = Conv(c1, c_, 1, 1)
+        self.cv2 = Conv(c_ * 4, c2, 1, 1)  # 这里不再是按照MaxPooling的个数进行的，而是固定为4
+        self.m = nn.MaxPool2d(kernel_size=k, stride=1, padding=k // 2)  # 这里的模块不再是一系列，而是一个，且kernel_size被固定了！
+
+    def forward(self, x):
+        x = self.cv1(x)  # 先经过一个 1x1 卷积
+        y1 = self.m(x)  # 经过一个 5x5 的MaxPooling
+        y2 = self.m(y1)  # 再经过一个 5x5 的MaxPooling
+        _m = self.m(y2)  # 再再经过一个 5x5 的MaxPooling
+        _concat = torch.cat((x, y1, y2, _m), 1)  # 将3个经过 MaxPooling 的和没有经过的沿着通道维度拼接
+        _conv2 = self.cv2(_concat)  # 最后经过一个 1x1 卷积调整通道数
+        return _conv2
+```
+
+可以看到，SPPF 跟 SPP 有很大的区别，下面是 SPPF 的流程图：
+
+<div align=center>
+
+```mermaid
+graph TB
+
+FeatureMap -->        |1x1x26x26| 1x1-Conv-C1
+1x1-Conv-C1 -->       |X=1x1x13x13| 5x5-MaxPooling-1
+5x5-MaxPooling-1 -->  |Y=1x1x13x13| 5x5-MaxPooling-2
+5x5-MaxPooling-2 -->  |Z=1x1x13x13| 5x5-MaxPooling-3
+1x1-Conv-C1 ==>       |X=1x1x13x13| Concat
+5x5-MaxPooling-1 -->  |Y=1x1x13x13| Concat
+5x5-MaxPooling-2 -->  |Z=1x1x13x13| Concat
+5x5-MaxPooling-3 -->  |U=1x1x13x13| Concat
+Concat -->            |1x4x13x13| 1x1-Conv-C2
+1x1-Conv-C2 -->       |1xC2x13x13| Out
+
+style FeatureMap fill:transparent,stroke:#000000,stroke-width:2px;
+style 1x1-Conv-C1 fill:transparent,stroke:#008080,stroke-width:2px;
+style 5x5-MaxPooling-1 fill:transparent,stroke:#0000FF,stroke-width:2px;
+style 5x5-MaxPooling-2 fill:transparent,stroke:#FFA500,stroke-width:2px;
+style 5x5-MaxPooling-3 fill:transparent,stroke:#FF0F50,stroke-width:2px;
+style Concat fill:transparent,stroke:#000000,stroke-width:2px;
+style 1x1-Conv-C2 fill:transparent,stroke:#1E90FF,stroke-width:2px;
+style Out fill:transparent,stroke:#000000,stroke-width:2px;
+```
+
+</div>
+
+可以看到，SPPF 与 SPP 有了很大的不同：
+- 在 SPP 中，经过 1x1 卷积的特征图 $\mathcal{X}$ 会分为四条支路，分别进入 shortcut、5x5-MaxPooling、9x9-MaxPooling 以及 13x13-MaxPooling，之后四条支路的特征图会进行 Concat
+- 在 SPPF 中，MaxPooling 的数量被固定为 4，且 `kernel_size` 也被固定为 `k`，经过 1x1 卷积的特征图 $\mathcal{X}$ 会进入两条支路，左边还是 shortcut，右边则是顺序经过三个 5x5-MaxPooling，每个 MaxPooling 都会分为两个分支，一个进入 Concat，另外一个进入下一个 5x5-MaxPooling。
+
+SPPF 这样的操作可以得到和 SPP 一样的模型性能，且计算量下降。
+
+---
+
+SPP 和 SPPF 参数量对比：
+
+```python
+import sys
+sys.path.append('Learning-Notebook-Codes/ObjectDetection/YOLOv5/codes/yolov5-v7.0')
+from torchsummary import summary
+from models.common import SPP, SPPF
+
+
+spp = SPP(c1=32, c2=3)
+sppf = SPPF(c1=32, c2=3)
+
+summary(spp, (32, 26, 26))
+summary(sppf, (32, 26, 26))
+
+```
+
+```
+----------------------------------------------------------------
+        Layer (type)               Output Shape         Param #
+================================================================
+            Conv2d-1           [-1, 16, 26, 26]             512
+       BatchNorm2d-2           [-1, 16, 26, 26]              32
+              SiLU-3           [-1, 16, 26, 26]               0
+              SiLU-4           [-1, 16, 26, 26]               0
+              Conv-5           [-1, 16, 26, 26]               0
+         MaxPool2d-6           [-1, 16, 26, 26]               0
+         MaxPool2d-7           [-1, 16, 26, 26]               0
+         MaxPool2d-8           [-1, 16, 26, 26]               0
+            Conv2d-9            [-1, 3, 26, 26]             192
+      BatchNorm2d-10            [-1, 3, 26, 26]               6
+             SiLU-11            [-1, 3, 26, 26]               0
+             SiLU-12            [-1, 3, 26, 26]               0
+             Conv-13            [-1, 3, 26, 26]               0
+================================================================
+Total params: 742
+Trainable params: 742
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.08
+Forward/backward pass size (MB): 0.74
+Params size (MB): 0.00
+Estimated Total Size (MB): 0.82
+----------------------------------------------------------------
+
+
+----------------------------------------------------------------
+        Layer (type)               Output Shape         Param #
+================================================================
+            Conv2d-1           [-1, 16, 26, 26]             512
+       BatchNorm2d-2           [-1, 16, 26, 26]              32
+              SiLU-3           [-1, 16, 26, 26]               0
+              SiLU-4           [-1, 16, 26, 26]               0
+              Conv-5           [-1, 16, 26, 26]               0
+         MaxPool2d-6           [-1, 16, 26, 26]               0
+         MaxPool2d-7           [-1, 16, 26, 26]               0
+         MaxPool2d-8           [-1, 16, 26, 26]               0
+            Conv2d-9            [-1, 3, 26, 26]             192
+      BatchNorm2d-10            [-1, 3, 26, 26]               6
+             SiLU-11            [-1, 3, 26, 26]               0
+             SiLU-12            [-1, 3, 26, 26]               0
+             Conv-13            [-1, 3, 26, 26]               0
+================================================================
+Total params: 742
+Trainable params: 742
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.08
+Forward/backward pass size (MB): 0.74
+Params size (MB): 0.00
+Estimated Total Size (MB): 0.82
+----------------------------------------------------------------
+```
+
+我们发现二者是一样的，因此直接暴力求解：
+
+```python
+import sys
+sys.path.append('Learning-Notebook-Codes/ObjectDetection/YOLOv5/codes/yolov5-v7.0')
+import torch
+import time
+from tqdm.rich import tqdm
+from models.common import SPP, SPPF
+
+
+spp = SPP(c1=96, c2=3)
+sppf = SPPF(c1=96, c2=3)
+
+input_tensor = torch.randn(size=[16, 96, 26, 26])
+times = 200
+
+t1 = time.time()
+progress_bar = tqdm(total=times, desc='SPP')
+for _ in range(times):
+    tmp = spp(input_tensor)
+    progress_bar.update()
+progress_bar.close()
+t2 = time.time()
+
+progress_bar = tqdm(total=times, desc='SPPF')
+for _ in range(50):
+    tmp = sppf(input_tensor)
+    progress_bar.update()
+progress_bar.close()
+t3 = time.time()
+
+print(f"SPP: {(t2 - t1) / times:.4f}s")
+print(f"SPPF: {(t3 - t2) / times:.4f}s")
+```
+
+```
+SPP: 0.0795s
+SPPF: 0.0083s
+```
+
+💡 可以看到，SPPF 的速度是 SPP 的 9.58 倍，提升是非常明显的！
