@@ -834,18 +834,6 @@ style C3 fill:transparent,stroke:#0000FF,stroke-width:2px;
 
 > 将 SPP 块添加到 CSP 之上，因为它显著增加了感受野，分离出最重要的上下文特征，并且几乎不会降低网络操作速度 —— [YOLOv4 论文](https://arxiv.org/pdf/2004.10934.pdf)
 
-<div align=center>
-    <img src=./imgs_markdown/2024-02-01-17-47-49.png
-    width=50%>
-    <center>YOLOv4-SPP</center>
-</div>
-
-<div align=center>
-    <img src=./imgs_markdown/2024-02-01-17-44-23.png
-    width=50%>
-    <center>YOLOv5-SPP</center>
-</div>
-
 在 YOLOv4-SPP 中，进行了 5x5, 7x7, 13x13 的 MaxPooling，而在 YOLOv5-SPP 中，进行了 5x5, 9x9, 13x13 的 MaxPooling。通过 YOLOv4-SPP 中特征图变化可以看到，在进行了 MaxPooling 后特征图的 shape 并没有发生变化。我们看一下 YOLOv5-SPP 的源码：
 
 ```python
@@ -874,31 +862,9 @@ class SPP(nn.Module):
 SPP 的流程图如下：
 
 <div align=center>
-
-```mermaid
-graph TB
-
-FeatureMap -->       |1x1x26x26| 1x1-Conv-C1
-1x1-Conv-C1 -->      |1x1x13x13| 5x5-MaxPooling
-1x1-Conv-C1 -->      |1x1x13x13| 9x9-MaxPooling
-1x1-Conv-C1 -->      |1x1x13x13| 13x13-MaxPooling
-1x1-Conv-C1 ==>      |X=1x1x13x13| Concat
-5x5-MaxPooling -->   |Y=1x1x13x13| Concat
-9x9-MaxPooling -->   |Y=1x1x13x13| Concat
-13x13-MaxPooling --> |Y=1x1x13x13| Concat
-Concat -->           |1x4x13x13| 1x1-Conv-C2
-1x1-Conv-C2 -->      |1xC2x13x13| Out
-
-style FeatureMap fill:transparent,stroke:#000000,stroke-width:2px;
-style 1x1-Conv-C1 fill:transparent,stroke:#008080,stroke-width:2px;
-style 5x5-MaxPooling fill:transparent,stroke:#0000FF,stroke-width:2px;
-style 9x9-MaxPooling fill:transparent,stroke:#FFA500,stroke-width:2px;
-style 13x13-MaxPooling fill:transparent,stroke:#808080,stroke-width:2px;
-style Concat fill:transparent,stroke:#FF0F50,stroke-width:2px;
-style 1x1-Conv-C2 fill:transparent,stroke:#FF4500,stroke-width:2px;
-style Out fill:transparent,stroke:#000000,stroke-width:2px;
-```
-
+    <img src=./imgs_markdown/plots-SPP.jpg
+    width=70%>
+    <center>YOLOv5-SPP</center>
 </div>
 
 ## 3.5 SPPF（Spatial Pyramid Pooling with Fixed）
@@ -936,31 +902,19 @@ class SPPF(nn.Module):
 可以看到，SPPF 跟 SPP 有很大的区别，下面是 SPPF 的流程图：
 
 <div align=center>
+    <img src=./imgs_markdown/plots-SPPF.jpg
+    width=70%>
+    <center>YOLOv5-SPP</center>
+</div>
 
-```mermaid
-graph TB
+---
 
-FeatureMap -->        |1x1x26x26| 1x1-Conv-C1
-1x1-Conv-C1 -->       |X=1x1x13x13| 5x5-MaxPooling-1
-5x5-MaxPooling-1 -->  |Y=1x1x13x13| 5x5-MaxPooling-2
-5x5-MaxPooling-2 -->  |Z=1x1x13x13| 5x5-MaxPooling-3
-1x1-Conv-C1 ==>       |X=1x1x13x13| Concat
-5x5-MaxPooling-1 -->  |Y=1x1x13x13| Concat
-5x5-MaxPooling-2 -->  |Z=1x1x13x13| Concat
-5x5-MaxPooling-3 -->  |U=1x1x13x13| Concat
-Concat -->            |1x4x13x13| 1x1-Conv-C2
-1x1-Conv-C2 -->       |1xC2x13x13| Out
+放在一起看一下：
 
-style FeatureMap fill:transparent,stroke:#000000,stroke-width:2px;
-style 1x1-Conv-C1 fill:transparent,stroke:#008080,stroke-width:2px;
-style 5x5-MaxPooling-1 fill:transparent,stroke:#0000FF,stroke-width:2px;
-style 5x5-MaxPooling-2 fill:transparent,stroke:#FFA500,stroke-width:2px;
-style 5x5-MaxPooling-3 fill:transparent,stroke:#FF0F50,stroke-width:2px;
-style Concat fill:transparent,stroke:#000000,stroke-width:2px;
-style 1x1-Conv-C2 fill:transparent,stroke:#1E90FF,stroke-width:2px;
-style Out fill:transparent,stroke:#000000,stroke-width:2px;
-```
-
+<div align=center>
+    <img src=./imgs_markdown/plots-SPP+SPPF.jpg
+    width=100%>
+    <center>YOLOv5-SPP v.s. YOLOv5-SPPF</center>
 </div>
 
 可以看到，SPPF 与 SPP 有了很大的不同：
@@ -971,7 +925,7 @@ SPPF 这样的操作可以得到和 SPP 一样的模型性能，且计算量下�
 
 ---
 
-SPP 和 SPPF 参数量对比：
+<center><font color='red'><b>SPP 和 SPPF 参数量对比</b></font></center>
 
 ```python
 import sys
@@ -1056,10 +1010,10 @@ from tqdm.rich import tqdm
 from models.common import SPP, SPPF
 
 
-spp = SPP(c1=96, c2=3)
-sppf = SPPF(c1=96, c2=3)
+spp = SPP(c1=1024, c2=1024)
+sppf = SPPF(c1=1024, c2=1024)
 
-input_tensor = torch.randn(size=[16, 96, 26, 26])
+input_tensor = torch.randn(size=[1, 1024, 20, 20])
 times = 200
 
 t1 = time.time()
@@ -1071,19 +1025,197 @@ progress_bar.close()
 t2 = time.time()
 
 progress_bar = tqdm(total=times, desc='SPPF')
-for _ in range(50):
+for _ in range(times):
     tmp = sppf(input_tensor)
     progress_bar.update()
 progress_bar.close()
 t3 = time.time()
 
-print(f"SPP: {(t2 - t1) / times:.4f}s")
-print(f"SPPF: {(t3 - t2) / times:.4f}s")
+print(f"SPP (average time):  {(t2 - t1) / times:.4f}s")
+print(f"SPPF (average time): {(t3 - t2) / times:.4f}s")
 ```
 
 ```
-SPP: 0.0795s
-SPPF: 0.0083s
+SPP (average time):  0.0429s
+SPPF (average time): 0.0250s
 ```
 
-💡 可以看到，SPPF 的速度是 SPP 的 9.58 倍，提升是非常明显的！
+💡 可以看到，SPPF 的速度是 SPP 的 1.716 倍，提升是非常明显的！
+
+## 3.6 PANet（Path-Aggregation Network）
+
+PANet（Path-Aggregation Network，路径聚合网络）是一种用于目标检测的深度神经网络架构，旨在改善目标实例的多尺度特征表达。PANet 主要由两个关键组件组成：自顶向下的路径传播（Top-Down Path Propagation）和自底向上的特征聚合（Bottom-Up Feature Aggregation）。
+
+<div align=center>
+    <img src=./imgs_markdown/2024-02-02-11-59-04.png
+    width=100%>
+    <center>PANet 网络结构图</center>
+</div>
+
+> (a) FPN主干网络。 (b) 自底向上路径增强。 (c) 自适应特征池化。 (d) 区域提取分支。 (e) 全连接融合。 注意，在(a)和(b)中为了简洁起见，我们省略了特征图的通道维度。
+
+1. **自顶向下的路径传播（Top-Down Path Propagation）：**
+ - PANet 通过自顶向下的路径传播从高层语义特征到低层细节特征，帮助网络更好地理解目标的全局和局部上下文信息。
+ - 这个传播路径使得网络能够通过多个层次的特征层次结合，从而捕捉目标的多尺度信息。
+
+2. **自底向上的特征聚合（Bottom-Up Feature Aggregation）：**
+ - 为了更好地捕获底层特征的细节信息，PANet 引入了自底向上的特征聚合机制。
+ - 通过底层特征的横向传播，网络能够聚合来自多个尺度的信息，有助于提升对小目标或者细节的检测性能。
+
+PANet 的设计使得网络能够充分利用多尺度信息，从而提高目标检测任务的性能。该网络在 2018 年由北京大学的研究团队提出，已经在许多目标检测竞赛和应用中取得了显著的成果。这种网络架构的灵活性和高效性使得它在处理不同尺度和复杂场景下的目标检测问题上表现出色。
+
+在 YOLOv5 架构图中，PANet 的示意图如下。
+
+<div align=center>
+    <img src=./imgs_markdown/plots-PANet.jpg
+    width=100%>
+    <center>PANet 网络结构图</center>
+</div>
+
+通过将拥有低中高层语义信息的特征图进行相互融合，最终的预测特征图不仅拥有高级语义信息，也有一定的中级和低级语义信息，这样可以提高模型预测能力。
+
+# 4. 损失函数
+
+YOLOv5 损失函数包括三种：
+
+1. Classification Loss：分类损失
+2. Localization Loss: 定位损失（Anchor 与 GT 框之间的误差）
+3. Confidence Loss: 置信度损失
+
+总的损失是这三种损失的加权和。
+
+## 4.1 分类损失
+
+**大多数分类器假设输出标签是互斥的**（对于猫狗分类数据集而言，假设一张图片是“猫”，那么就不能是“狗”），例如 YOLOv1 和 YOLOv2，在这些模型中，通过使用 Softmax 函数将得分转换为总和为 1 的概率，以表示每个类别的置信度。然而，在 YOLOv3、YOLOv4 和 YOLOv5 之后，引入了多标签分类的概念。举个例子，**YOLOv5 的输出标签可以是多标签的，例如一个检测框可能同时包含“行人”和“儿童”，这两个类别并不是互斥的**。
+
+> Softmax 函数用于将一组实数转换为概率分布。给定输入向量  $ z = [z_1, z_2, ..., z_k] $，Softmax 函数的输出 $ \sigma(z) $ 的计算公式如下：
+> $$ \sigma(z)_i = \frac{e^{z_i}}{\sum_{j=1}^{k} e^{z_j}} $$
+> 其中：
+> - $ \sigma(z)_i $ 是 Softmax 函数的输出中的第 $ i $ 个元素。
+> - $ e $ 是自然对数的底。
+> - $ z_i $ 是输入向量 $ z $ 的第 $ i $ 个元素。
+> - $ \sum_{j=1}^{k} e^{z_j} $ 是对所有输入向量的指数项的和。
+>
+> Softmax 函数的目标是将输入向量 $ z $ 转换为一个概率分布，使得输出的每个元素都在 0 到 1 之间，且所有元素的和为 1。这通常用于多类别分类问题，其中每个元素对应一个类别，并且 Softmax 输出表示每个类别的概率。
+
+需要注意的是，<font color='green'>在多标签分类中，一个物体可能同时属于多个类别，因此输出的标签不再通过 Softmax 函数进行处理</font>。相反，<font color='blue'>通常会使用 Sigmoid 函数对每个类别的得分进行独立的二分类处理</font>。这样，每个类别的输出都是一个介于 0 和 1 之间的概率值，表示物体属于该类别的置信度。因此，在多标签分类下，输出类别的概率之和可以大于 1。
+
+为了更清晰地说明多标签分类的实现方式，假设有 N 个类别，每个类别使用一个 Sigmoid 激活函数来产生一个范围在 0 到 1 之间的输出。对于每个类别，如果输出值大于设定的阈值（通常为 0.5），则认为该物体属于该类别。这种独立的二分类方式允许一个检测框同时具有多个类别，与互斥的单标签分类不同。
+
+💡 总的来说，多标签分类通过使用多个独立的 Sigmoid 函数来实现，每个函数对应一个类别，这样就可以有效地处理一个物体属于多个类别的情况。
+
+因此在计算分类损失时，YOLOv3、YOLOv4、YOLOv5 对每个标签都使用 BCE 损失，这样也降低了计算复杂度。
+
+## 4.2 定位损失
+
+### 4.2.1 IoU
+
+边界框回归是许多 2D/3D 计算机视觉任务中最基本的组件之一。以前的方法通常使用 $L_1$ 和 $L_2$ 损失来度量边界框的预测误差，但这些损失函数考虑的因素相对较少。一种改进的方法是使用 IoU（Intersection over Union）来度量边界框的定位损失。
+
+IoU 考虑了预测边界框与真实边界框之间的重叠程度，通过计算它们的交集与并集之间的比值。使用 IoU 作为损失函数的度量标准可以更准确地衡量边界框的位置和尺寸的预测精度，尤其是在目标检测等任务中。这种方法对于提高模型的定位准确性和鲁棒性非常有效。
+
+<div style="overflow: hidden;">
+    <img src="./imgs_markdown/2024-02-02-14-28-29.png" style="float: left; width: 50%;">
+    <img src="./imgs_markdown/2024-02-02-14-30-53.png" style="float: left; width: 50%;">
+</div>
+
+上图中，绿色的框为 Ground Truth，黑色的框为 Anchor，那么 IoU 计算公式如下：
+
+$$
+\mathrm{IoU} = \frac{|A \cap B|}{|A \cup B|}
+$$
+
+我们看一下 IoU 的源码：
+
+```python
+def bbox_iou(box1, box2, xywh=True, GIoU=False, DIoU=False, CIoU=False, eps=1e-7):
+    # Returns Intersection over Union (IoU) of box1(1,4) to box2(n,4)
+
+    # Get the coordinates of bounding boxes
+    if xywh:  # transform from xywh to xyxy
+        (x1, y1, w1, h1), (x2, y2, w2, h2) = box1.chunk(4, -1), box2.chunk(4, -1)
+        w1_, h1_, w2_, h2_ = w1 / 2, h1 / 2, w2 / 2, h2 / 2
+        b1_x1, b1_x2, b1_y1, b1_y2 = x1 - w1_, x1 + w1_, y1 - h1_, y1 + h1_
+        b2_x1, b2_x2, b2_y1, b2_y2 = x2 - w2_, x2 + w2_, y2 - h2_, y2 + h2_
+    else:  # x1, y1, x2, y2 = box1
+        b1_x1, b1_y1, b1_x2, b1_y2 = box1.chunk(4, -1)
+        b2_x1, b2_y1, b2_x2, b2_y2 = box2.chunk(4, -1)
+        w1, h1 = b1_x2 - b1_x1, (b1_y2 - b1_y1).clamp(eps)
+        w2, h2 = b2_x2 - b2_x1, (b2_y2 - b2_y1).clamp(eps)
+
+    # Intersection area
+    inter = (b1_x2.minimum(b2_x2) - b1_x1.maximum(b2_x1)).clamp(0) * (
+        b1_y2.minimum(b2_y2) - b1_y1.maximum(b2_y1)
+    ).clamp(0)
+
+    # Union Area
+    union = w1 * h1 + w2 * h2 - inter + eps
+
+    # IoU
+    iou = inter / union
+    if CIoU or DIoU or GIoU:
+        cw = b1_x2.maximum(b2_x2) - b1_x1.minimum(b2_x1)  # convex (smallest enclosing box) width
+        ch = b1_y2.maximum(b2_y2) - b1_y1.minimum(b2_y1)  # convex height
+        if CIoU or DIoU:  # Distance or Complete IoU https://arxiv.org/abs/1911.08287v1
+            c2 = cw**2 + ch**2 + eps  # convex diagonal squared
+            rho2 = ((b2_x1 + b2_x2 - b1_x1 - b1_x2) ** 2 + (b2_y1 + b2_y2 - b1_y1 - b1_y2) ** 2) / 4  # center dist ** 2
+            if CIoU:  # https://github.com/Zzh-tju/DIoU-SSD-pytorch/blob/master/utils/box/box_utils.py#L47
+                v = (4 / math.pi**2) * (torch.atan(w2 / h2) - torch.atan(w1 / h1)).pow(2)
+                with torch.no_grad():
+                    alpha = v / (v - iou + (1 + eps))
+                return iou - (rho2 / c2 + v * alpha)  # CIoU
+            return iou - rho2 / c2  # DIoU
+        c_area = cw * ch + eps  # convex area
+        return iou - (c_area - union) / c_area  # GIoU https://arxiv.org/pdf/1902.09630.pdf
+    return iou  # IoU
+```
+
+> 💡 `torch.chunk(input, chunks, dim=0)`: `input`: 要分割的输入张量。`chunks`: 分割的块数。`dim`: 沿着哪个维度进行分割，默认为 0。
+>
+> 💡 `torch.clamp(input, min, max, out=None)`: 将输入张量的元素限制在指定范围内
+>
+> 💡 `torch.prod(input, dtype=None)`: 用于计算输入张量中所有元素的乘积
+
+### 4.2.2 IoU 存在的问题
+
+虽然 IoU 可以度量两个框的重合度，但也存在一定问题。当两个物体不重叠时，IoU 的计算结果为 0，这并不能直接反映出两个框的距离或定位误差。此外，当 IoU 被用作损失函数时，在两个框不重叠的情况下，梯度也为 0，这可能导致模型无法有效地进行优化，尤其是在训练初期。
+
+```python
+if |A ∩ B| = 0:
+    IoU(A, B) = 0
+```
+
+### 4.2.3 IoU 推广：GIoU（Generalized IoU）
+
+改进方法：为了解决 IoU 在不重叠的情况下的问题，一种常见的做法是推广 IoU 并确保满足以下条件：
+
+1. **遵循与 IoU 相同的定义**：将比较对象的形状数据编码为区域属性。
+2. **维持 IoU 的尺寸不变性**：确保新的指标在计算时不受对象尺寸变化的影响，保持与 IoU 相关的特性。
+3. **在重叠对象的情况下确保与 IoU 的强相关性**：新的指标在两个对象高度重叠时应该保持与 IoU 类似的表现，以便保留其在目标检测等任务中的有效性。
+
+在这个背景下，一种被提出的改进是 Generalized IoU（GIoU）。GIoU 是一种更全面的边界框重叠度量，它在计算两个边界框之间的重叠时，不仅考虑了它们的交集和并集，还考虑了它们的外接矩形（最小闭包矩形）。GIoU 被设计为在不同情况下都能提供更准确的重叠度量，包括不重叠的情况。GIoU 具体操作如下：
+
+1. **计算交集（Intersection）**：$|A \cap B|$
+2. **计算并集（Union）**：$|A \cup B|$
+3. **计算外接矩形的面积（Bounding Box的最小闭包矩形）**：$|C|$
+4. **计算 GIoU**：$$\mathrm{GIoU} = \mathrm{IoU} - \frac{|C - (A \cup B) |}{|C|}$$
+5. **计算损失值**：$$\mathcal{L}_{\mathrm{GIoU}} = 1 - \mathrm{GIoU}$$
+
+<div align=center>
+    <img src=./imgs_markdown/plots-GIoU.jpg
+    width=100%>
+    <center>GIoU 示例图</center>
+</div>
+
+研究者们发现，使用 GIoU 作为损失函数在目标检测等任务中能够取得更好的性能，特别是在边界框回归方面。GIoU 的引入为解决 IoU 不足的问题提供了一个有效的方法。
+
+### 4.2.4 DIoU（Distance IoU）
+
+Distance-IoU (DIoU) 是为了进一步改进边界框重叠度量而提出的。DIoU 是 GIoU 的一种改进形式，它在 GIoU 的基础上引入了对边界框中心点之间距离的考虑。DIoU 的提出主要是为了解决 GIoU 中的一些问题，尤其是在存在重叠但不完全匹配的情况下的不足。
+
+GIoU 主要考虑了两个边界框的交集、并集以及外接矩形，但在一些情况下，GIoU 仍然可能受到边界框中心点之间距离的限制。在物体不完全对齐的情况下，GIoU 可能会导致对中心点距离的过度敏感，因此在一些实际场景中，GIoU 可能表现不够稳健。
+
+DIoU 引入了中心点之间的距离，通过考虑中心点距离来纠正 GIoU 中的一些缺陷。DIoU 的计算包括了中心点距离的项，以更全面地度量两个边界框之间的距离。DIoU 在实际目标检测任务中的性能提升主要体现在对不完全匹配目标的准确边界框回归上。
+
+综合而言，DIoU 的提出旨在弥补 GIoU 中对中心点距离的过度敏感的问题，使得在处理实际场景中存在不完全匹配的目标时能够更加稳健。
+
