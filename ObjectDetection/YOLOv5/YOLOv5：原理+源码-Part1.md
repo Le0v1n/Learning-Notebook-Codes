@@ -194,6 +194,7 @@ backbone:
 ```
 
 <kbd><b>Q</b>uestion</kbd>：这个计算是怎么进行的？
+
 <kbd><b>A</b>nswer</kbd>：在 `models/yolo.py` 的 `parse_model()` 函数中有写：
 
 ```python
@@ -338,6 +339,7 @@ head: [
 - 不像 YOLOv3 那样，作者区分了 Neck 和 Head。YOLOv5 的作者没有做出区分，只有 Head，所以在 Head 部分中包含了 PANet 和 Detect 部分。
 
 <kbd><b>Q</b>uestion</kbd>：`Concat` 怎么理解？
+
 <kbd><b>A</b>nswer</kbd>：我们看下面的图。
 
 <div align=center>
@@ -435,9 +437,11 @@ head: [
 | YOLOv5x6<br>+ [TTA] | <font color='blue'>1280<br><font color='red'><b>1536| 55.0<br>**55.8**| 72.7<br>**72.7**| 3136<br>-| 26.2<br>-| 19.4<br>-| 140.7<br>-| 209.8<br>-|
 
 <kbd><b>Q</b>uestion</kbd>：YOLOv5s 和 YOLOv5s6 有什么区别？
+
 <kbd><b>A</b>nswer</kbd>：在YOLOv5中，"x6"表示YOLOv5的最大版本，并且具有更深和更宽的网络结构。可见 issue -> [What is the difference between YOLOv5s and YOLOv5s6? #12499](https://github.com/ultralytics/yolov5/issues/12499)
 
 <kbd><b>Q</b>uestion</kbd>：[TTA] 是什么？
+
 <kbd><b>A</b>nswer</kbd>：TTA（Test Time Augmentation）是一种在测试时应用数据增强的技术。在目标检测任务中，通常会在训练时应用数据增强（如随机裁剪、旋转、缩放等）来增加训练样本的多样性，从而提高模型的鲁棒性和泛化能力。而在测试时，为了进一步提高模型的性能，可以应用一些额外的数据增强操作。TTA通过对输入图像进行多种增强操作，生成多个预测结果，并对这些结果进行综合，以提高目标检测模型的性能。可见官方介绍文档 -> [测试时间增强（TTA）](https://docs.ultralytics.com/zh/yolov5/tutorials/test_time_augmentation/)
 
 # 3. 网络架构
@@ -826,6 +830,7 @@ style C3 fill:transparent,stroke:#0000FF,stroke-width:2px;
 ---
 
 <kbd><b>Q</b>uestion</kbd>：C3 模块为什么叫做 C3？
+
 <kbd><b>A</b>nswer</kbd>：因为它的全称是：CSP Bottleneck with 3 convolutions。
 
 ## 3.4 SPP（Spatial Pyramid Pooling）
