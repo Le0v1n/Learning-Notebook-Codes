@@ -1129,52 +1129,63 @@ $$
 
 ```python
 def bbox_iou(box1, box2, xywh=True, GIoU=False, DIoU=False, CIoU=False, eps=1e-7):
+    """
+        box1: [1, 4]
+        box2: [N, 4]
+        xywh: 坐标格式为 xywh
+        GIoU: 使用GIoU
+        DIoU: 使用DIoU
+        CIoU: 使用CIoU
+    """
     # Returns Intersection over Union (IoU) of box1(1,4) to box2(n,4)
 
     # Get the coordinates of bounding boxes
+    # 将坐标转换为 xyxy 的格式
+    # ⚠️ 坐标原点：左上角
     if xywh:  # transform from xywh to xyxy
         (x1, y1, w1, h1), (x2, y2, w2, h2) = box1.chunk(4, -1), box2.chunk(4, -1)
         w1_, h1_, w2_, h2_ = w1 / 2, h1 / 2, w2 / 2, h2 / 2
         b1_x1, b1_x2, b1_y1, b1_y2 = x1 - w1_, x1 + w1_, y1 - h1_, y1 + h1_
         b2_x1, b2_x2, b2_y1, b2_y2 = x2 - w2_, x2 + w2_, y2 - h2_, y2 + h2_
     else:  # x1, y1, x2, y2 = box1
-        b1_x1, b1_y1, b1_x2, b1_y2 = box1.chunk(4, -1)
+        b1_x1, b1_y1, b1_x2, b1_y2 = box1.chunk(4, -1)  # b1_x1: x1列
         b2_x1, b2_y1, b2_x2, b2_y2 = box2.chunk(4, -1)
+
+        # 把w和h求出来
         w1, h1 = b1_x2 - b1_x1, (b1_y2 - b1_y1).clamp(eps)
         w2, h2 = b2_x2 - b2_x1, (b2_y2 - b2_y1).clamp(eps)
 
     # Intersection area
-    inter = (b1_x2.minimum(b2_x2) - b1_x1.maximum(b2_x1)).clamp(0) * (
-        b1_y2.minimum(b2_y2) - b1_y1.maximum(b2_y1)
-    ).clamp(0)
-
+    # 求交集的面积
+    # tensor1.minimum(tensor2): 两个相同shape的tensor进行逐元素比较
+    inter_w = (b1_x2.minimum(b2_x2) - b1_x1.maximum(b2_x1)).clamp(0)  # 交集的宽度
+    inter_h = (b1_y2.minimum(b2_y2) - b1_y1.maximum(b2_y1)).clamp(0)  # 交集的高度
+    inter = inter_w * inter_h  # 交集的面积
+            
     # Union Area
     union = w1 * h1 + w2 * h2 - inter + eps
 
     # IoU
     iou = inter / union
-    if CIoU or DIoU or GIoU:
-        cw = b1_x2.maximum(b2_x2) - b1_x1.minimum(b2_x1)  # convex (smallest enclosing box) width
-        ch = b1_y2.maximum(b2_y2) - b1_y1.minimum(b2_y1)  # convex height
-        if CIoU or DIoU:  # Distance or Complete IoU https://arxiv.org/abs/1911.08287v1
-            c2 = cw**2 + ch**2 + eps  # convex diagonal squared
-            rho2 = ((b2_x1 + b2_x2 - b1_x1 - b1_x2) ** 2 + (b2_y1 + b2_y2 - b1_y1 - b1_y2) ** 2) / 4  # center dist ** 2
-            if CIoU:  # https://github.com/Zzh-tju/DIoU-SSD-pytorch/blob/master/utils/box/box_utils.py#L47
-                v = (4 / math.pi**2) * (torch.atan(w2 / h2) - torch.atan(w1 / h1)).pow(2)
-                with torch.no_grad():
-                    alpha = v / (v - iou + (1 + eps))
-                return iou - (rho2 / c2 + v * alpha)  # CIoU
-            return iou - rho2 / c2  # DIoU
-        c_area = cw * ch + eps  # convex area
-        return iou - (c_area - union) / c_area  # GIoU https://arxiv.org/pdf/1902.09630.pdf
     return iou  # IoU
 ```
+
+对应的图片如下：
+
+<div align=center>
+    <img src=./imgs_markdown/plots-IoU.jpg
+    width=100%>
+    <center>IoU 示意图</center>
+</div>
 
 > 💡 `torch.chunk(input, chunks, dim=0)`: `input`: 要分割的输入张量。`chunks`: 分割的块数。`dim`: 沿着哪个维度进行分割，默认为 0。
 >
 > 💡 `torch.clamp(input, min, max, out=None)`: 将输入张量的元素限制在指定范围内
 >
 > 💡 `torch.prod(input, dtype=None)`: 用于计算输入张量中所有元素的乘积
+>
+> 💡 `b1_x2.minimum(b2_x2)` 表示取 `b1_x2` 和 `b2_x2` 中的每个元素的最小值。这是一个逐元素的比较操作，对于两个形状相同的张量，它将返回一个新的张量，其中每个元素都是对应位置上两个输入张量中较小的那个值。
+
 
 ### 4.2.2 IoU 存在的问题
 
@@ -1209,6 +1220,57 @@ if |A ∩ B| = 0:
 
 研究者们发现，使用 GIoU 作为损失函数在目标检测等任务中能够取得更好的性能，特别是在边界框回归方面。GIoU 的引入为解决 IoU 不足的问题提供了一个有效的方法。
 
+我们看一下 GIoU 的源码：
+
+```python
+def bbox_iou(box1, box2, xywh=True, GIoU=False, DIoU=False, CIoU=False, eps=1e-7):
+    # Returns Intersection over Union (IoU) of box1(1,4) to box2(n,4)
+
+    # Get the coordinates of bounding boxes
+    # 将坐标转换为 xyxy 的格式
+    # ⚠️ 坐标原点：左上角
+    if xywh:  # transform from xywh to xyxy
+        (x1, y1, w1, h1), (x2, y2, w2, h2) = box1.chunk(4, -1), box2.chunk(4, -1)
+        w1_, h1_, w2_, h2_ = w1 / 2, h1 / 2, w2 / 2, h2 / 2
+        b1_x1, b1_x2, b1_y1, b1_y2 = x1 - w1_, x1 + w1_, y1 - h1_, y1 + h1_
+        b2_x1, b2_x2, b2_y1, b2_y2 = x2 - w2_, x2 + w2_, y2 - h2_, y2 + h2_
+    else:  # x1, y1, x2, y2 = box1
+        b1_x1, b1_y1, b1_x2, b1_y2 = box1.chunk(4, -1)  # b1_x1: x1列
+        b2_x1, b2_y1, b2_x2, b2_y2 = box2.chunk(4, -1)
+
+        # 把w和h求出来
+        w1, h1 = b1_x2 - b1_x1, (b1_y2 - b1_y1).clamp(eps)
+        w2, h2 = b2_x2 - b2_x1, (b2_y2 - b2_y1).clamp(eps)
+
+    # Intersection area
+    # 求交集的面积
+    # tensor1.minimum(tensor2): 两个相同shape的tensor进行逐元素比较
+    inter_w = (b1_x2.minimum(b2_x2) - b1_x1.maximum(b2_x1)).clamp(0)  # 交集的宽度
+    inter_h = (b1_y2.minimum(b2_y2) - b1_y1.maximum(b2_y1)).clamp(0)  # 交集的高度
+    inter = inter_w * inter_h  # 交集的面积
+            
+    # Union Area
+    union = w1 * h1 + w2 * h2 - inter + eps
+
+    # 先求一下普通的IoU
+    iou = inter / union
+    
+    if CIoU or DIoU or GIoU:
+        # GIoU https://arxiv.org/pdf/1902.09630.pdf
+
+        # 求出最小外接矩形的宽度
+        cw = b1_x2.maximum(b2_x2) - b1_x1.minimum(b2_x1)  # convex (smallest enclosing box) width
+        # 求出最小外接矩形的高度
+        ch = b1_y2.maximum(b2_y2) - b1_y1.minimum(b2_y1)  # convex height
+
+        # 求出最小外接矩形的面积
+        c_area = cw * ch + eps  # convex area
+
+        # 计算最终的 IoU
+        iou = iou - (c_area - union) / c_area  
+        return iou
+```
+
 ### 4.2.4 DIoU（Distance IoU）
 
 Distance-IoU (DIoU) 是为了进一步改进边界框重叠度量而提出的。DIoU 是 GIoU 的一种改进形式，它在 GIoU 的基础上引入了对边界框中心点之间距离的考虑。DIoU 的提出主要是为了解决 GIoU 中的一些问题，尤其是在存在重叠但不完全匹配的情况下的不足。
@@ -1217,5 +1279,210 @@ GIoU 主要考虑了两个边界框的交集、并集以及外接矩形，但在
 
 DIoU 引入了中心点之间的距离，通过考虑中心点距离来纠正 GIoU 中的一些缺陷。DIoU 的计算包括了中心点距离的项，以更全面地度量两个边界框之间的距离。DIoU 在实际目标检测任务中的性能提升主要体现在对不完全匹配目标的准确边界框回归上。
 
+<div align=center>
+    <img src=./imgs_markdown/plots-DIoU.jpg
+    width=100%>
+    <center>DIoU 示例图</center>
+</div>
+
+> Figure 5: DIoU loss for bounding box regression, where the normalized distance between central points can be directly minimized. $c$ is the diagonal length of the smallest enclosing box covering two boxes, and $d = \rho(\bold{b}, \bold{b}^{gt})$ is the distance of central points of two boxes.
+>
+> 图5：DIoU损失用于边界框回归，其中可以直接最小化中心点之间的标准化距离。$c$ 是覆盖两个框的最小外接框的对角线长度，$d = \rho(\bold{b}, \bold{b}^{gt})$ 是两个框中心点的距离。
+
 综合而言，DIoU 的提出旨在弥补 GIoU 中对中心点距离的过度敏感的问题，使得在处理实际场景中存在不完全匹配的目标时能够更加稳健。
 
+我们看一下 DIoU 的源码：
+
+```python
+def bbox_iou(box1, box2, xywh=True, GIoU=False, DIoU=False, CIoU=False, eps=1e-7):
+    # Returns Intersection over Union (IoU) of box1(1,4) to box2(n,4)
+
+    # Get the coordinates of bounding boxes
+    # 将坐标转换为 xyxy 的格式
+    # ⚠️ 坐标原点：左上角
+    if xywh:  # transform from xywh to xyxy
+        (x1, y1, w1, h1), (x2, y2, w2, h2) = box1.chunk(4, -1), box2.chunk(4, -1)
+        w1_, h1_, w2_, h2_ = w1 / 2, h1 / 2, w2 / 2, h2 / 2
+        b1_x1, b1_x2, b1_y1, b1_y2 = x1 - w1_, x1 + w1_, y1 - h1_, y1 + h1_
+        b2_x1, b2_x2, b2_y1, b2_y2 = x2 - w2_, x2 + w2_, y2 - h2_, y2 + h2_
+    else:  # x1, y1, x2, y2 = box1
+        b1_x1, b1_y1, b1_x2, b1_y2 = box1.chunk(4, -1)  # b1_x1: x1列
+        b2_x1, b2_y1, b2_x2, b2_y2 = box2.chunk(4, -1)
+
+        # 把w和h求出来
+        w1, h1 = b1_x2 - b1_x1, (b1_y2 - b1_y1).clamp(eps)
+        w2, h2 = b2_x2 - b2_x1, (b2_y2 - b2_y1).clamp(eps)
+
+    # Intersection area
+    # 求交集的面积
+    # tensor1.minimum(tensor2): 两个相同shape的tensor进行逐元素比较
+    inter_w = (b1_x2.minimum(b2_x2) - b1_x1.maximum(b2_x1)).clamp(0)  # 交集的宽度
+    inter_h = (b1_y2.minimum(b2_y2) - b1_y1.maximum(b2_y1)).clamp(0)  # 交集的高度
+    inter = inter_w * inter_h  # 交集的面积
+            
+    # Union Area
+    union = w1 * h1 + w2 * h2 - inter + eps
+
+    # 先求一下普通的IoU
+    iou = inter / union
+    
+    if CIoU or DIoU or GIoU:
+        # GIoU https://arxiv.org/pdf/1902.09630.pdf
+
+        # 求出最小外接矩形的宽度
+        cw = b1_x2.maximum(b2_x2) - b1_x1.minimum(b2_x1)  # convex (smallest enclosing box) width
+        # 求出最小外接矩形的高度
+        ch = b1_y2.maximum(b2_y2) - b1_y1.minimum(b2_y1)  # convex height
+
+        # Distance or Complete IoU https://arxiv.org/abs/1911.08287v1
+        if CIoU or DIoU:
+            # 💡 使用勾股定理求出对角线的平方，即c^2
+            c² = cw**2 + ch**2 + eps  # convex diagonal squared | 凸对角线的平方
+            
+            # 求两个box中心点的平方（看下面的图）
+            rho² = ((b2_x1 + b2_x2 - b1_x1 - b1_x2) ** 2 + (b2_y1 + b2_y2 - b1_y1 - b1_y2) ** 2) / 4  # center dist ** 2
+
+            return iou - rho² / c²  # DIoU
+```
+
+还是拿下面这张图说事儿，
+
+<div align=center>
+    <img src=./imgs_markdown/plots-DIoU-中心点.jpg
+    width=100%>
+    <center>DIoU 中心点求解公式</center>
+</div>
+
+### 4.2.5 CIoU（Complete IoU）
+
+CIoU（Complete Intersection over Union）是一种边界框（Bounding Box）的相似性度量方法，它是 DIoU（Distance Intersection over Union）的改进版本。CIoU 主要用于目标检测任务中，特别是在训练阶段，作为损失函数的一部分。以下是DIoU的一些潜在缺陷：
+
+1. **局限性：** DIoU 主要关注中心点距离和最小外接矩形对角线距离，相对于 CIoU 来说，DIoU 的度量相对较为简化，有时无法捕捉边界框之间的复杂关系。
+
+2. **对形状变化不敏感：** DIoU 在处理边界框形状变化时可能不够敏感，特别是对于不同形状和比例的目标，DIoU 的相似性度量可能不够准确。
+
+3. **不全面：** DIoU 缺乏对宽高比例差异的考虑，而 CIoU 引入了宽高比例差异的项，使得相似性度量更加全面。
+
+4. **收敛性较差：** 在某些情况下，DIoU 可能在训练中收敛较慢，而 CIoU 的改进设计有助于提高损失函数的收敛性。
+
+总的来说，CIoU 可以看作是对 DIoU 的一种扩展和改进，以更全面、更准确地度量边界框之间的相似性。在实践中，CIoU 的性能可能更好，特别是在处理各种目标形状和尺寸差异的情况下。然而，选择使用哪种方法通常取决于具体的任务和实验结果。
+
+
+相比于 DIoU，CIoU 还考虑了**宽高比例差异**，即 CIoU 还考虑了两个边界框的宽高比例之差异。
+
+CIoU 的计算公式如下：
+
+$$ 
+\text{CIoU} = \text{IoU} - \frac{d^2}{c^2} - \alpha \cdot v 
+$$
+
+可以看到，相比于 DIoU，CIoU 其实只是在惩罚项上加了一项，即
+
+$$
+\mathcal{R}_{\text{CIoU}} = \frac{\rho^2(\bold{b}, \bold{b}^{gt})}{c^2} + \alpha v
+$$
+
+其中，$\alpha$ 是一个正的权衡参数，而 $v$ 衡量了两个 Box 宽高比的一致性：
+
+$$
+v = \frac{4}{\pi^2}(\arctan \frac{w^{gt}}{h^{gt}} - \arctan\frac{w}{h})^2
+$$
+
+CIoU 的损失函数定义如下：
+
+$$
+\mathcal{L}_{\text{CIoU}} = 1 - \mathrm{IoU} + \frac{\rho^2(\bold{b}, \bold{b}^{gt})}{c^2} + \alpha v
+$$
+
+其中权衡参数 $\alpha$ 被定义为：
+
+$$
+\alpha = \frac{v}{(1 - IoU) + v'}
+$$
+
+通过这个定义，重叠区域因子在回归中被赋予更高的优先级，特别是对于非重叠情况。
+
+最后，CIoU 损失的优化与 DIoU 损失相同，只是需要明确关于宽度（w）和高度（h）的 $v$ 梯度：
+
+$$
+\frac{\partial v}{\partial w} = \frac{8}{\pi^2}(\arctan \frac{w^{gt}}{h^{gt}} - \arctan \frac{w}{h}) \times \frac{h}{w^2 + h^2} \\
+\frac{\partial v}{\partial h} = \frac{8}{\pi^2}(\arctan \frac{w^{gt}}{h^{gt}} - \arctan \frac{w}{h}) \times \frac{w}{w^2 + h^2} \tag{12}
+$$
+
+分母 $w^2 + h^2$ 在 $h$ 和 $w$ 范围在 [0, 1] 的情况下通常是一个较小的值，可能导致梯度爆炸。因此，在我们的实现中，为了稳定收敛，分母 $w^2+h^2$ 被简单地移除，其中步长 $\frac{1}{w^2+h^2}$ 被替换为1，梯度方向仍然与方程 (12) 一致。
+
+<div align=center>
+    <img src=./imgs_markdown/2024-02-04-14-17-55.png
+    width=100%>
+    <center>IoU、GIoU、DIoU 的回归误差</center>
+</div>
+
+图4：在最终迭代 $T$（即 $E(T, n)$）可视化了 IoU、GIoU 和 DIoU 损失的回归误差，对每个坐标 $n$。我们注意到 (a) 和 (b) 中的区域对应于良好的回归情况。可以看到，IoU 损失在非重叠情况下有较大误差，GIoU 损失在水平和垂直情况下有较大误差，而我们的 DIoU 损失在所有地方都导致非常小的回归误差。
+
+我们看一下 CIoU 的源码：
+
+```python
+def bbox_iou(box1, box2, xywh=True, GIoU=False, DIoU=False, CIoU=False, eps=1e-7):
+    # Returns Intersection over Union (IoU) of box1(1,4) to box2(n,4)
+
+    # Get the coordinates of bounding boxes
+    # 将坐标转换为 xyxy 的格式
+    # ⚠️ 坐标原点：左上角
+    if xywh:  # transform from xywh to xyxy
+        (x1, y1, w1, h1), (x2, y2, w2, h2) = box1.chunk(4, -1), box2.chunk(4, -1)
+        w1_, h1_, w2_, h2_ = w1 / 2, h1 / 2, w2 / 2, h2 / 2
+        b1_x1, b1_x2, b1_y1, b1_y2 = x1 - w1_, x1 + w1_, y1 - h1_, y1 + h1_
+        b2_x1, b2_x2, b2_y1, b2_y2 = x2 - w2_, x2 + w2_, y2 - h2_, y2 + h2_
+    else:  # x1, y1, x2, y2 = box1
+        b1_x1, b1_y1, b1_x2, b1_y2 = box1.chunk(4, -1)  # b1_x1: x1列
+        b2_x1, b2_y1, b2_x2, b2_y2 = box2.chunk(4, -1)
+
+        # 把w和h求出来
+        w1, h1 = b1_x2 - b1_x1, (b1_y2 - b1_y1).clamp(eps)
+        w2, h2 = b2_x2 - b2_x1, (b2_y2 - b2_y1).clamp(eps)
+
+    # Intersection area
+    # 求交集的面积
+    # tensor1.minimum(tensor2): 两个相同shape的tensor进行逐元素比较
+    inter_w = (b1_x2.minimum(b2_x2) - b1_x1.maximum(b2_x1)).clamp(0)  # 交集的宽度
+    inter_h = (b1_y2.minimum(b2_y2) - b1_y1.maximum(b2_y1)).clamp(0)  # 交集的高度
+    inter = inter_w * inter_h  # 交集的面积
+            
+    # Union Area
+    union = w1 * h1 + w2 * h2 - inter + eps
+
+    # 先求一下普通的IoU
+    iou = inter / union
+    
+    if CIoU or DIoU or GIoU:
+        # GIoU https://arxiv.org/pdf/1902.09630.pdf
+
+        # 求出最小外接矩形的宽度
+        cw = b1_x2.maximum(b2_x2) - b1_x1.minimum(b2_x1)  # convex (smallest enclosing box) width
+        # 求出最小外接矩形的高度
+        ch = b1_y2.maximum(b2_y2) - b1_y1.minimum(b2_y1)  # convex height
+
+        # Distance or Complete IoU https://arxiv.org/abs/1911.08287v1
+        if CIoU or DIoU:
+            # 💡 使用勾股定理求出对角线的平方，即c^2
+            c² = cw**2 + ch**2 + eps  # convex diagonal squared | 凸对角线的平方
+            
+            # 求两个box中心点的平方（看下面的图）
+            rho² = ((b2_x1 + b2_x2 - b1_x1 - b1_x2) ** 2 + (b2_y1 + b2_y2 - b1_y1 - b1_y2) ** 2) / 4  # center dist ** 2
+
+            # 使用CIoU
+            if CIoU:
+                # 宽高比trade-off parameter
+                v = (4 / math.pi**2) * (torch.atan(w2 / h2) - torch.atan(w1 / h1)).pow(2)
+
+                # 当处于前向推理时
+                with torch.no_grad():
+                    alpha = v / (v - iou + (1 + eps))
+                return iou - (rho2 / c2 + v * alpha)  # CIoU
+```
+
+CIoU 的引入旨在提高边界框相似性度量的准确性，使得在目标检测的训练中更好地指导模型的学习。
+
+# 参考资料
+
+1. [YOLOv5入门到精通！不愧是公认的讲的最好的【目标检测全套教程】同济大佬12小时带你从入门到进阶（YOLO/目标检测/环境部署+项目实战/Python/）](https://www.bilibili.com/video/BV1YG411876u)
