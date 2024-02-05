@@ -7,22 +7,23 @@ from xml.dom.minidom import Document
 import os
 import cv2
 import tqdm
+import sys
+sys.path.append('/mnt/f/Projects/本地代码/Learning-Notebook-Codes')
+from Datasets.coco128.classes import coco128_class
 
 
 """============================ 需要修改的地方 ==================================="""
-IMAGE_PATH = "EXAMPLE_FOLDER/images"  # 原图文件夹路径
-TXT_PATH = "EXAMPLE_FOLDER/labels"  # 原txt标签文件夹路径
-XML_PATH = "EXAMPLE_FOLDER/annotations-xml"  # 保存xml文件夹路径
+dataset_path = 'Datasets/coco128/train'  # 🧡数据集路径
+classes_dict = coco128_class  # 🧡类别字典
+
 image_type = '.jpg'
 create_empty_xml_for_neg = True  # 是否为负样本生成对应的空的xml文件
-
-classes_dict = {
-    '0': "cat",
-    '1': 'dog'
-}
 """==============================================================================="""
 
-os.makedirs(XML_PATH) if not os.path.exists(XML_PATH) else None
+# 组合路径
+IMAGE_PATH = os.path.join(dataset_path, "images")  # 原图文件夹路径
+TXT_PATH = os.path.join(dataset_path, "labels")  # 原txt标签文件夹路径
+XML_PATH = os.path.join(dataset_path, "annotations-xml")  # 保存xml文件夹路径
 
 txt_file_list = [file for file in os.listdir(TXT_PATH) if file.endswith("txt") and file != 'classes.txt']
 
@@ -33,6 +34,24 @@ SKIP_NUM = 0  # 跳过创建xml文件数量
 OBJECT_NUM = 0  # object数量
 ERROR_NUM = 0  # 没有对应图片
 "---------------------------"
+
+_str = (f"💡 图片路径: \033[1;33m{IMAGE_PATH}\033[0m"
+        f"\n💡 TXT文件路径为: \033[1;33m{TXT_PATH}\033[0m"
+        f"\n💡 JSON文件路径为: \033[1;33m{XML_PATH}\033[0m"
+        f"\n 所有TXT文件数量: \033[1;33m{TOTAL_NUM}\033[0m"
+        f"\n 类别字典为:")
+
+for idx, value in classes_dict.items():
+    _str += f"\n\t[{idx}] {value}"
+
+_str += f"\n\n请输入 \033[1;31m'yes'\033[0m 继续，输入其他停止"
+print(_str)
+
+_INPUT = input()
+if _INPUT != "yes":
+    exit()
+
+os.makedirs(XML_PATH) if not os.path.exists(XML_PATH) else None
 
 process_bar = tqdm.tqdm(total=TOTAL_NUM, desc="yolo2xml", unit='.txt')
 for i, txt_name in enumerate(txt_file_list):
@@ -129,21 +148,21 @@ for i, txt_name in enumerate(txt_file_list):
         bndbox = xmlBuilder.createElement("bndbox")  
         ## 5.1 xmin标签
         xmin = xmlBuilder.createElement("xmin")  
-        mathData = float(((float(oneline[1])) * W + 1) - (float(oneline[3])) * 0.5 * W)
+        mathData = float(((float(oneline[1])) * W) - (float(oneline[3])) * 0.5 * W)
         xminContent = xmlBuilder.createTextNode(str(mathData))
         xmin.appendChild(xminContent)
         bndbox.appendChild(xmin)  # xmin标签结束
 
         ## 5.2 ymin标签
         ymin = xmlBuilder.createElement("ymin")  # ymin标签
-        mathData = float(((float(oneline[2])) * H + 1) - (float(oneline[4])) * 0.5 * H)
+        mathData = float(((float(oneline[2])) * H) - (float(oneline[4])) * 0.5 * H)
         yminContent = xmlBuilder.createTextNode(str(mathData))
         ymin.appendChild(yminContent)
         bndbox.appendChild(ymin)  # ymin标签结束
         
         ## 5.3 xmax标签
         xmax = xmlBuilder.createElement("xmax")  # xmax标签
-        mathData = float(((float(oneline[1])) * W + 1) + (float(oneline[3])) * 0.5 * W)
+        mathData = float(((float(oneline[1])) * W) + (float(oneline[3])) * 0.5 * W)
         xmaxContent = xmlBuilder.createTextNode(str(mathData))
         xmax.appendChild(xmaxContent)
         bndbox.appendChild(xmax)  # xmax标签结束
@@ -151,7 +170,7 @@ for i, txt_name in enumerate(txt_file_list):
         ## 5.4 ymax标签
         ymax = xmlBuilder.createElement("ymax")  # ymax标签
         mathData = float(
-            ((float(oneline[2])) * H + 1) + (float(oneline[4])) * 0.5 * H)
+            ((float(oneline[2])) * H) + (float(oneline[4])) * 0.5 * H)
         ymaxContent = xmlBuilder.createTextNode(str(mathData))
         ymax.appendChild(ymaxContent)
         bndbox.appendChild(ymax)  # ymax标签结束

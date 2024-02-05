@@ -1,0 +1,78 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          404.0,
+          204.119705
+        ],
+        [
+          524.0,
+          418.119871
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          272.0,
+          152.950125
+        ],
+        [
+          372.99968,
+          423.949983
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          185.41984,
+          233.519802
+        ],
+        [
+          277.75968,
+          419.939774
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "frisbee",
+      "text": "",
+      "points": [
+        [
+          272.529792,
+          111.920177
+        ],
+        [
+          306.279808,
+          133.550195
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000625.jpg",
+  "imageData": null,
+  "imageHeight": 446,
+  "imageWidth": 640
+}

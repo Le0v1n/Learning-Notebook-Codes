@@ -1,0 +1,27 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "toilet",
+      "text": "",
+      "points": [
+        [
+          80.71992,
+          89.37024
+        ],
+        [
+          345.95016,
+          625.5904
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000636.jpg",
+  "imageData": null,
+  "imageHeight": 640,
+  "imageWidth": 480
+}

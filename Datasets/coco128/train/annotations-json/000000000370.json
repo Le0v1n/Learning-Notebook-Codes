@@ -1,0 +1,44 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          90.81,
+          24.50016
+        ],
+        [
+          480.00024,
+          640.00032
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "broccoli",
+      "text": "",
+      "points": [
+        [
+          242.44992,
+          257.05024
+        ],
+        [
+          480.0,
+          501.00032
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000370.jpg",
+  "imageData": null,
+  "imageHeight": 640,
+  "imageWidth": 480
+}

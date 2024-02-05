@@ -1,0 +1,78 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          0.84,
+          114.710101
+        ],
+        [
+          54.38,
+          372.409939
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          0.0,
+          61.350025
+        ],
+        [
+          68.92,
+          374.000187
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "giraffe",
+      "text": "",
+      "points": [
+        [
+          82.0,
+          116.380011
+        ],
+        [
+          267.74,
+          369.060021
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "giraffe",
+      "text": "",
+      "points": [
+        [
+          316.72,
+          131.829951
+        ],
+        [
+          444.76,
+          296.079905
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000136.jpg",
+  "imageData": null,
+  "imageHeight": 374,
+  "imageWidth": 500
+}

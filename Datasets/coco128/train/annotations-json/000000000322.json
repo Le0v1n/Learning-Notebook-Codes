@@ -1,0 +1,44 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          71.66016,
+          110.479928
+        ],
+        [
+          277.96032,
+          386.269936
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "frisbee",
+      "text": "",
+      "points": [
+        [
+          282.10992,
+          205.97976
+        ],
+        [
+          325.34992,
+          218.729772
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000322.jpg",
+  "imageData": null,
+  "imageHeight": 481,
+  "imageWidth": 640
+}

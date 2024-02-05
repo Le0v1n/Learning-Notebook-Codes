@@ -1,0 +1,197 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "couch",
+      "text": "",
+      "points": [
+        [
+          -0.000223,
+          419.70016
+        ],
+        [
+          182.499855,
+          637.97024
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "clock",
+      "text": "",
+      "points": [
+        [
+          205.87021,
+          275.860032
+        ],
+        [
+          234.130198,
+          303.930048
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          154.660156,
+          542.400288
+        ],
+        [
+          196.810144,
+          559.970272
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          107.979834,
+          536.750112
+        ],
+        [
+          149.009827,
+          560.860128
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "mouse",
+      "text": "",
+      "points": [
+        [
+          100.979864,
+          464.680032
+        ],
+        [
+          113.019857,
+          474.310048
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "remote",
+      "text": "",
+      "points": [
+        [
+          365.030105,
+          496.98016
+        ],
+        [
+          386.280087,
+          504.10016
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          116.039834,
+          522.139904
+        ],
+        [
+          161.059966,
+          543.239936
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "remote",
+      "text": "",
+      "points": [
+        [
+          155.379799,
+          530.469952
+        ],
+        [
+          186.589809,
+          537.099968
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "remote",
+      "text": "",
+      "points": [
+        [
+          148.130091,
+          544.199798
+        ],
+        [
+          158.510072,
+          549.809802
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          160.389851,
+          509.790208
+        ],
+        [
+          192.629853,
+          526.440192
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "laptop",
+      "text": "",
+      "points": [
+        [
+          123.390159,
+          468.86032
+        ],
+        [
+          162.460161,
+          488.18032
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000384.jpg",
+  "imageData": null,
+  "imageHeight": 640,
+  "imageWidth": 446
+}

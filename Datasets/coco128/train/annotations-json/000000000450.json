@@ -1,0 +1,78 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "wine glass",
+      "text": "",
+      "points": [
+        [
+          461.70016,
+          3.230016
+        ],
+        [
+          559.64,
+          73.179936
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "cup",
+      "text": "",
+      "points": [
+        [
+          562.01984,
+          -0.00024
+        ],
+        [
+          640.0,
+          192.96984
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "pizza",
+      "text": "",
+      "points": [
+        [
+          0.0,
+          13.73976
+        ],
+        [
+          566.41024,
+          471.83976
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "dining table",
+      "text": "",
+      "points": [
+        [
+          0.0,
+          1.08
+        ],
+        [
+          640.0,
+          480.0
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000450.jpg",
+  "imageData": null,
+  "imageHeight": 480,
+  "imageWidth": 640
+}

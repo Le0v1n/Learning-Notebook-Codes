@@ -1,0 +1,350 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          27.69984,
+          69.829872
+        ],
+        [
+          392.60992,
+          427.0
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "spoon",
+      "text": "",
+      "points": [
+        [
+          415.569952,
+          349.850024
+        ],
+        [
+          430.879968,
+          373.400014
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "microwave",
+      "text": "",
+      "points": [
+        [
+          507.6,
+          312.809738
+        ],
+        [
+          639.05984,
+          422.199879
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "fork",
+      "text": "",
+      "points": [
+        [
+          608.509952,
+          251.829804
+        ],
+        [
+          616.179968,
+          292.579824
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "knife",
+      "text": "",
+      "points": [
+        [
+          445.729888,
+          329.049958
+        ],
+        [
+          463.059872,
+          363.719966
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "knife",
+      "text": "",
+      "points": [
+        [
+          454.369888,
+          320.690023
+        ],
+        [
+          470.259872,
+          365.860219
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "spoon",
+      "text": "",
+      "points": [
+        [
+          401.489984,
+          323.289941
+        ],
+        [
+          424.590016,
+          348.609931
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "spoon",
+      "text": "",
+      "points": [
+        [
+          383.890016,
+          341.859936
+        ],
+        [
+          419.469984,
+          381.89994
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "spoon",
+      "text": "",
+      "points": [
+        [
+          402.190272,
+          111.670107
+        ],
+        [
+          416.660288,
+          226.330283
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "spoon",
+      "text": "",
+      "points": [
+        [
+          420.950272,
+          114.400132
+        ],
+        [
+          434.380288,
+          217.670082
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "spoon",
+      "text": "",
+      "points": [
+        [
+          328.989888,
+          256.479898
+        ],
+        [
+          347.159872,
+          323.410013
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "knife",
+      "text": "",
+      "points": [
+        [
+          461.60016,
+          335.520139
+        ],
+        [
+          477.88016,
+          368.800135
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "knife",
+      "text": "",
+      "points": [
+        [
+          466.520032,
+          325.239837
+        ],
+        [
+          480.310048,
+          357.739831
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "knife",
+      "text": "",
+      "points": [
+        [
+          469.28016,
+          335.379827
+        ],
+        [
+          484.60016,
+          368.569811
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "clock",
+      "text": "",
+      "points": [
+        [
+          0.149984,
+          0.0
+        ],
+        [
+          53.869984,
+          53.95999
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "spoon",
+      "text": "",
+      "points": [
+        [
+          403.990112,
+          367.62012
+        ],
+        [
+          436.180128,
+          388.730104
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "spoon",
+      "text": "",
+      "points": [
+        [
+          392.560096,
+          299.360071
+        ],
+        [
+          409.100064,
+          331.710061
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "spoon",
+      "text": "",
+      "points": [
+        [
+          388.560128,
+          387.149819
+        ],
+        [
+          403.290112,
+          410.119815
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "spoon",
+      "text": "",
+      "points": [
+        [
+          401.36,
+          355.240109
+        ],
+        [
+          422.96,
+          380.380119
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "spoon",
+      "text": "",
+      "points": [
+        [
+          623.229962,
+          50.489953
+        ],
+        [
+          628.019958,
+          73.059935
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000294.jpg",
+  "imageData": null,
+  "imageHeight": 427,
+  "imageWidth": 640
+}

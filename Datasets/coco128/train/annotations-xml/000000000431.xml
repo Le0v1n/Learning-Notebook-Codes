@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<annotation>
+		<folder>images</folder>
+		<filename>000000000431.jpg</filename>
+		<size>
+			<width>640</width>
+			<height>389</height>
+			<depth>3</depth>
+		</size>
+		<object>
+			<name>sports ball</name>
+			<pose>Unspecified</pose>
+			<truncated>0</truncated>
+			<difficult>0</difficult>
+			<bndbox>
+				<xmin>359.090176</xmin>
+				<ymin>194.15983895</ymin>
+				<xmax>371.270144</xmax>
+				<ymax>205.79984704999998</ymax>
+			</bndbox>
+		</object>
+		<object>
+			<name>person</name>
+			<pose>Unspecified</pose>
+			<truncated>0</truncated>
+			<difficult>0</difficult>
+			<bndbox>
+				<xmin>153.74975999999998</xmin>
+				<ymin>67.1201995</ymin>
+				<xmax>311.04</xmax>
+				<ymax>319.5901465</ymax>
+			</bndbox>
+		</object>
+		<object>
+			<name>tennis racket</name>
+			<pose>Unspecified</pose>
+			<truncated>0</truncated>
+			<difficult>0</difficult>
+			<bndbox>
+				<xmin>296.7904</xmin>
+				<ymin>158.950068</ymin>
+				<xmax>378.06016</xmax>
+				<ymax>221.039914</ymax>
+			</bndbox>
+		</object>
+	</annotation>

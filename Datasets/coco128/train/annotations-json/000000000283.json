@@ -1,0 +1,95 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "bottle",
+      "text": "",
+      "points": [
+        [
+          63.18029,
+          42.58016
+        ],
+        [
+          145.580134,
+          354.32992
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "chair",
+      "text": "",
+      "points": [
+        [
+          0.229964,
+          142.60992
+        ],
+        [
+          59.790016,
+          228.96
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "chair",
+      "text": "",
+      "points": [
+        [
+          148.650178,
+          67.01984
+        ],
+        [
+          428.000214,
+          356.0496
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "dining table",
+      "text": "",
+      "points": [
+        [
+          0.0,
+          210.82016
+        ],
+        [
+          424.659888,
+          630.96032
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "wine glass",
+      "text": "",
+      "points": [
+        [
+          164.760098,
+          156.23968
+        ],
+        [
+          253.020118,
+          370.45984
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000283.jpg",
+  "imageData": null,
+  "imageHeight": 640,
+  "imageWidth": 428
+}

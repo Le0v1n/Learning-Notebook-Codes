@@ -1,0 +1,112 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          57.529923,
+          264.62976
+        ],
+        [
+          348.039801,
+          474.60992
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "skateboard",
+      "text": "",
+      "points": [
+        [
+          154.939939,
+          446.419712
+        ],
+        [
+          316.089739,
+          500.489728
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          149.430187,
+          16.320032
+        ],
+        [
+          171.110173,
+          47.090016
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          338.65007,
+          0.139968
+        ],
+        [
+          427.000213,
+          114.939968
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          176.880117,
+          17.100032
+        ],
+        [
+          197.890097,
+          41.260032
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          78.139826,
+          38.48
+        ],
+        [
+          103.699832,
+          67.059968
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000634.jpg",
+  "imageData": null,
+  "imageHeight": 640,
+  "imageWidth": 427
+}

@@ -1,0 +1,61 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "sports ball",
+      "text": "",
+      "points": [
+        [
+          359.090176,
+          194.159839
+        ],
+        [
+          371.270144,
+          205.799847
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          153.74976,
+          67.120199
+        ],
+        [
+          311.04,
+          319.590147
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "tennis racket",
+      "text": "",
+      "points": [
+        [
+          296.7904,
+          158.950068
+        ],
+        [
+          378.06016,
+          221.039914
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000431.jpg",
+  "imageData": null,
+  "imageHeight": 389,
+  "imageWidth": 640
+}

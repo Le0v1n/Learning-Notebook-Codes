@@ -1,0 +1,350 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "tv",
+      "text": "",
+      "points": [
+        [
+          105.93,
+          169.329938
+        ],
+        [
+          316.24,
+          368.039813
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "bottle",
+      "text": "",
+      "points": [
+        [
+          66.9,
+          252.620062
+        ],
+        [
+          113.46,
+          368.169938
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          358.28,
+          122.300062
+        ],
+        [
+          364.08,
+          169.650187
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          403.21,
+          116.249812
+        ],
+        [
+          451.22,
+          179.409937
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          332.17,
+          123.159937
+        ],
+        [
+          338.4,
+          171.410063
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          337.67,
+          122.829938
+        ],
+        [
+          342.78,
+          171.710063
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          342.93,
+          124.540125
+        ],
+        [
+          349.35,
+          171.790125
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          332.31,
+          256.330125
+        ],
+        [
+          361.66,
+          313.330125
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          347.25,
+          121.839938
+        ],
+        [
+          356.04,
+          170.750063
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          331.56,
+          122.43
+        ],
+        [
+          403.61,
+          171.39
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          290.73,
+          338.760131
+        ],
+        [
+          412.92,
+          370.790119
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "teddy bear",
+      "text": "",
+      "points": [
+        [
+          192.97,
+          3.219938
+        ],
+        [
+          241.21,
+          56.360062
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "bowl",
+      "text": "",
+      "points": [
+        [
+          154.34,
+          72.129994
+        ],
+        [
+          194.86,
+          95.960006
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "mouse",
+      "text": "",
+      "points": [
+        [
+          98.39,
+          357.09
+        ],
+        [
+          134.47,
+          374.82
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          87.59,
+          90.600131
+        ],
+        [
+          142.35,
+          95.870119
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          86.26,
+          94.920131
+        ],
+        [
+          141.82,
+          100.190119
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          88.63,
+          100.369875
+        ],
+        [
+          142.36,
+          105.109875
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "teddy bear",
+      "text": "",
+      "points": [
+        [
+          385.45,
+          34.08
+        ],
+        [
+          425.31,
+          89.25
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          88.9,
+          104.999869
+        ],
+        [
+          142.62,
+          110.199881
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "bottle",
+      "text": "",
+      "points": [
+        [
+          205.87,
+          47.730187
+        ],
+        [
+          233.05,
+          113.870062
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000643.jpg",
+  "imageData": null,
+  "imageHeight": 375,
+  "imageWidth": 500
+}

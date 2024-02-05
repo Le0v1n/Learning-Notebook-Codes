@@ -1,0 +1,265 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "bicycle",
+      "text": "",
+      "points": [
+        [
+          48.859968,
+          268.79988
+        ],
+        [
+          74.209984,
+          285.62988
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          262.689888,
+          248.31024
+        ],
+        [
+          302.099872,
+          337.5
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "bicycle",
+      "text": "",
+      "points": [
+        [
+          18.590016,
+          271.11996
+        ],
+        [
+          43.780032,
+          286.68996
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          82.869952,
+          256.13976
+        ],
+        [
+          120.539968,
+          321.78984
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          251.649856,
+          253.239912
+        ],
+        [
+          263.909824,
+          279.539928
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "sports ball",
+      "text": "",
+      "points": [
+        [
+          270.75,
+          294.6
+        ],
+        [
+          272.61,
+          297.36
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          216.169792,
+          255.010032
+        ],
+        [
+          226.799808,
+          278.820048
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          446.84976,
+          246.329832
+        ],
+        [
+          459.68976,
+          281.749848
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          504.059712,
+          244.480248
+        ],
+        [
+          516.769728,
+          276.380232
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "tennis racket",
+      "text": "",
+      "points": [
+        [
+          294.450272,
+          290.379768
+        ],
+        [
+          309.200288,
+          322.159752
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          389.499968,
+          256.369848
+        ],
+        [
+          401.589952,
+          277.229832
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          6.46,
+          258.440112
+        ],
+        [
+          28.909984,
+          294.250128
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "tennis racket",
+      "text": "",
+      "points": [
+        [
+          28.679936,
+          254.549928
+        ],
+        [
+          96.710016,
+          290.229912
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "tennis racket",
+      "text": "",
+      "points": [
+        [
+          253.059962,
+          269.03988
+        ],
+        [
+          257.389958,
+          273.26988
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "bicycle",
+      "text": "",
+      "points": [
+        [
+          628.660288,
+          266.119992
+        ],
+        [
+          639.150272,
+          275.680008
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000531.jpg",
+  "imageData": null,
+  "imageHeight": 480,
+  "imageWidth": 640
+}

@@ -1,0 +1,44 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "dog",
+      "text": "",
+      "points": [
+        [
+          0.0,
+          16.169809
+        ],
+        [
+          625.80992,
+          588.560109
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "frisbee",
+      "text": "",
+      "points": [
+        [
+          235.34976,
+          185.449804
+        ],
+        [
+          590.81984,
+          477.439983
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000394.jpg",
+  "imageData": null,
+  "imageHeight": 611,
+  "imageWidth": 640
+}

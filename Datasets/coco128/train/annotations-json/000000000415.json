@@ -1,0 +1,44 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "tennis racket",
+      "text": "",
+      "points": [
+        [
+          60.129987,
+          399.089728
+        ],
+        [
+          102.099959,
+          443.499712
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          -0.00018,
+          257.44032
+        ],
+        [
+          122.959834,
+          559.06016
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000415.jpg",
+  "imageData": null,
+  "imageHeight": 640,
+  "imageWidth": 359
+}

@@ -1,0 +1,44 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "dog",
+      "text": "",
+      "points": [
+        [
+          417.499863,
+          148.97024
+        ],
+        [
+          515.119605,
+          227.74016
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "boat",
+      "text": "",
+      "points": [
+        [
+          1.440285,
+          64.71968
+        ],
+        [
+          638.000319,
+          542.2
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000400.jpg",
+  "imageData": null,
+  "imageHeight": 640,
+  "imageWidth": 638
+}

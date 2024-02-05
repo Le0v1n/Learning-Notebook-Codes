@@ -1,0 +1,146 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "bowl",
+      "text": "",
+      "points": [
+        [
+          1.08,
+          187.69008
+        ],
+        [
+          612.66976,
+          473.53008
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "bowl",
+      "text": "",
+      "points": [
+        [
+          311.73024,
+          4.31016
+        ],
+        [
+          631.01024,
+          232.99032
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "broccoli",
+      "text": "",
+      "points": [
+        [
+          249.60032,
+          229.27032
+        ],
+        [
+          565.84032,
+          474.35016
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "bowl",
+      "text": "",
+      "points": [
+        [
+          0.00032,
+          13.51008
+        ],
+        [
+          434.48032,
+          388.63008
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "orange",
+      "text": "",
+      "points": [
+        [
+          376.2,
+          40.35996
+        ],
+        [
+          451.75008,
+          86.88996
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "orange",
+      "text": "",
+      "points": [
+        [
+          465.779712,
+          38.969952
+        ],
+        [
+          523.849728,
+          85.639968
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "orange",
+      "text": "",
+      "points": [
+        [
+          385.70016,
+          73.65984
+        ],
+        [
+          469.72,
+          144.16992
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "orange",
+      "text": "",
+      "points": [
+        [
+          364.0496,
+          2.490096
+        ],
+        [
+          458.80992,
+          73.559856
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000009.jpg",
+  "imageData": null,
+  "imageHeight": 480,
+  "imageWidth": 640
+}

@@ -1,0 +1,78 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "teddy bear",
+      "text": "",
+      "points": [
+        [
+          153.1803,
+          213.2499
+        ],
+        [
+          287.7501,
+          426.2697
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "teddy bear",
+      "text": "",
+      "points": [
+        [
+          273.7098,
+          214.3797
+        ],
+        [
+          391.0098,
+          355.9599
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "dog",
+      "text": "",
+      "points": [
+        [
+          420.1497,
+          71.4501
+        ],
+        [
+          512.9799,
+          195.0999
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "teddy bear",
+      "text": "",
+      "points": [
+        [
+          73.1001,
+          235.3299
+        ],
+        [
+          194.5203,
+          493.3497
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000309.jpg",
+  "imageData": null,
+  "imageHeight": 600,
+  "imageWidth": 600
+}

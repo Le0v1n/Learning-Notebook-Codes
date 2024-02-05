@@ -1,0 +1,44 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "sink",
+      "text": "",
+      "points": [
+        [
+          75.870114,
+          295.01
+        ],
+        [
+          161.070131,
+          306.58
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "bowl",
+      "text": "",
+      "points": [
+        [
+          72.999956,
+          292.99
+        ],
+        [
+          165.86995,
+          320.59
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000590.jpg",
+  "imageData": null,
+  "imageHeight": 500,
+  "imageWidth": 409
+}

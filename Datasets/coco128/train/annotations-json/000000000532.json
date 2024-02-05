@@ -1,0 +1,146 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "bus",
+      "text": "",
+      "points": [
+        [
+          86.29024,
+          127.09992
+        ],
+        [
+          547.96,
+          389.21016
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          269.08976,
+          234.56976
+        ],
+        [
+          313.60976,
+          390.82992
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          124.320096,
+          253.47984
+        ],
+        [
+          169.980064,
+          367.5
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          221.339712,
+          212.82996
+        ],
+        [
+          239.329728,
+          231.21996
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          154.410272,
+          216.469848
+        ],
+        [
+          166.680288,
+          236.129832
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "bus",
+      "text": "",
+      "points": [
+        [
+          0.340096,
+          163.5
+        ],
+        [
+          97.129856,
+          353.50992
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "handbag",
+      "text": "",
+      "points": [
+        [
+          153.129984,
+          268.630152
+        ],
+        [
+          174.230016,
+          304.170168
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "handbag",
+      "text": "",
+      "points": [
+        [
+          120.389824,
+          316.920168
+        ],
+        [
+          135.489856,
+          342.280152
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000532.jpg",
+  "imageData": null,
+  "imageHeight": 480,
+  "imageWidth": 640
+}

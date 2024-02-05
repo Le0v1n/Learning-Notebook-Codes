@@ -1,0 +1,44 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "giraffe",
+      "text": "",
+      "points": [
+        [
+          385.52992,
+          60.030003
+        ],
+        [
+          600.50016,
+          357.190137
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "giraffe",
+      "text": "",
+      "points": [
+        [
+          53.01024,
+          356.490006
+        ],
+        [
+          185.04032,
+          411.68001
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000025.jpg",
+  "imageData": null,
+  "imageHeight": 426,
+  "imageWidth": 640
+}

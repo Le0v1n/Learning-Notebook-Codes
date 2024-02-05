@@ -1,0 +1,78 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          52.36008,
+          387.76992
+        ],
+        [
+          228.72024,
+          545.38976
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "truck",
+      "text": "",
+      "points": [
+        [
+          52.64016,
+          353.779872
+        ],
+        [
+          177.22032,
+          413.249888
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "stop sign",
+      "text": "",
+      "points": [
+        [
+          115.84008,
+          226.58976
+        ],
+        [
+          152.86008,
+          301.75968
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "clock",
+      "text": "",
+      "points": [
+        [
+          112.04016,
+          42.19008
+        ],
+        [
+          266.34,
+          194.49984
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000064.jpg",
+  "imageData": null,
+  "imageHeight": 640,
+  "imageWidth": 480
+}

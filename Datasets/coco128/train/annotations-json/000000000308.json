@@ -1,0 +1,231 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          134.68,
+          28.649991
+        ],
+        [
+          268.39968,
+          424.090029
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          0.0,
+          47.309856
+        ],
+        [
+          185.08032,
+          426.0
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          45.73984,
+          15.340047
+        ],
+        [
+          208.71008,
+          281.230077
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          111.180192,
+          78.759945
+        ],
+        [
+          145.690208,
+          166.559823
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          381.08992,
+          23.469831
+        ],
+        [
+          556.89024,
+          419.439813
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "wine glass",
+      "text": "",
+      "points": [
+        [
+          364.500128,
+          223.930095
+        ],
+        [
+          388.950112,
+          283.710249
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "wine glass",
+      "text": "",
+      "points": [
+        [
+          146.339936,
+          156.05019
+        ],
+        [
+          195.999904,
+          255.360162
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "wine glass",
+      "text": "",
+      "points": [
+        [
+          235.400288,
+          149.479992
+        ],
+        [
+          260.250272,
+          208.060104
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          -6.4e-05,
+          236.449809
+        ],
+        [
+          119.660096,
+          421.209843
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "wine glass",
+      "text": "",
+      "points": [
+        [
+          0.029952,
+          170.459853
+        ],
+        [
+          67.580032,
+          297.640023
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          345.799968,
+          73.100109
+        ],
+        [
+          395.689952,
+          249.380187
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "clock",
+      "text": "",
+      "points": [
+        [
+          436.240288,
+          237.869944
+        ],
+        [
+          449.330272,
+          250.959944
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "umbrella",
+      "text": "",
+      "points": [
+        [
+          276.23968,
+          63.140229
+        ],
+        [
+          363.84992,
+          137.700027
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000308.jpg",
+  "imageData": null,
+  "imageHeight": 426,
+  "imageWidth": 640
+}

@@ -1,0 +1,44 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          152.56992,
+          90.680069
+        ],
+        [
+          517.24,
+          426.450238
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "wine glass",
+      "text": "",
+      "points": [
+        [
+          231.68992,
+          34.869888
+        ],
+        [
+          478.58976,
+          298.980063
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000326.jpg",
+  "imageData": null,
+  "imageHeight": 427,
+  "imageWidth": 640
+}

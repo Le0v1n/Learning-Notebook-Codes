@@ -1,0 +1,44 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "fork",
+      "text": "",
+      "points": [
+        [
+          418.65024,
+          118.600104
+        ],
+        [
+          583.32992,
+          427.0
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "cake",
+      "text": "",
+      "points": [
+        [
+          125.70016,
+          0.959896
+        ],
+        [
+          501.84032,
+          293.619718
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000092.jpg",
+  "imageData": null,
+  "imageHeight": 427,
+  "imageWidth": 640
+}

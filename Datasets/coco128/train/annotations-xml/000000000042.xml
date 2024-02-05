@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<annotation>
+		<folder>images</folder>
+		<filename>000000000042.jpg</filename>
+		<size>
+			<width>640</width>
+			<height>478</height>
+			<depth>3</depth>
+		</size>
+		<object>
+			<name>dog</name>
+			<pose>Unspecified</pose>
+			<truncated>0</truncated>
+			<difficult>0</difficult>
+			<bndbox>
+				<xmin>214.14976</xmin>
+				<ymin>41.29011799999999</ymin>
+				<xmax>562.4096</xmax>
+				<ymax>285.070118</ymax>
+			</bndbox>
+		</object>
+	</annotation>

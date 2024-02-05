@@ -1,0 +1,44 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "elephant",
+      "text": "",
+      "points": [
+        [
+          156.410218,
+          169.33024
+        ],
+        [
+          591.000295,
+          632.8304
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "elephant",
+      "text": "",
+      "points": [
+        [
+          1.659823,
+          13.29984
+        ],
+        [
+          388.989994,
+          605.08992
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000263.jpg",
+  "imageData": null,
+  "imageHeight": 640,
+  "imageWidth": 591
+}

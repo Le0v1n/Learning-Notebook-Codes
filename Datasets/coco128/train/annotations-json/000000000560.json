@@ -1,0 +1,95 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "potted plant",
+      "text": "",
+      "points": [
+        [
+          54.39983,
+          126.179976
+        ],
+        [
+          109.71989,
+          188.520072
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "sink",
+      "text": "",
+      "points": [
+        [
+          79.87992,
+          194.839788
+        ],
+        [
+          194.01972,
+          260.45994
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "cell phone",
+      "text": "",
+      "points": [
+        [
+          160.879917,
+          188.120104
+        ],
+        [
+          171.379923,
+          193.960088
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "sink",
+      "text": "",
+      "points": [
+        [
+          219.439849,
+          152.45997
+        ],
+        [
+          249.199871,
+          156.839982
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "toilet",
+      "text": "",
+      "points": [
+        [
+          303.989942,
+          143.980044
+        ],
+        [
+          343.909938,
+          180.539892
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000560.jpg",
+  "imageData": null,
+  "imageHeight": 312,
+  "imageWidth": 460
+}

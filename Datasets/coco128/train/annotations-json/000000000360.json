@@ -1,0 +1,61 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          261.02,
+          138.759881
+        ],
+        [
+          313.12,
+          175.709869
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          97.99,
+          273.390131
+        ],
+        [
+          124.59,
+          294.800119
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "snowboard",
+      "text": "",
+      "points": [
+        [
+          240.45,
+          155.01
+        ],
+        [
+          292.64,
+          196.5
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000360.jpg",
+  "imageData": null,
+  "imageHeight": 375,
+  "imageWidth": 500
+}

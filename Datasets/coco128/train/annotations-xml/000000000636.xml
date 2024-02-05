@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<annotation>
+		<folder>images</folder>
+		<filename>000000000636.jpg</filename>
+		<size>
+			<width>480</width>
+			<height>640</height>
+			<depth>3</depth>
+		</size>
+		<object>
+			<name>toilet</name>
+			<pose>Unspecified</pose>
+			<truncated>0</truncated>
+			<difficult>0</difficult>
+			<bndbox>
+				<xmin>80.71991999999997</xmin>
+				<ymin>89.37023999999997</ymin>
+				<xmax>345.95016</xmax>
+				<ymax>625.5904</ymax>
+			</bndbox>
+		</object>
+	</annotation>

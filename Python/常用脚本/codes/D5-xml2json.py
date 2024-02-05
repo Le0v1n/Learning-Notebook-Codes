@@ -1,33 +1,30 @@
 """
-+ 脚本说明：用于将xml格式标注文件转换为json格式
-+ 用途：labelImg -> labelme
-+ 要求：要有对应的图片文件，这样读取到的尺寸信息是最准确的。
+用于将xml格式标注文件转换为json格式
 """
 import os
 import tqdm
 from lxml import etree
 from PIL import Image
 import json
+from prettytable import PrettyTable
+import sys
+sys.path.append('/mnt/f/Projects/本地代码/Learning-Notebook-Codes')
+from Datasets.coco128.classes import coco128_class
 
 
 """============================ 需要修改的地方 ==================================="""
-IMAGE_PATH = "EXAMPLE_FOLDER/images"  # 原图文件夹路径
-XML_PATH = "EXAMPLE_FOLDER/annotations-xml"  # 保存xml文件夹路径
-JSON_SAVE_PATH = "EXAMPLE_FOLDER/annotations-json"
+dataset_path = 'Datasets/coco128/train'  # 🧡数据集路径
+classes_dict = coco128_class  # 🧡类别字典
 
-IMAGE_TYPE = '.jpg'
+image_type = '.jpg'
 OVERRIDE = True  # 是否覆盖已存在的json文件
-
-classes_dict = {
-    '0': "cat",
-    '1': 'dog'
-}
 """==============================================================================="""
+IMAGE_PATH = os.path.join(dataset_path, "images")
+XML_PATH = os.path.join(dataset_path, "annotations-xml")
+JSON_SAVE_PATH = os.path.join(dataset_path, "annotations-json")
 
 assert os.path.exists(IMAGE_PATH), f"图像文件夹[{IMAGE_PATH}]不存在!"
 assert os.path.exists(XML_PATH), f"xml文件夹[{XML_PATH}]不存在!"
-
-os.makedirs(JSON_SAVE_PATH) if not os.path.exists(JSON_SAVE_PATH) else None
 
 xml_file_list = [file for file in os.listdir(XML_PATH) if file.endswith(".xml")]
 
@@ -40,6 +37,23 @@ WARNING_NUM = 0  # 没有对应图片
 WARNING_LIST = []
 "---------------------------"
 
+
+table = PrettyTable(["Class Index", "Class Name"])
+for class_name, count in classes_dict.items():
+    table.add_row([class_name, count])
+
+print(f"\n图片文件夹路径: \033[1;32m{IMAGE_PATH}\033[0m"
+      f"\nXML文件保存路径: \033[1;32m{XML_PATH}\033[0m"
+      f"\nJSON文件夹路径: \033[1;32m{JSON_SAVE_PATH}\033[0m"
+      f"\n是否覆盖已存在的json文件: \033[1;32m{OVERRIDE}\033[0m"
+      f"\n{table}"
+      f"\n\n请输入 \033[1;31m'yes'\033[0m 继续，输入其他停止")
+
+_INPUT = input()
+if _INPUT != "yes":
+    exit()
+
+os.makedirs(JSON_SAVE_PATH) if not os.path.exists(JSON_SAVE_PATH) else None
 
 def parse_xml_to_dict(xml):
     """
@@ -90,7 +104,7 @@ for i, xml_name in enumerate(xml_file_list):
     data = parse_xml_to_dict(xml)["annotation"]
     
     # 构建图片路径
-    img_full_path = os.path.join(IMAGE_PATH, xml_pre) + IMAGE_TYPE
+    img_full_path = os.path.join(IMAGE_PATH, xml_pre) + image_type
     
     # 图片存在 -> 获取图片的宽度和高度(确保这两个值是正确的)
     if os.path.exists(img_full_path):
@@ -108,7 +122,7 @@ for i, xml_name in enumerate(xml_file_list):
         "version": "0.2.2",
         "flags": {},
         "shapes": [],
-        "imagePath": f"{xml_pre}{IMAGE_TYPE}",
+        "imagePath": f"{xml_pre}{image_type}",
         "imageData": None,
         "imageHeight": img_height,
         "imageWidth": img_width,
@@ -158,7 +172,7 @@ print(f"👌 xml2json已完成, 详情如下:"
       f"\n\t成功转换文件数量/总文件数量 = \033[1;32m{SUCCEED_NUM}\033[0m/{TOTAL_NUM}"
       f"\n\t跳过转换文件数量/总文件数量 = \033[1;31m{SKIP_NUM}\033[0m/{TOTAL_NUM}"
       f"\n\t所有样本的 object 数量/总文件数量 = \033[1;32m{OBJECT_NUM}\033[0m/{TOTAL_NUM}"
-      f"\n\t平均每个json文件中object的数量为: {int(OBJECT_NUM / SUCCEED_NUM)}"
+      f"\n\t平均每个json文件中object的数量为: {OBJECT_NUM / SUCCEED_NUM:.2f}"
       f"\n\t ⚠️没有对应图片的数量为: {WARNING_NUM}"
       f"\n\n\t结果保存路径为: \033[1;31m{JSON_SAVE_PATH}\033[0m")
 

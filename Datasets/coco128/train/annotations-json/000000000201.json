@@ -1,0 +1,146 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "snowboard",
+      "text": "",
+      "points": [
+        [
+          333.73984,
+          31.740052
+        ],
+        [
+          488.58976,
+          394.33994
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "snowboard",
+      "text": "",
+      "points": [
+        [
+          284.37984,
+          17.329934
+        ],
+        [
+          430.87008,
+          379.260002
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "snowboard",
+      "text": "",
+      "points": [
+        [
+          266.08,
+          48.800132
+        ],
+        [
+          361.18016,
+          343.240164
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "snowboard",
+      "text": "",
+      "points": [
+        [
+          242.61024,
+          53.190128
+        ],
+        [
+          328.88032,
+          346.180096
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "snowboard",
+      "text": "",
+      "points": [
+        [
+          211.54016,
+          46.950102
+        ],
+        [
+          294.29024,
+          333.820098
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          615.24992,
+          195.43015
+        ],
+        [
+          627.72992,
+          212.00017
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          585.900256,
+          194.449987
+        ],
+        [
+          597.640224,
+          212.370005
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "snowboard",
+      "text": "",
+      "points": [
+        [
+          268.40032,
+          63.33009
+        ],
+        [
+          362.66016,
+          358.540094
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000201.jpg",
+  "imageData": null,
+  "imageHeight": 428,
+  "imageWidth": 640
+}

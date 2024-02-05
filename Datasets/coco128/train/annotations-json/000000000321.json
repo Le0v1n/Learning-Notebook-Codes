@@ -1,0 +1,61 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "hot dog",
+      "text": "",
+      "points": [
+        [
+          363.6704,
+          199.72008
+        ],
+        [
+          612.14016,
+          440.28024
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "hot dog",
+      "text": "",
+      "points": [
+        [
+          370.45024,
+          62.11992
+        ],
+        [
+          605.36032,
+          304.93992
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "sandwich",
+      "text": "",
+      "points": [
+        [
+          78.54976,
+          43.64016
+        ],
+        [
+          294.22976,
+          422.65008
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000321.jpg",
+  "imageData": null,
+  "imageHeight": 480,
+  "imageWidth": 640
+}

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<annotation>
+		<folder>images</folder>
+		<filename>000000000595.jpg</filename>
+		<size>
+			<width>640</width>
+			<height>480</height>
+			<depth>3</depth>
+		</size>
+		<object>
+			<name>tv</name>
+			<pose>Unspecified</pose>
+			<truncated>0</truncated>
+			<difficult>0</difficult>
+			<bndbox>
+				<xmin>368.07008</xmin>
+				<ymin>296.98967999999996</ymin>
+				<xmax>509.06016000000005</xmax>
+				<ymax>408.90984</ymax>
+			</bndbox>
+		</object>
+	</annotation>

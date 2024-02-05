@@ -1,0 +1,78 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "teddy bear",
+      "text": "",
+      "points": [
+        [
+          134.44,
+          11.270035
+        ],
+        [
+          395.63,
+          308.870121
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "teddy bear",
+      "text": "",
+      "points": [
+        [
+          287.79,
+          0.770136
+        ],
+        [
+          487.36,
+          156.220021
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "teddy bear",
+      "text": "",
+      "points": [
+        [
+          0.0,
+          4.88014
+        ],
+        [
+          91.87,
+          186.170052
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "teddy bear",
+      "text": "",
+      "points": [
+        [
+          79.47,
+          0.910048
+        ],
+        [
+          292.73,
+          120.920195
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000491.jpg",
+  "imageData": null,
+  "imageHeight": 313,
+  "imageWidth": 500
+}

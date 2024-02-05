@@ -1,0 +1,350 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          172.319872,
+          366.289947
+        ],
+        [
+          182.229888,
+          375.839953
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          611.08992,
+          309.650197
+        ],
+        [
+          620.68992,
+          320.560202
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          162.40016,
+          394.280107
+        ],
+        [
+          177.88016,
+          404.390093
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          218.02016,
+          329.760178
+        ],
+        [
+          228.34016,
+          339.420173
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "airplane",
+      "text": "",
+      "points": [
+        [
+          156.37984,
+          187.79985
+        ],
+        [
+          456.65952,
+          270.3
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "truck",
+      "text": "",
+      "points": [
+        [
+          87.57024,
+          359.970197
+        ],
+        [
+          109.41024,
+          384.820202
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "traffic light",
+      "text": "",
+      "points": [
+        [
+          253.669722,
+          146.629849
+        ],
+        [
+          255.479718,
+          148.559851
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          71.74016,
+          404.250034
+        ],
+        [
+          85.18016,
+          413.750016
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          94.32,
+          391.490025
+        ],
+        [
+          106.96,
+          402.370025
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          131.93008,
+          372.340056
+        ],
+        [
+          140.13008,
+          381.530044
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          121.599904,
+          364.679984
+        ],
+        [
+          131.619936,
+          374.179966
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          194.58032,
+          368.1299
+        ],
+        [
+          203.10032,
+          377.9899
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          311.550282,
+          199.510172
+        ],
+        [
+          316.260278,
+          205.660178
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          52.359968,
+          191.960005
+        ],
+        [
+          59.759968,
+          198.019995
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          218.06992,
+          348.959829
+        ],
+        [
+          229.38992,
+          361.749821
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "bus",
+      "text": "",
+      "points": [
+        [
+          416.869824,
+          203.869971
+        ],
+        [
+          440.289856,
+          214.199979
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "truck",
+      "text": "",
+      "points": [
+        [
+          329.479776,
+          192.459848
+        ],
+        [
+          340.579744,
+          206.089853
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          291.440202,
+          182.330206
+        ],
+        [
+          297.110198,
+          186.760194
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "bus",
+      "text": "",
+      "points": [
+        [
+          452.829824,
+          385.579996
+        ],
+        [
+          466.249856,
+          405.430004
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "truck",
+      "text": "",
+      "points": [
+        [
+          93.440096,
+          392.250031
+        ],
+        [
+          105.500064,
+          402.800019
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000540.jpg",
+  "imageData": null,
+  "imageHeight": 425,
+  "imageWidth": 640
+}

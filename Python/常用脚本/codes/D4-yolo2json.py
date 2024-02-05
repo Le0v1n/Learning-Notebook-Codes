@@ -7,26 +7,32 @@ import os
 import cv2
 import tqdm
 import json
+import sys
+sys.path.append('/mnt/f/Projects/本地代码/Learning-Notebook-Codes')
+from Datasets.coco128.classes import coco128_class
 
 
 """============================ 需要修改的地方 ==================================="""
-IMAGE_PATH = "EXAMPLE_FOLDER/images"  # 原图文件夹路径
-TXT_PATH = "EXAMPLE_FOLDER/labels"  # 原txt标签文件夹路径
-JSON_PATH = "EXAMPLE_FOLDER/annotations-json"  # 保存json文件夹路径
+dataset_path = 'Datasets/coco128/train'  # 🧡数据集路径
+classes_dict = coco128_class  # 🧡类别字典
 
-DECIMAL_PLACES = 6  # 标签保留几位小数, 默认为6
-IMAGE_TYPE = '.jpg'  # 图片类型
+image_folder_name = 'images'  # 图片文件夹名称
+txt_folder_name = 'labels'  # txt文件夹名称
+json_save_folder_path = 'annotations-json'  # json文件夹名称
+
+image_type = '.jpg'  # 图片类型
 create_empty_json_for_neg = True  # 是否为负样本生成对应的空的json文件
+decimal_places = 6  # 标签保留几位小数, 默认为6
 
-classes_dict = {
-    '0': "cat",
-    '1': 'dog'
-}
-
-# Json 文件基础信息
+# 生成的 Json 文件基础信息
 __version = "0.2.2"
 __imageData = None
 """==============================================================================="""
+
+# 组合路径
+IMAGE_PATH = os.path.join(dataset_path, image_folder_name)
+TXT_PATH = os.path.join(dataset_path, txt_folder_name)
+JSON_PATH = os.path.join(dataset_path, json_save_folder_path)
 
 txt_file_list = [file for file in os.listdir(TXT_PATH) if file.endswith("txt") and file != 'classes.txt']
 
@@ -43,7 +49,12 @@ _str = (f"💡 图片路径: \033[1;33m{IMAGE_PATH}\033[0m"
         f"\n💡 TXT文件路径为: \033[1;33m{TXT_PATH}\033[0m"
         f"\n💡 JSON文件路径为: \033[1;33m{JSON_PATH}\033[0m"
         f"\n 所有TXT文件数量: \033[1;33m{TOTAL_NUM}\033[0m"
-        f"\n\n请输入 \033[1;31m'yes'\033[0m 继续，输入其他停止")
+        f"\n 类别字典为:")
+
+for idx, value in classes_dict.items():
+    _str += f"\n\t[{idx}] {value}"
+
+_str += f"\n\n请输入 \033[1;31m'yes'\033[0m 继续，输入其他停止"
 print(_str)
 
 _INPUT = input()
@@ -60,7 +71,7 @@ for i, txt_name in enumerate(txt_file_list):
 
     # 完整路径
     txt_path = os.path.join(TXT_PATH, txt_name)
-    image_path = os.path.join(IMAGE_PATH, txt_pre) + IMAGE_TYPE
+    image_path = os.path.join(IMAGE_PATH, txt_pre) + image_type
     json_save_path = os.path.join(JSON_PATH, txt_pre) + '.json'
         
     # 打开 txt 文件
@@ -84,11 +95,10 @@ for i, txt_name in enumerate(txt_file_list):
     height, width, channel = img.shape  # 获取图片尺寸
     
     # 创建 Json 文件的内容
-    _relative_image_path = f'../{os.path.join(os.path.basename(IMAGE_PATH), os.path.basename(image_path))}'
     json_data = {"version": __version,
                  "flags": {},
                  "shapes": [],
-                 "imagePath": _relative_image_path,  # 图片路径
+                 "imagePath": f'../{os.path.join(os.path.basename(IMAGE_PATH), os.path.basename(image_path))}',  # 图片路径
                  "imageData": __imageData,
                  "imageHeight": height,
                  "imageWidth": width
@@ -106,10 +116,10 @@ for i, txt_name in enumerate(txt_file_list):
         x_center, y_center = x_center * width, y_center * height  # 还原中心点坐标
         w, h = w * width, h * height  # 还原宽度和高度
         
-        xmin = round(x_center - w / 2, DECIMAL_PLACES)
-        ymin = round(y_center - h / 2, DECIMAL_PLACES)
-        xmax = round(x_center + w / 2, DECIMAL_PLACES)
-        ymax = round(y_center + h / 2, DECIMAL_PLACES)
+        xmin = round(x_center - w / 2, decimal_places)
+        ymin = round(y_center - h / 2, decimal_places)
+        xmax = round(x_center + w / 2, decimal_places)
+        ymax = round(y_center + h / 2, decimal_places)
         
         # 添加到 shapes 列表中
         json_data["shapes"].append({

@@ -1,0 +1,129 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "refrigerator",
+      "text": "",
+      "points": [
+        [
+          16.66016,
+          102.669854
+        ],
+        [
+          139.72,
+          348.78997
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "clock",
+      "text": "",
+      "points": [
+        [
+          315.62016,
+          19.600095
+        ],
+        [
+          384.12,
+          88.099953
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "bowl",
+      "text": "",
+      "points": [
+        [
+          157.459712,
+          184.110114
+        ],
+        [
+          203.049728,
+          203.640132
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "oven",
+      "text": "",
+      "points": [
+        [
+          260.10016,
+          175.12026
+        ],
+        [
+          379.84992,
+          533.080236
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "sink",
+      "text": "",
+      "points": [
+        [
+          496.76992,
+          203.179755
+        ],
+        [
+          625.90016,
+          256.699731
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "potted plant",
+      "text": "",
+      "points": [
+        [
+          560.65024,
+          45.269865
+        ],
+        [
+          604.65024,
+          104.059665
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "vase",
+      "text": "",
+      "points": [
+        [
+          218.38,
+          54.98975
+        ],
+        [
+          252.02,
+          102.14977
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000138.jpg",
+  "imageData": null,
+  "imageHeight": 573,
+  "imageWidth": 640
+}

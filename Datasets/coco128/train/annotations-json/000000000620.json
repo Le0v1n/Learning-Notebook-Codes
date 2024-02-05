@@ -1,0 +1,44 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "refrigerator",
+      "text": "",
+      "points": [
+        [
+          243.05976,
+          2.88032
+        ],
+        [
+          479.99976,
+          585.35008
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "pizza",
+      "text": "",
+      "points": [
+        [
+          96.63,
+          252.93952
+        ],
+        [
+          318.23016,
+          398.17984
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000620.jpg",
+  "imageData": null,
+  "imageHeight": 640,
+  "imageWidth": 480
+}

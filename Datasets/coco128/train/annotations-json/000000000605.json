@@ -1,0 +1,78 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "dining table",
+      "text": "",
+      "points": [
+        [
+          0.0,
+          2.35008
+        ],
+        [
+          640.0,
+          480.0
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "cup",
+      "text": "",
+      "points": [
+        [
+          290.80992,
+          123.77976
+        ],
+        [
+          515.67968,
+          298.91976
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "spoon",
+      "text": "",
+      "points": [
+        [
+          260.529888,
+          203.58024
+        ],
+        [
+          319.459872,
+          301.61016
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "cup",
+      "text": "",
+      "points": [
+        [
+          409.8896,
+          30.19992
+        ],
+        [
+          552.26976,
+          172.57992
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000605.jpg",
+  "imageData": null,
+  "imageHeight": 480,
+  "imageWidth": 640
+}

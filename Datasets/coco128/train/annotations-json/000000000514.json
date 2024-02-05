@@ -1,0 +1,27 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "bed",
+      "text": "",
+      "points": [
+        [
+          37.39014,
+          225.88992
+        ],
+        [
+          360.00018,
+          624.27968
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000514.jpg",
+  "imageData": null,
+  "imageHeight": 640,
+  "imageWidth": 360
+}

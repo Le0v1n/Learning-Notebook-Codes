@@ -1,0 +1,61 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          507.709792,
+          363.06024
+        ],
+        [
+          561.179808,
+          444.34008
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "skis",
+      "text": "",
+      "points": [
+        [
+          492.71008,
+          432.709848
+        ],
+        [
+          570.44,
+          457.769832
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "backpack",
+      "text": "",
+      "points": [
+        [
+          517.710272,
+          365.610048
+        ],
+        [
+          534.900288,
+          388.660032
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000382.jpg",
+  "imageData": null,
+  "imageHeight": 480,
+  "imageWidth": 640
+}

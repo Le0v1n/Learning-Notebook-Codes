@@ -1,0 +1,44 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "motorcycle",
+      "text": "",
+      "points": [
+        [
+          12.999803,
+          22.7504
+        ],
+        [
+          548.979707,
+          632.42016
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "motorcycle",
+      "text": "",
+      "points": [
+        [
+          1.65997,
+          3.32
+        ],
+        [
+          270.25984,
+          275.22976
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000073.jpg",
+  "imageData": null,
+  "imageHeight": 640,
+  "imageWidth": 565
+}

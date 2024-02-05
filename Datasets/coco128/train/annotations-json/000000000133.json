@@ -1,0 +1,44 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "bed",
+      "text": "",
+      "points": [
+        [
+          13.99008,
+          2.86992
+        ],
+        [
+          640.00032,
+          421.52016
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "teddy bear",
+      "text": "",
+      "points": [
+        [
+          525.340192,
+          20.929992
+        ],
+        [
+          573.290208,
+          49.649976
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000133.jpg",
+  "imageData": null,
+  "imageHeight": 480,
+  "imageWidth": 640
+}

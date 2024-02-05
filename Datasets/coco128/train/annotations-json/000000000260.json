@@ -1,0 +1,129 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "bus",
+      "text": "",
+      "points": [
+        [
+          2.26,
+          93.770136
+        ],
+        [
+          68.4,
+          251.630118
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          261.0,
+          139.880146
+        ],
+        [
+          312.75,
+          309.380144
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          17.29,
+          142.160098
+        ],
+        [
+          40.96,
+          170.010086
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          238.43,
+          175.250041
+        ],
+        [
+          271.58,
+          190.980029
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "suitcase",
+      "text": "",
+      "points": [
+        [
+          332.28,
+          232.160108
+        ],
+        [
+          375.73,
+          293.879993
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "suitcase",
+      "text": "",
+      "points": [
+        [
+          373.94,
+          222.989954
+        ],
+        [
+          402.29,
+          292.709831
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "suitcase",
+      "text": "",
+      "points": [
+        [
+          334.72,
+          205.569891
+        ],
+        [
+          395.5,
+          245.529891
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000260.jpg",
+  "imageData": null,
+  "imageHeight": 333,
+  "imageWidth": 500
+}

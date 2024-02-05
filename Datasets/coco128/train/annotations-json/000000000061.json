@@ -1,0 +1,95 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          261.20032,
+          205.92014
+        ],
+        [
+          309.28032,
+          263.1601
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          393.390048,
+          210.340102
+        ],
+        [
+          425.920032,
+          250.08009
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "elephant",
+      "text": "",
+      "points": [
+        [
+          370.11008,
+          248.899764
+        ],
+        [
+          453.2,
+          296.539788
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "elephant",
+      "text": "",
+      "points": [
+        [
+          223.24992,
+          250.1
+        ],
+        [
+          365.16992,
+          327.810096
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          261.540128,
+          196.57006
+        ],
+        [
+          295.750112,
+          250.75026
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000061.jpg",
+  "imageData": null,
+  "imageHeight": 488,
+  "imageWidth": 640
+}

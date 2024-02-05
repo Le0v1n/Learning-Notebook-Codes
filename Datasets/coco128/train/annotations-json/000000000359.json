@@ -1,0 +1,78 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "traffic light",
+      "text": "",
+      "points": [
+        [
+          153.87,
+          100.439794
+        ],
+        [
+          219.24,
+          134.68991
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "traffic light",
+      "text": "",
+      "points": [
+        [
+          243.76,
+          99.939985
+        ],
+        [
+          294.76,
+          122.339991
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "traffic light",
+      "text": "",
+      "points": [
+        [
+          278.48,
+          293.480115
+        ],
+        [
+          282.94,
+          297.590109
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          0.0,
+          290.110066
+        ],
+        [
+          123.72,
+          327.690142
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000359.jpg",
+  "imageData": null,
+  "imageHeight": 332,
+  "imageWidth": 500
+}

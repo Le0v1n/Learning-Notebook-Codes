@@ -1,0 +1,44 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          3.369794,
+          42.7
+        ],
+        [
+          332.579921,
+          471.91
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "baseball glove",
+      "text": "",
+      "points": [
+        [
+          9.859964,
+          234.5
+        ],
+        [
+          98.269798,
+          305.81
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000474.jpg",
+  "imageData": null,
+  "imageHeight": 500,
+  "imageWidth": 333
+}

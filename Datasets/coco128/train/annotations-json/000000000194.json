@@ -1,0 +1,44 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "knife",
+      "text": "",
+      "points": [
+        [
+          504.96032,
+          415.15008
+        ],
+        [
+          606.37024,
+          480.0
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "pizza",
+      "text": "",
+      "points": [
+        [
+          1.08032,
+          40.98984
+        ],
+        [
+          640.0,
+          473.52984
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000194.jpg",
+  "imageData": null,
+  "imageHeight": 480,
+  "imageWidth": 640
+}

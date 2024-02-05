@@ -1,0 +1,61 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          254.04992,
+          130.26984
+        ],
+        [
+          405.40992,
+          428.64984
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "bench",
+      "text": "",
+      "points": [
+        [
+          42.06976,
+          226.52016
+        ],
+        [
+          609.44,
+          428.22
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "traffic light",
+      "text": "",
+      "points": [
+        [
+          15.1,
+          9.710016
+        ],
+        [
+          51.78,
+          66.879936
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000510.jpg",
+  "imageData": null,
+  "imageHeight": 480,
+  "imageWidth": 640
+}

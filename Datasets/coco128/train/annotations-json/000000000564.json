@@ -1,0 +1,282 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          230.51002,
+          335.29984
+        ],
+        [
+          377.98982,
+          614.49984
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          430.78022,
+          203.67968
+        ],
+        [
+          520.00026,
+          297.57984
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "tennis racket",
+      "text": "",
+      "points": [
+        [
+          296.88984,
+          432.809856
+        ],
+        [
+          402.36976,
+          473.629824
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "chair",
+      "text": "",
+      "points": [
+        [
+          62.900006,
+          234.390112
+        ],
+        [
+          106.359994,
+          256.660128
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "chair",
+      "text": "",
+      "points": [
+        [
+          108.710212,
+          232.0
+        ],
+        [
+          154.290188,
+          257.44
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "chair",
+      "text": "",
+      "points": [
+        [
+          202.820228,
+          230.330176
+        ],
+        [
+          250.320252,
+          256.350144
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "chair",
+      "text": "",
+      "points": [
+        [
+          245.15998,
+          307.81008
+        ],
+        [
+          301.71986,
+          336.09008
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "chair",
+      "text": "",
+      "points": [
+        [
+          135.729932,
+          258.530048
+        ],
+        [
+          185.859908,
+          288.780032
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "chair",
+      "text": "",
+      "points": [
+        [
+          88.78987,
+          256.369888
+        ],
+        [
+          139.24989,
+          282.179872
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "chair",
+      "text": "",
+      "points": [
+        [
+          39.440232,
+          260.52992
+        ],
+        [
+          86.360248,
+          284.20992
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "chair",
+      "text": "",
+      "points": [
+        [
+          13.519974,
+          235.62032
+        ],
+        [
+          61.259978,
+          258.06032
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "chair",
+      "text": "",
+      "points": [
+        [
+          412.26016,
+          304.209696
+        ],
+        [
+          473.76992,
+          350.749664
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "chair",
+      "text": "",
+      "points": [
+        [
+          325.819988,
+          279.269888
+        ],
+        [
+          377.350012,
+          300.879872
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "chair",
+      "text": "",
+      "points": [
+        [
+          303.389918,
+          307.559872
+        ],
+        [
+          354.769922,
+          334.829888
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "chair",
+      "text": "",
+      "points": [
+        [
+          233.05984,
+          228.6
+        ],
+        [
+          299.52,
+          306.00992
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "chair",
+      "text": "",
+      "points": [
+        [
+          152.800154,
+          232.509888
+        ],
+        [
+          201.510166,
+          274.039872
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000564.jpg",
+  "imageData": null,
+  "imageHeight": 640,
+  "imageWidth": 520
+}

@@ -1,0 +1,95 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "potted plant",
+      "text": "",
+      "points": [
+        [
+          528.37024,
+          5.480255
+        ],
+        [
+          639.70016,
+          242.740091
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "cat",
+      "text": "",
+      "points": [
+        [
+          0.92,
+          37.129999
+        ],
+        [
+          413.41984,
+          402.880143
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "couch",
+      "text": "",
+      "points": [
+        [
+          0.00032,
+          1.829872
+        ],
+        [
+          619.65024,
+          402.729756
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "remote",
+      "text": "",
+      "points": [
+        [
+          439.00992,
+          198.190075
+        ],
+        [
+          618.27008,
+          285.99015
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "remote",
+      "text": "",
+      "points": [
+        [
+          389.57984,
+          167.289821
+        ],
+        [
+          587.57984,
+          227.789963
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000599.jpg",
+  "imageData": null,
+  "imageHeight": 407,
+  "imageWidth": 640
+}

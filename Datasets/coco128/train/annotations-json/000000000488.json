@@ -1,0 +1,180 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "sports ball",
+      "text": "",
+      "points": [
+        [
+          431.120288,
+          252.620102
+        ],
+        [
+          439.410272,
+          260.200122
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          180.76032,
+          210.29988
+        ],
+        [
+          285.39008,
+          341.329884
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          112.24032,
+          245.319816
+        ],
+        [
+          239.24,
+          356.079864
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "baseball bat",
+      "text": "",
+      "points": [
+        [
+          214.909888,
+          225.800148
+        ],
+        [
+          278.359872,
+          271.730116
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "baseball glove",
+      "text": "",
+      "points": [
+        [
+          218.970112,
+          274.810032
+        ],
+        [
+          243.120128,
+          295.30004
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "baseball glove",
+      "text": "",
+      "points": [
+        [
+          562.509984,
+          253.320087
+        ],
+        [
+          573.010016,
+          261.310085
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          209.300128,
+          197.889881
+        ],
+        [
+          234.710112,
+          268.639847
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          546.320288,
+          216.449968
+        ],
+        [
+          590.450272,
+          265.709948
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          34.67008,
+          208.019987
+        ],
+        [
+          125.90976,
+          360.380013
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          224.36024,
+          181.860169
+        ],
+        [
+          228.78024,
+          189.870183
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000488.jpg",
+  "imageData": null,
+  "imageHeight": 406,
+  "imageWidth": 640
+}

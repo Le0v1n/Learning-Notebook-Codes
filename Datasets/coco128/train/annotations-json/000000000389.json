@@ -1,0 +1,248 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "tie",
+      "text": "",
+      "points": [
+        [
+          306.65024,
+          300.72984
+        ],
+        [
+          372.08,
+          479.99976
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          0.00032,
+          256.72008
+        ],
+        [
+          141.30016,
+          478.92024
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          467.34016,
+          292.19016
+        ],
+        [
+          565.05024,
+          480.00024
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          91.30016,
+          249.63024
+        ],
+        [
+          183.0,
+          420.25008
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          566.94016,
+          270.66984
+        ],
+        [
+          640.0,
+          395.55
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          41.339968,
+          172.709928
+        ],
+        [
+          55.409984,
+          217.029912
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          170.840192,
+          285.240048
+        ],
+        [
+          218.830208,
+          332.590032
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          429.700128,
+          257.19
+        ],
+        [
+          473.030112,
+          305.37
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          394.45984,
+          242.340168
+        ],
+        [
+          427.01984,
+          269.020152
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          562.50016,
+          371.80992
+        ],
+        [
+          639.73984,
+          479.83968
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "backpack",
+      "text": "",
+      "points": [
+        [
+          385.90016,
+          266.44992
+        ],
+        [
+          463.0304,
+          480.0
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          140.9904,
+          84.04968
+        ],
+        [
+          509.06016,
+          473.64984
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          517.460288,
+          269.93988
+        ],
+        [
+          525.870272,
+          279.56988
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          516.91008,
+          269.97
+        ],
+        [
+          590.70976,
+          415.95
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000389.jpg",
+  "imageData": null,
+  "imageHeight": 480,
+  "imageWidth": 640
+}

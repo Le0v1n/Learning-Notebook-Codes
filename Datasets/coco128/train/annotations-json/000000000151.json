@@ -1,0 +1,61 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          434.610072,
+          61.50976
+        ],
+        [
+          465.170088,
+          114.78976
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "train",
+      "text": "",
+      "points": [
+        [
+          210.76008,
+          4.60032
+        ],
+        [
+          480.00024,
+          640.0
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "stop sign",
+      "text": "",
+      "points": [
+        [
+          212.610072,
+          329.170272
+        ],
+        [
+          250.730088,
+          364.560288
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000151.jpg",
+  "imageData": null,
+  "imageHeight": 640,
+  "imageWidth": 480
+}

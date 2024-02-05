@@ -1,0 +1,95 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "boat",
+      "text": "",
+      "points": [
+        [
+          54.270057,
+          359.69984
+        ],
+        [
+          368.459967,
+          446.16
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "boat",
+      "text": "",
+      "points": [
+        [
+          192.140058,
+          359.96016
+        ],
+        [
+          391.30017,
+          405.92016
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "boat",
+      "text": "",
+      "points": [
+        [
+          252.28998,
+          354.080128
+        ],
+        [
+          409.369812,
+          383.690112
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "boat",
+      "text": "",
+      "points": [
+        [
+          263.290152,
+          357.89008
+        ],
+        [
+          349.06014,
+          374.17008
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "boat",
+      "text": "",
+      "points": [
+        [
+          272.710034,
+          355.560096
+        ],
+        [
+          297.410026,
+          366.580064
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000404.jpg",
+  "imageData": null,
+  "imageHeight": 640,
+  "imageWidth": 426
+}

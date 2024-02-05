@@ -1,0 +1,61 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          152.11008,
+          183.09984
+        ],
+        [
+          281.260032,
+          559.06976
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "motorcycle",
+      "text": "",
+      "points": [
+        [
+          130.139904,
+          346.51968
+        ],
+        [
+          424.400128,
+          635.15968
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "handbag",
+      "text": "",
+      "points": [
+        [
+          265.100032,
+          294.59008
+        ],
+        [
+          399.700224,
+          404.76992
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000086.jpg",
+  "imageData": null,
+  "imageHeight": 640,
+  "imageWidth": 512
+}

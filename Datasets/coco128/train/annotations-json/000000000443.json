@@ -1,0 +1,112 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "cat",
+      "text": "",
+      "points": [
+        [
+          198.61984,
+          53.28
+        ],
+        [
+          571.03008,
+          433.96992
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          117.57024,
+          1.07976
+        ],
+        [
+          637.48,
+          473.52984
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          488.62976,
+          2.16
+        ],
+        [
+          640.0,
+          305.25984
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "remote",
+      "text": "",
+      "points": [
+        [
+          500.59008,
+          194.87016
+        ],
+        [
+          640.0,
+          347.45016
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "couch",
+      "text": "",
+      "points": [
+        [
+          1.08032,
+          1.90008
+        ],
+        [
+          569.93024,
+          472.14024
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          2.36992,
+          152.68992
+        ],
+        [
+          145.77984,
+          464.4
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000443.jpg",
+  "imageData": null,
+  "imageHeight": 480,
+  "imageWidth": 640
+}

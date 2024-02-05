@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<annotation>
+		<folder>images</folder>
+		<filename>000000000472.jpg</filename>
+		<size>
+			<width>640</width>
+			<height>226</height>
+			<depth>3</depth>
+		</size>
+		<object>
+			<name>airplane</name>
+			<pose>Unspecified</pose>
+			<truncated>0</truncated>
+			<difficult>0</difficult>
+			<bndbox>
+				<xmin>394.86016</xmin>
+				<ymin>56.679896</ymin>
+				<xmax>482.0704</xmax>
+				<ymax>88.14</ymax>
+			</bndbox>
+		</object>
+	</annotation>

@@ -1,0 +1,78 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "bench",
+      "text": "",
+      "points": [
+        [
+          271.29,
+          72.62
+        ],
+        [
+          375.0,
+          311.0
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "teddy bear",
+      "text": "",
+      "points": [
+        [
+          1.119938,
+          31.46
+        ],
+        [
+          356.180062,
+          494.38
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "chair",
+      "text": "",
+      "points": [
+        [
+          273.620063,
+          62.92
+        ],
+        [
+          373.239937,
+          302.76
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          162.339938,
+          1.3
+        ],
+        [
+          374.030062,
+          492.21
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000623.jpg",
+  "imageData": null,
+  "imageHeight": 500,
+  "imageWidth": 375
+}

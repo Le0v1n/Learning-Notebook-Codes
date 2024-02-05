@@ -1,0 +1,61 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "laptop",
+      "text": "",
+      "points": [
+        [
+          249.16992,
+          50.69976
+        ],
+        [
+          624.54016,
+          327.90984
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "laptop",
+      "text": "",
+      "points": [
+        [
+          152.37984,
+          50.29008
+        ],
+        [
+          623.24,
+          362.67024
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "cell phone",
+      "text": "",
+      "points": [
+        [
+          332.50016,
+          111.88032
+        ],
+        [
+          542.50016,
+          205.63008
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000387.jpg",
+  "imageData": null,
+  "imageHeight": 480,
+  "imageWidth": 640
+}

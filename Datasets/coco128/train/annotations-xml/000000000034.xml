@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<annotation>
+		<folder>images</folder>
+		<filename>000000000034.jpg</filename>
+		<size>
+			<width>640</width>
+			<height>425</height>
+			<depth>3</depth>
+		</size>
+		<object>
+			<name>zebra</name>
+			<pose>Unspecified</pose>
+			<truncated>0</truncated>
+			<difficult>0</difficult>
+			<bndbox>
+				<xmin>0.960000000000008</xmin>
+				<ymin>20.060000000000002</ymin>
+				<xmax>442.19007999999997</xmax>
+				<ymax>399.21015</ymax>
+			</bndbox>
+		</object>
+	</annotation>

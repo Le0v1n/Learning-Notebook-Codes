@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<annotation>
+		<folder>images</folder>
+		<filename>000000000491.jpg</filename>
+		<size>
+			<width>500</width>
+			<height>313</height>
+			<depth>3</depth>
+		</size>
+		<object>
+			<name>teddy bear</name>
+			<pose>Unspecified</pose>
+			<truncated>0</truncated>
+			<difficult>0</difficult>
+			<bndbox>
+				<xmin>134.44000000000003</xmin>
+				<ymin>11.270034500000008</ymin>
+				<xmax>395.63</xmax>
+				<ymax>308.8701215</ymax>
+			</bndbox>
+		</object>
+		<object>
+			<name>teddy bear</name>
+			<pose>Unspecified</pose>
+			<truncated>0</truncated>
+			<difficult>0</difficult>
+			<bndbox>
+				<xmin>287.78999999999996</xmin>
+				<ymin>0.7701364999999925</ymin>
+				<xmax>487.36</xmax>
+				<ymax>156.22002149999997</ymax>
+			</bndbox>
+		</object>
+		<object>
+			<name>teddy bear</name>
+			<pose>Unspecified</pose>
+			<truncated>0</truncated>
+			<difficult>0</difficult>
+			<bndbox>
+				<xmin>0.0</xmin>
+				<ymin>4.880139500000013</ymin>
+				<xmax>91.86999999999999</xmax>
+				<ymax>186.1700525</ymax>
+			</bndbox>
+		</object>
+		<object>
+			<name>teddy bear</name>
+			<pose>Unspecified</pose>
+			<truncated>0</truncated>
+			<difficult>0</difficult>
+			<bndbox>
+				<xmin>79.47</xmin>
+				<ymin>0.9100475000000046</ymin>
+				<xmax>292.73</xmax>
+				<ymax>120.92019450000001</ymax>
+			</bndbox>
+		</object>
+	</annotation>

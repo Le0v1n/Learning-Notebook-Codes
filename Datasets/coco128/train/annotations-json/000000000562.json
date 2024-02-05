@@ -1,0 +1,78 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "toothbrush",
+      "text": "",
+      "points": [
+        [
+          139.720073,
+          159.84032
+        ],
+        [
+          218.32997,
+          278.53024
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "toothbrush",
+      "text": "",
+      "points": [
+        [
+          188.569805,
+          57.49024
+        ],
+        [
+          266.969894,
+          279.48
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "toothbrush",
+      "text": "",
+      "points": [
+        [
+          63.279954,
+          81.54016
+        ],
+        [
+          146.699784,
+          264.1904
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "cup",
+      "text": "",
+      "points": [
+        [
+          63.000139,
+          77.4496
+        ],
+        [
+          372.260092,
+          604.33984
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000562.jpg",
+  "imageData": null,
+  "imageHeight": 640,
+  "imageWidth": 423
+}

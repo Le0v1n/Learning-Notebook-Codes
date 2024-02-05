@@ -4,5 +4,6 @@
 *.pt
 *.pth
 *.onnx
+*.log
 
 __pycache__

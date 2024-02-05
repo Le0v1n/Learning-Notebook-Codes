@@ -1,0 +1,180 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "knife",
+      "text": "",
+      "points": [
+        [
+          502.599872,
+          105.46992
+        ],
+        [
+          528.429888,
+          237.85008
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "knife",
+      "text": "",
+      "points": [
+        [
+          476.62,
+          127.48992
+        ],
+        [
+          496.34,
+          233.59968
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "knife",
+      "text": "",
+      "points": [
+        [
+          528.800192,
+          99.29976
+        ],
+        [
+          555.270208,
+          237.18984
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "knife",
+      "text": "",
+      "points": [
+        [
+          555.669952,
+          100.89984
+        ],
+        [
+          576.539968,
+          239.88
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "knife",
+      "text": "",
+      "points": [
+        [
+          573.729728,
+          96.60024
+        ],
+        [
+          600.699712,
+          239.39016
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "oven",
+      "text": "",
+      "points": [
+        [
+          138.38016,
+          202.70016
+        ],
+        [
+          474.59008,
+          472.96992
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "microwave",
+      "text": "",
+      "points": [
+        [
+          -0.000128,
+          43.66992
+        ],
+        [
+          118.200192,
+          188.58
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          476.68032,
+          333.94992
+        ],
+        [
+          567.13024,
+          364.30992
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          497.16,
+          365.190168
+        ],
+        [
+          611.20992,
+          398.890152
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          513.13024,
+          402.70968
+        ],
+        [
+          640.0,
+          452.82984
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000089.jpg",
+  "imageData": null,
+  "imageHeight": 480,
+  "imageWidth": 640
+}

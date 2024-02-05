@@ -1,0 +1,146 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "refrigerator",
+      "text": "",
+      "points": [
+        [
+          391.66016,
+          175.899875
+        ],
+        [
+          454.70016,
+          285.759715
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "oven",
+      "text": "",
+      "points": [
+        [
+          392.04992,
+          274.919894
+        ],
+        [
+          640.0,
+          426.999786
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "bottle",
+      "text": "",
+      "points": [
+        [
+          623.899776,
+          233.269865
+        ],
+        [
+          639.919744,
+          271.439865
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "knife",
+      "text": "",
+      "points": [
+        [
+          223.64976,
+          192.280235
+        ],
+        [
+          230.56976,
+          244.240157
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "bottle",
+      "text": "",
+      "points": [
+        [
+          498.819968,
+          278.459937
+        ],
+        [
+          521.869952,
+          303.769935
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "bottle",
+      "text": "",
+      "points": [
+        [
+          83.05984,
+          219.169919
+        ],
+        [
+          88.17984,
+          248.2499
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "knife",
+      "text": "",
+      "points": [
+        [
+          235.42024,
+          200.870215
+        ],
+        [
+          239.32024,
+          217.400197
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "bowl",
+      "text": "",
+      "points": [
+        [
+          252.42976,
+          299.840254
+        ],
+        [
+          383.81984,
+          388.060162
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000486.jpg",
+  "imageData": null,
+  "imageHeight": 427,
+  "imageWidth": 640
+}

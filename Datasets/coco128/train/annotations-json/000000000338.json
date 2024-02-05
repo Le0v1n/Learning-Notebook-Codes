@@ -1,0 +1,112 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "refrigerator",
+      "text": "",
+      "points": [
+        [
+          217.5904,
+          149.73984
+        ],
+        [
+          313.37024,
+          327.0
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "clock",
+      "text": "",
+      "points": [
+        [
+          458.17008,
+          88.689937
+        ],
+        [
+          481.41008,
+          113.299925
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          326.99968,
+          142.070055
+        ],
+        [
+          417.45984,
+          325.770153
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          439.349792,
+          173.720058
+        ],
+        [
+          496.259808,
+          327.0
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "oven",
+      "text": "",
+      "points": [
+        [
+          24.25024,
+          243.959822
+        ],
+        [
+          163.13024,
+          322.589915
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "handbag",
+      "text": "",
+      "points": [
+        [
+          465.150176,
+          231.65007
+        ],
+        [
+          490.810144,
+          270.990132
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000338.jpg",
+  "imageData": null,
+  "imageHeight": 327,
+  "imageWidth": 640
+}

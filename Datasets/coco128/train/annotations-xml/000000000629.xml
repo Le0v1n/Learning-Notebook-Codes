@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<annotation>
+		<folder>images</folder>
+		<filename>000000000629.jpg</filename>
+		<size>
+			<width>640</width>
+			<height>427</height>
+			<depth>3</depth>
+		</size>
+		<object>
+			<name>motorcycle</name>
+			<pose>Unspecified</pose>
+			<truncated>0</truncated>
+			<difficult>0</difficult>
+			<bndbox>
+				<xmin>320.97024000000005</xmin>
+				<ymin>257.1199715</ymin>
+				<xmax>567.72992</xmax>
+				<ymax>414.22992450000004</ymax>
+			</bndbox>
+		</object>
+	</annotation>

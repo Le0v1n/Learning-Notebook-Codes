@@ -1,0 +1,27 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "bear",
+      "text": "",
+      "points": [
+        [
+          226.96,
+          87.99979
+        ],
+        [
+          500.09024,
+          345.739979
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000502.jpg",
+  "imageData": null,
+  "imageHeight": 427,
+  "imageWidth": 640
+}

@@ -1,0 +1,129 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          124.84,
+          130.16976
+        ],
+        [
+          170.04,
+          282.99984
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "tennis racket",
+      "text": "",
+      "points": [
+        [
+          140.800224,
+          118.930008
+        ],
+        [
+          178.900256,
+          135.349992
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "sports ball",
+      "text": "",
+      "points": [
+        [
+          124.230144,
+          91.389792
+        ],
+        [
+          130.770176,
+          98.579808
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          458.52,
+          228.82992
+        ],
+        [
+          589.52992,
+          404.94
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          434.22,
+          202.49004
+        ],
+        [
+          448.82,
+          216.86004
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          529.320288,
+          203.300208
+        ],
+        [
+          545.690272,
+          214.290192
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          329.940032,
+          202.720152
+        ],
+        [
+          363.290048,
+          214.440168
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000419.jpg",
+  "imageData": null,
+  "imageHeight": 480,
+  "imageWidth": 640
+}

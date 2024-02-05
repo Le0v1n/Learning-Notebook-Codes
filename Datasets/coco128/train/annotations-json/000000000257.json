@@ -1,0 +1,571 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "traffic light",
+      "text": "",
+      "points": [
+        [
+          89.299968,
+          197.239752
+        ],
+        [
+          112.829952,
+          230.019768
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "traffic light",
+      "text": "",
+      "points": [
+        [
+          50.269984,
+          199.12992
+        ],
+        [
+          75.359968,
+          222.88992
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "backpack",
+      "text": "",
+      "points": [
+        [
+          176.16,
+          362.20992
+        ],
+        [
+          226.56,
+          417.69984
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "truck",
+      "text": "",
+      "points": [
+        [
+          249.17024,
+          277.95984
+        ],
+        [
+          454.1104,
+          400.93008
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "truck",
+      "text": "",
+      "points": [
+        [
+          508.44992,
+          304.48008
+        ],
+        [
+          639.2096,
+          368.35992
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          139.56992,
+          345.57984
+        ],
+        [
+          211.08992,
+          480.0
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          236.739904,
+          326.46024
+        ],
+        [
+          265.119936,
+          406.18008
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          211.61968,
+          332.49
+        ],
+        [
+          233.89968,
+          392.98008
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          264.090208,
+          330.65016
+        ],
+        [
+          280.460192,
+          403.53
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          287.830112,
+          337.13976
+        ],
+        [
+          320.980128,
+          414.13992
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          570.980192,
+          327.79008
+        ],
+        [
+          585.730208,
+          370.03008
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          125.189728,
+          325.450128
+        ],
+        [
+          135.319712,
+          362.480112
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          316.720128,
+          334.13016
+        ],
+        [
+          336.890112,
+          408.93
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          77.650304,
+          326.41008
+        ],
+        [
+          97.950336,
+          374.58
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          138.109792,
+          325.590192
+        ],
+        [
+          153.659808,
+          364.040208
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          225.170048,
+          327.33
+        ],
+        [
+          240.380032,
+          396.87
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "traffic light",
+      "text": "",
+      "points": [
+        [
+          227.370144,
+          296.500032
+        ],
+        [
+          238.670176,
+          307.890048
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "traffic light",
+      "text": "",
+      "points": [
+        [
+          27.580022,
+          303.1002
+        ],
+        [
+          33.270026,
+          310.2102
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "traffic light",
+      "text": "",
+      "points": [
+        [
+          28.93,
+          276.6
+        ],
+        [
+          34.75,
+          288.36
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "backpack",
+      "text": "",
+      "points": [
+        [
+          208.469664,
+          340.870152
+        ],
+        [
+          219.769696,
+          360.450168
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "handbag",
+      "text": "",
+      "points": [
+        [
+          306.740192,
+          360.15996
+        ],
+        [
+          319.250208,
+          373.92996
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          190.829952,
+          330.599952
+        ],
+        [
+          211.459968,
+          370.369968
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "truck",
+      "text": "",
+      "points": [
+        [
+          519.96,
+          323.80992
+        ],
+        [
+          640.00032,
+          480.0
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "truck",
+      "text": "",
+      "points": [
+        [
+          55.23968,
+          301.11
+        ],
+        [
+          196.46976,
+          360.95016
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "truck",
+      "text": "",
+      "points": [
+        [
+          473.609984,
+          320.43012
+        ],
+        [
+          498.390016,
+          334.38012
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "traffic light",
+      "text": "",
+      "points": [
+        [
+          89.930112,
+          177.969888
+        ],
+        [
+          104.960128,
+          192.619872
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "handbag",
+      "text": "",
+      "points": [
+        [
+          93.12976,
+          344.24016
+        ],
+        [
+          99.00976,
+          356.72016
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          537.15968,
+          328.859928
+        ],
+        [
+          551.23968,
+          368.679912
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "traffic light",
+      "text": "",
+      "points": [
+        [
+          301.980128,
+          260.820072
+        ],
+        [
+          309.070112,
+          275.000088
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "traffic light",
+      "text": "",
+      "points": [
+        [
+          295.599878,
+          261.400152
+        ],
+        [
+          301.989882,
+          273.600168
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "traffic light",
+      "text": "",
+      "points": [
+        [
+          55.4,
+          299.170001
+        ],
+        [
+          60.28,
+          303.469999
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "handbag",
+      "text": "",
+      "points": [
+        [
+          208.910208,
+          341.479968
+        ],
+        [
+          220.120192,
+          370.529952
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "handbag",
+      "text": "",
+      "points": [
+        [
+          472.59976,
+          340.879841
+        ],
+        [
+          478.73976,
+          345.479839
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000257.jpg",
+  "imageData": null,
+  "imageHeight": 480,
+  "imageWidth": 640
+}

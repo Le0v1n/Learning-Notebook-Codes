@@ -1,0 +1,384 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          388.030208,
+          324.649791
+        ],
+        [
+          397.640192,
+          337.979809
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          339.42016,
+          316.810158
+        ],
+        [
+          346.30016,
+          329.890138
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          333.21992,
+          315.730143
+        ],
+        [
+          339.51992,
+          329.680161
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          401.739936,
+          325.699782
+        ],
+        [
+          416.439904,
+          338.659794
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "kite",
+      "text": "",
+      "points": [
+        [
+          434.24016,
+          192.440206
+        ],
+        [
+          452.60016,
+          207.440194
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "kite",
+      "text": "",
+      "points": [
+        [
+          280.609856,
+          252.259947
+        ],
+        [
+          290.309824,
+          258.629957
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "kite",
+      "text": "",
+      "points": [
+        [
+          435.830144,
+          82.729918
+        ],
+        [
+          446.210176,
+          95.229914
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "kite",
+      "text": "",
+      "points": [
+        [
+          293.240288,
+          208.279908
+        ],
+        [
+          315.690272,
+          218.989924
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          559.570016,
+          317.52984
+        ],
+        [
+          566.669984,
+          336.039856
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          538.450198,
+          315.990153
+        ],
+        [
+          543.540202,
+          330.710143
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          278.559936,
+          311.709982
+        ],
+        [
+          288.259904,
+          317.039994
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          311.270208,
+          316.860084
+        ],
+        [
+          321.760192,
+          321.590084
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          295.01968,
+          316.510087
+        ],
+        [
+          303.61968,
+          320.650089
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "car",
+      "text": "",
+      "points": [
+        [
+          256.349888,
+          321.380107
+        ],
+        [
+          275.799872,
+          328.590109
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "kite",
+      "text": "",
+      "points": [
+        [
+          62.670272,
+          340.52001
+        ],
+        [
+          104.340288,
+          353.90999
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "kite",
+      "text": "",
+      "points": [
+        [
+          384.709856,
+          274.600028
+        ],
+        [
+          422.369824,
+          290.520044
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          274.320256,
+          326.609946
+        ],
+        [
+          282.340224,
+          339.429958
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          544.699798,
+          317.64005
+        ],
+        [
+          549.149802,
+          333.93003
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          586.44016,
+          321.279891
+        ],
+        [
+          590.96016,
+          331.159885
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          249.86992,
+          316.259814
+        ],
+        [
+          255.18992,
+          339.28981
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          233.569792,
+          315.30011
+        ],
+        [
+          241.399808,
+          339.580122
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          220.05968,
+          313.449909
+        ],
+        [
+          227.69968,
+          340.659923
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000149.jpg",
+  "imageData": null,
+  "imageHeight": 428,
+  "imageWidth": 640
+}

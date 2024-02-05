@@ -1,0 +1,231 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          75.71016,
+          124.17024
+        ],
+        [
+          358.11,
+          640.0
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "remote",
+      "text": "",
+      "points": [
+        [
+          334.85004,
+          367.080032
+        ],
+        [
+          379.34004,
+          385.670048
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          259.679952,
+          402.10976
+        ],
+        [
+          269.809968,
+          472.31968
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          70.349832,
+          170.569952
+        ],
+        [
+          77.569848,
+          186.279968
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          31.859976,
+          164.28
+        ],
+        [
+          41.119992,
+          193.16
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          26.979984,
+          164.210272
+        ],
+        [
+          35.379984,
+          193.520288
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          37.3302,
+          164.59024
+        ],
+        [
+          65.7402,
+          194.79024
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          12.91992,
+          98.909792
+        ],
+        [
+          107.17992,
+          144.859808
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "book",
+      "text": "",
+      "points": [
+        [
+          82.610208,
+          63.579872
+        ],
+        [
+          96.420192,
+          92.409888
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "couch",
+      "text": "",
+      "points": [
+        [
+          1.659888,
+          495.94016
+        ],
+        [
+          89.530128,
+          630.24992
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "potted plant",
+      "text": "",
+      "points": [
+        [
+          415.24992,
+          276.53984
+        ],
+        [
+          473.66976,
+          361.32
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "potted plant",
+      "text": "",
+      "points": [
+        [
+          374.40984,
+          221.09024
+        ],
+        [
+          436.91976,
+          319.7904
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "potted plant",
+      "text": "",
+      "points": [
+        [
+          426.64008,
+          177.70016
+        ],
+        [
+          480.00024,
+          281.57024
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000446.jpg",
+  "imageData": null,
+  "imageHeight": 640,
+  "imageWidth": 480
+}

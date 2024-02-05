@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<annotation>
+		<folder>images</folder>
+		<filename>000000000078.jpg</filename>
+		<size>
+			<width>612</width>
+			<height>612</height>
+			<depth>3</depth>
+		</size>
+		<object>
+			<name>clock</name>
+			<pose>Unspecified</pose>
+			<truncated>0</truncated>
+			<difficult>0</difficult>
+			<bndbox>
+				<xmin>359.799696</xmin>
+				<ymin>2.0697839999999985</ymin>
+				<xmax>573.929928</xmax>
+				<ymax>237.979872</ymax>
+			</bndbox>
+		</object>
+	</annotation>

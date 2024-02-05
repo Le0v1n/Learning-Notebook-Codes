@@ -1,0 +1,61 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          139.780158,
+          58.22016
+        ],
+        [
+          285.089966,
+          599.9904
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "person",
+      "text": "",
+      "points": [
+        [
+          70.739809,
+          254.79968
+        ],
+        [
+          199.599869,
+          601.06976
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "suitcase",
+      "text": "",
+      "points": [
+        [
+          289.279903,
+          378.9104
+        ],
+        [
+          426.999786,
+          600.69024
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000572.jpg",
+  "imageData": null,
+  "imageHeight": 640,
+  "imageWidth": 427
+}

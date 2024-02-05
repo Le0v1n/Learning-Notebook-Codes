@@ -1,0 +1,44 @@
+{
+  "version": "0.2.2",
+  "flags": {},
+  "shapes": [
+    {
+      "label": "dog",
+      "text": "",
+      "points": [
+        [
+          46.0,
+          192.999758
+        ],
+        [
+          136.0,
+          335.999813
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    },
+    {
+      "label": "skateboard",
+      "text": "",
+      "points": [
+        [
+          304.79,
+          136.819733
+        ],
+        [
+          396.0,
+          388.209938
+        ]
+      ],
+      "group_id": null,
+      "shape_type": "rectangle",
+      "flags": {}
+    }
+  ],
+  "imagePath": "../images/000000000490.jpg",
+  "imageData": null,
+  "imageHeight": 495,
+  "imageWidth": 500
+}
