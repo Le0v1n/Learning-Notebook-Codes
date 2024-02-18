@@ -176,7 +176,7 @@ for epoch in range(num_epochs):
 ```
 
 在上面的代码中，`T_0` 参数代表初始周期的大小，即在第一次余弦退火周期中，学习率将按照余弦调度进行调整的 Epoch 数。`T_mult` 参数指定了每个周期结束后周期大小将乘以的倍数。`scheduler.step(epoch)` 应该在每次更新参数之后、每个epoch结束时调用。
-请根据你的具体需求调整 `T_0` 和 `T_mult` 的值，以及 `num_epochs`，即你的训练周期总数。
+请根据我们的具体需求调整 `T_0` 和 `T_mult` 的值，以及 `num_epochs`，即我们的训练周期总数。
 
 ## 5.3 YOLOv5-v7.0 使用的 Scheduler
 
@@ -1094,26 +1094,33 @@ parser.add_argument("--resume", nargs="?", const=True, default=False, help="resu
 
 def main(opt, callbacks=Callbacks()):
     # Checks
-    if RANK in {-1, 0}:
-        print_args(vars(opt))
-        check_git_status()
-        check_requirements(ROOT / "requirements.txt")
+    if RANK in {-1, 0}:  # 判断是否在主线程中
+        print_args(vars(opt))  # 打印所有参数
+        check_git_status()  # 检查git的状态
+        check_requirements(ROOT / "requirements.txt")  # 检查环境是否满足（如果不满足则自动安装）
 
-    # Resume (from specified or most recent last.pt)
+    # Resume (from specified or most recent last.pt) | 断点续训
     if opt.resume and not check_comet_resume(opt) and not opt.evolve:
         # 先判断 opt.resume 是不是一个str，如果是，说明我们指定了具体的last.pt
         last = Path(check_file(opt.resume) if isinstance(opt.resume, str) else get_latest_run())
+
+        # 读取权重文件的上级上级文件夹下的opt.yaml文件
         opt_yaml = last.parent.parent / "opt.yaml"  # train options yaml
+
+        # 将启动训练时的opt保存一下
         opt_data = opt.data  # original dataset
-        if opt_yaml.is_file():
+
+        if opt_yaml.is_file():  # 如果权重文件的上级上级文件夹下的opt.yaml文件存在
             with open(opt_yaml, errors="ignore") as f:
-                d = yaml.safe_load(f)
-        else:
+                d = yaml.safe_load(f)  # 加载所有的配置
+        else:  # 如果不存在则读取权重中的opt
             d = torch.load(last, map_location="cpu")["opt"]
+
+        # 将原来的opt使用读取到的opt进行覆盖
         opt = argparse.Namespace(**d)  # replace
+        
+        # 修改opt中的三个参数
         opt.cfg, opt.weights, opt.resume = "", str(last), True  # reinstate
-        if is_url(opt_data):
-            opt.data = check_file(opt_data)  # avoid HUB resume auth timeout
 ```
 
 因为 `--resume` 是 `nargs="?"`，所以它可以有 0 个参数或者 1 个参数，即我们可以给它传参也可以不给它传参，那么它有如下两种用法：
@@ -1128,9 +1135,351 @@ python train.py --resume runs/exp/weights/example_weights.pt
 
 ## 5.7 Multi-GPU Training，多 GPU 训练
 
+PyTorch 为数据并行训练提供了几种选项。对于从简单到复杂、从原型到生产逐渐增长的应用程序，常见的开发路径将是：
+
+1. 〔**不使用 DDP**〕如果数据和模型可以适应一个 GPU，并且训练速度不是问题，那么我们直接使用单设备训练就行，不用 DDP。
+2. 〔**单机多卡 - 不推荐**〕使用单机多 GPU 的 DataParallel，以最小的代码更改利用单台机器上的多个 GPU 来加快训练速度。
+3. 〔**单机多卡 - 推荐**〕如果我们想进一步加快训练速度，并愿意编写更多代码，那么就使用单机多 GPU 的 DDP。
+4. 〔**多机多卡**〕如果应用程序需要跨机器扩展，请使用多机器的 DistributedDataParallel 和启动脚本。
+5. 〔**训练大模型**〕当数据和模型无法适应一个 GPU 时，在单机或多机上使用多 GPU 的 FullyShardedDataParallel (FSDP) 进行训练。
+6. 〔**弹性训练**〕如果预期会出现错误（例如，内存不足）或者在训练过程中资源可以动态加入和离开，请使用 torch.distributed.elastic 启动分布式训练。
+
+> 💡 DP 训练也适用于自动混合精度（AMP）
+
+> 💡 之前写过一篇关于多 GPU 训练的博客：[PyTorch使用多GPU并行训练及其原理和注意事项](https://blog.csdn.net/weixin_44878336/article/details/125412625)
+
+### 5.7.1 DP (Data Parallel，数据并行)
+
+```python
+class torch.nn.DataParallel(module, 
+                            device_ids=None, 
+                            output_device=None, 
+                            dim=0)
+```
+
+可以看到，DP 可以在 module 级别实现数据并行。具体来说，这个容器（DP）通过在 Batch 维度上分块，将输入分割到指定的设备上，从而实现给定 module 的并行应用（其他对象将每个设备复制一次）。
+
+- 在前向传播中， module 在每个设备上复制，并且每个副本处理输入的一部分。
+- 在反向传播过程中，每个副本的梯度被汇总到原始 module 中。
+
+需要注意的是：Batch 应该大于使用的 GPU 数量。
+
+> ⚠️ 在 PyTorch 官方文档中也表明：建议使用 DistributedDataParallel 而不是这个类（DP）来进行多 GPU 训练，**即使只有一个节点**。
+
+> DataParallel 包使单机多 GPU 并行变得非常容易，几乎不需要编写任何代码。它只需要对应用程序代码进行一次行更改。尽管 DataParallel 非常易于使用，但通常它的性能并不是最好的，因为它在每个前向传播中都复制了模型，并且它的单进程多线程并行自然会受到 GIL 争用的困扰。为了获得更好的性能，请考虑使用 DistributedDataParallel。
+
+
+### 5.7.2 DDP（Distributed Data Parallel，分布式数据并行）
+
+#### 5.7.2.1 DDP 介绍
+
+Distributed Data Parallel (DDP) 是 PyTorch 中用于分布式训练的高级原语，它允许模型在多个节点上进行训练，每个节点可以有多个 GPU。DDP 可以显著提高训练速度，尤其是在使用大量数据和复杂模型时。
+
+DDP 背后的主要思想是将模型复制到每个节点，并在每个节点上独立地处理一部分数据。在每个训练步骤中，每个节点上的模型副本会计算梯度，然后这些梯度会在所有节点之间进行平均。通过这种方式，DDP 可以确保每个节点上的模型参数保持同步。
+
+DDP 相对于其他并行方法（如 DataParallel）的主要优势在于其高效的通信机制。DDP 使用 Ring Allreduce 算法来减少梯度同步时的通信瓶颈，这使得 DDP 特别适合于大型模型和大规模训练工作。
+
+#### 5.7.2.2 DDP 的类定义
+
+```python
+class torch.nn.parallel.DistributedDataParallel(
+        module,  # 要并行化的模块
+        device_ids=None,
+        output_device=None,
+        dim=0, broadcast_buffers=True,
+        process_group=None,
+        bucket_cap_mb=25,
+        find_unused_parameters=False,
+        check_reduction=False,  # 此参数已弃用
+        gradient_as_bucket_view=False,
+        static_graph=False,
+        delay_all_reduce_named_params=None,
+        param_to_hook_all_reduce=None,
+        mixed_precision=None,
+        device_mesh=Non
+)
+```
+
+#### 5.7.2.3 使用 DDP 的步骤
+
+1. 初始化一个进程组，该进程组定义了参与训练的所有节点和它们之间的通信方式。
+2. 将模型封装在 `DistributedDataParallel` 中，这样模型就可以在多个节点上并行训练。
+3. 使用分布式 `Sampler` 确保每个节点只处理整个数据集的一部分，从而避免数据重复。
+4. 在每个节点上运行训练循环，DDP 会自动处理梯度同步和模型更新。
+
+DDP 还提供了一些其他功能，如自动故障恢复和模型检查点，这些功能对于长时间运行的大规模训练任务非常有用。
+
+总的来说，DDP 是 PyTorch 中用于实现高效分布式训练的强大工具，它通过在多个节点上并行化模型和数据，使得训练大型模型变得更加可行和高效。
+
+#### 5.7.2.4 DDP 的优点（相比于 DP）
+
+与 DataParallel 相比，DistributedDataParallel 需要多一个步骤来设置，即调用 init_process_group。DDP 使用<font color='red'>多进程并行</font>，因此在模型副本之间没有 GIL 争用。此外，模型在 DDP 构建时进行广播，而不是在每次前向传播时，这也有助于加速训练。DDP 配备了多种性能优化技术。
+
+> 💡 多线程会有 GIL 的问题，而多进程没有这种问题。
+
+#### 5.7.2.5 通信协议介绍
+
+在 PyTorch 的 `DistributedDataParallel`（DDP）中，通信协议主要指的是后端通信库，它用于在不同进程之间传输数据和梯度。截至我所知的信息，DDP 主要支持以下几种通信协议：
+
+1. **GLOO**
+   - 〔**特点**〕：GLOO 是 PyTorch 内置的通信库，支持 CPU 和 GPU 之间的通信。它适用于单个节点上的多 GPU 训练。
+   - 〔**优点**〕：易于使用，实现简单，适合开发和测试。
+   - 〔**缺点**〕：性能相对较低，<font color='red'><b>不适合大规模的分布式训练</b></font>。
+2. **NCCL**
+   - 〔**特点**〕：NCCL 是 NVIDIA Collective Communications Library 的缩写，专门为 NVIDIA GPU 设计的通信库。它支持 GPU 之间的通信，并且性能优秀。
+   - 〔**优点**〕：<font color='red'><b>适用于大规模分布式训练，特别是在拥有大量 GPU 的场景中，能够提供高效的通信性能</b></font>。
+   - 〔**缺点**〕：仅支持 NVIDIA GPU，需要在 NVIDIA 硬件上运行。
+3. **MPI**
+   - 〔**特点**〕：MPI 是 Message Passing Interface 的缩写，是一个跨语言的通信协议，广泛用于高性能计算。它支持在多节点之间进行通信。
+   - 〔**优点**〕：非常成熟，支持大规模分布式训练，特别是在高性能计算环境中。
+   - 〔**缺点**〕：需要外部依赖，配置和使用相对复杂，对开发者的要求较高。
+4. **MPI_NCCL**
+   - 〔**特点**〕：结合了 MPI 和 NCCL 的优点，可以在多节点之间进行 GPU 通信。
+   - 〔**优点**〕：结合了 MPI 的分布式通信能力和 NCCL 在 GPU 之间的通信性能。
+   - 〔**缺点**〕：实现相对复杂，需要同时配置 MPI 和 NCCL。
+5. **TCP**
+   - 〔**特点**〕：TCP 是传输控制协议，是一种广泛使用的网络通信协议。在 DDP 中，它通常用于在节点之间传输数据。
+   - 〔**优点**〕：易于实现，兼容性好，适用于多种网络环境。
+   - 〔**缺点**〕：性能相对较低，特别是在大规模分布式训练中可能成为瓶颈。
+
+---
+
+在选择通信协议时，需要根据具体的训练环境、硬件配置和性能需求来决定。例如：
+- 〔**单机多卡**〕<font color='purple'><b></b>如果是在单个节点上有多个 GPU，GLOO 是一个不错的选择</font>。
+- 〔**多机多卡**〕<font color='blue'><b>如果训练需要扩展到多个节点，NCCL 和 MPI 可能是更好的选择</b></font>。
+
+#### 5.7.2.6 DDP 示例-1
+
+让我们从一个简单的 `torch.nn.parallel.DistributedDataParallel` 示例开始。这个示例使用了一个 `torch.nn.Linear` 作为本地模型，用 DDP 包装它，然后在 DDP 模型上运行一次前向传播、一次反向传播和一个优化器步骤。之后，本地模型的参数将被更新，所有不同进程上的所有模型应该完全相同。
+
+```python
+import torch
+import torch.distributed as dist
+import torch.multiprocessing as mp
+import torch.nn as nn
+import torch.optim as optim
+import os
+from torch.nn.parallel import DistributedDataParallel as DDP
+
+
+def example(rank, world_size):
+    # create default process group | 创建默认的进程组
+    dist.init_process_group("gloo",  # 单机多卡推荐的协议
+                            rank=rank,  # 表明目前是哪个进程
+                            world_size=world_size  # 进程数量
+                            )
+
+    # create local model  | 创建本地模型
+    model = nn.Linear(10, 10).to(rank)
+
+    # construct DDP model | 构造DDP模型
+    ddp_model = DDP(model, device_ids=[rank])
+
+    # define loss function and optimizer | 定义损失函数和优化器
+    loss_fn = nn.MSELoss()
+    optimizer = optim.SGD(ddp_model.parameters(), lr=0.001)
+
+    # forward pass  | 前向传播
+    outputs = ddp_model(torch.randn(20, 10).to(rank))
+    labels = torch.randn(20, 10).to(rank)
+
+    # backward pass | 反向传播
+    loss_fn(outputs, labels).backward()
+
+    # update parameters | 更新参数
+    optimizer.step()
+
+
+def main():
+    world_size = 2  # 进程数量
+    # 使用PyTorch的多进程方法启动多进程
+    mp.spawn(
+        example,  # 进程执行的函数
+        args=(world_size,),  # 进程执行函数的参数
+        nprocs=world_size,  # 进程的数量
+        join=True  # 是否开启进程保护（父进程是否应该等待子进程完成执行后再执行）
+        )
+
+
+if __name__=="__main__":
+    # Environment variables which need to be set when using c10d's default "env" initialization mode.
+    # 在使用 c10d 的默认 "env" 初始化模式时需要设置的环境变量
+    os.environ["MASTER_ADDR"] = "localhost"
+    os.environ["MASTER_PORT"] = "29500"
+    main()
+```
+
+---
+
+<kbd><b>Question</b></kbd>：在 PyTorch 的 DistributedDataParallel 中，world_size 是什么？
+
+<kbd><b>Answer</b></kbd>：在 PyTorch 的 `DistributedDataParallel`（DDP）中，`world_size` 是一个参数，它表示参与分布式训练的**总进程数**，即整个训练集群中的 GPU 数量。`world_size` 用于定义分布式环境中的并行级别，它告诉 DDP 有多少个进程（或 GPU）正在参与训练。
+
+例如，如果你在一个拥有 8 个 GPU 的单个节点上训练，那么 `world_size` 就是 8。如果你有两个每个节点有 4 个 GPU 的节点，那么 `world_size` 就是 8。
+
+> ⚠️ 在 DDP 中正确设置 `world_size` 非常重要，因为它会影响数据的分片方式、梯度的同步方式以及训练的整体流程。如果 `world_size` 设置不正确，可能会导致训练过程中的各种问题，如数据不均匀、梯度同步失败等。
+
+---
+
+<kbd><b>Question</b></kbd>：节点又是什么？
+
+<kbd><b>Answer</b></kbd>：在 PyTorch 的分布式训练中，<font color='red'>节点可以是一个物理服务器，也可以是一个虚拟机</font>，只要它能够运行 Python 程序并能够与网络中的其他节点通信。
+
+在多节点分布式训练场景中，每个节点可能会有一个或多个 GPU，并且每个节点可能会运行一个或多个进程。每个节点上的进程可能会加载模型的一个副本，并处理数据集的一部分。这样，整个数据集就被分布在多个节点上，每个节点处理数据集的一个子集，从而实现数据并行和模型并行，以提高训练效率和处理能力。
+
+在单机多 GPU 训练场景中，节点通常指的是单个物理服务器或工作站，它包含多个 GPU，并且这些 GPU 可以通过高速内部网络连接在一起，形成一个大的计算资源池。在这种情况下，节点内的 GPU 之间可以进行高效的通信和数据传输。
+
+---
+
+<kbd><b>Question</b></kbd>：进程为什么叫 world？
+
+<kbd><b>Answer</b></kbd>：在分布式计算和并行训练的上下文中，术语 "world" 用于表示参与并行或分布式任务的全部进程集合。这种用法在各种并行和分布式系统的设计中都很常见，不仅仅限于 PyTorch 的 `DistributedDataParallel`（DDP）。
+
+使用 "world" 来描述整个进程集合的概念源于这样的思想：在并行或分布式计算中，所有的计算资源（进程、节点、设备等）都被视为一个整体，它们共同协作来完成一个任务。这个整体就像是一个“世界”，其中的每个部分（进程）都是这个“世界”的一部分，它们之间需要协同工作，以确保整个任务的顺利进行。
+
+在 PyTorch 的 DDP 中，`world_size` 参数就是用来表示这个“世界”中的进程数量，即参与训练的 GPU 数量。这个概念帮助开发者理解他们正在使用的是一个分布式的训练环境，其中的所有计算资源都是相互关联的，并且需要协同工作以提高训练效率。
+
+所以，当你看到 `world_size` 这个词时，它通常指的是参与分布式训练的所有 GPU 或进程的总数。
+
+---
+
+<kbd><b>Question</b></kbd>：节点和进程之间的关系是什么？
+
+<kbd><b>Answer</b></kbd>：在分布式计算和并行训练的上下文中，节点和进程之间的关系可以概括为：
+
+1. **节点（Node）**：
+   - 节点是物理或虚拟的计算设备，它可以是一个服务器、工作站或任何具有独立处理能力和网络连接的设备。
+   - 在分布式系统中，节点是并行或分布式计算的基本单位。一个节点可以包含一个或多个处理器（如 CPU 或 GPU），并且**可以运行一个或多个进程**。
+2. **进程（Process）**：
+   - 进程是计算机中程序执行的基本单位。它是程序在执行过程中的一个实例，拥有独立的内存空间和执行线程。
+   - **在分布式训练中，每个节点可以启动一个或多个进程**。**这些进程可以运行模型的副本，并处理数据集的一部分**。
+   - 进程之间的通信和协作是实现分布式计算和并行处理的关键。
+
+总结来说，节点是物理或虚拟的计算设备，而进程是这些节点上运行的程序实例。在分布式训练中，节点上可以启动多个进程，这些进程共同工作来处理数据并训练模型，每个进程负责模型的一部分或处理数据集的一部分。节点和进程之间的关系是并行和分布式系统设计的基础。
+
+---
+
+<kbd><b>Question</b></kbd>：rank 是什么？
+
+<kbd><b>Answer</b></kbd>：在 PyTorch 的 `DistributedDataParallel`（DDP）中，`rank` 是指每个进程在分布式训练环境中的唯一标识符。在分布式训练中，每个节点可以启动多个进程，这些进程可能负责不同的任务，如数据加载、模型训练、参数同步等。<font color='red'>每个进程都有一个唯一的 `rank`，用于在分布式环境中进行识别和通信</font>。
+
+在 DDP 中，`rank` 的值通常从 0 开始分配，每个节点的主进程通常会被分配一个 `rank`，而该节点的工作进程会被分配其他的 `rank`。💡 在多节点分布式训练中，所有节点的 `rank` 个数加起来就是 `world_size`。
+
+> 💡 当需要同步模型参数时，只有 `rank=0` 的进程会收集其他所有进程的参数，然后广播给其他所有进程。
+> 
+> 💡 如果我们需要记录日志、print 一些东西的时候，我们也是会用 `rank=0` 的主线程来进行的，不然多线程同时进行的话会导致很多的重复！
+
+
+下面我们画一张图来展示：
+
+<div align=center>
+    <img src=./imgs_markdown/plots-分布式训练的关系图.jpg
+    width=80%>
+    <center></center>
+</div>
+
+---
+
+<kbd><b>Question</b></kbd>：`os.environ["MASTER_ADDR"] = "localhost"` 和 `os.environ["MASTER_PORT"] = "29500"` 的作用？
+
+<kbd><b>Answer</b></kbd>：在 PyTorch 的分布式训练中，`MASTER_ADDR` 和 `MASTER_PORT` 环境变量用于指定主节点的地址和端口。这些变量在分布式训练的不同后端通信库中都有使用，包括 `gloo`、`nccl` 和 `mpi`。
+
+具体来说，这两个环境变量的作用如下：
+
+1. `MASTER_ADDR`：这个环境变量指定了主节点的 IP 地址或主机名。在单机多卡训练或多节点训练中，主节点是负责协调训练过程的进程。它通常会收集所有进程的梯度，并在所有进程之间同步模型参数。
+
+2. `MASTER_PORT`：这个环境变量指定了主节点监听的端口。每个分布式训练的实例都需要一个唯一的端口来接收来自其他进程的连接请求。
+
+在我们提供的代码中：
+
+- `os.environ["MASTER_ADDR"] = "localhost"` 设置主节点的地址为本地主机，即当前运行代码的机器。
+- `os.environ["MASTER_PORT"] = "29500"` 设置主节点监听的端口为 29500。
+
+这些设置确保了分布式训练中的进程能够正确地连接到主节点，以便进行数据和梯度的同步。<font color='red'><b>如果这些环境变量设置不正确，分布式训练的进程可能无法相互通信，导致训练失败</b></font>。
+
+---
+
+<kbd><b>Question</b></kbd>：主节点是第一个开启的节点吗？
+
+<kbd><b>Answer</b></kbd>：不，主节点并不一定是第一个开启的节点。在分布式训练中，主节点是负责协调训练过程的进程，它通常被分配一个特定的 `rank`，通常是 `rank 0`。主节点的角色是在训练过程中收集所有进程的梯度，并在所有进程之间同步模型参数。
+
+主节点的选择通常是由训练代码中的逻辑决定的，而不是由启动顺序决定的。在 PyTorch 的 `DistributedDataParallel`（DDP）中，我们可以显式地指定哪个进程应该作为主节点。例如，我们可以使用 `dist.init_process_group` 函数并设置 `rank=0` 来指定主节点。
+
+> ⚠️ <font color='red'><b>在多节点分布式训练中，每个节点上的主进程都可以是主节点，只要它们在启动时被正确地分配了 `rank 0`。这意味着，无论哪个节点首先启动，只要它的主进程被设置为 `rank 0`，它就可以成为主节点</b></font>。
+
+总结来说，主节点是分布式训练中的一个关键进程，但它的选择并不依赖于它在网络中的启动顺序，而是依赖于训练代码中的设置和逻辑。
+
+---
+
+<kbd><b>Question</b></kbd>：主节点（Master Node）的主要任务是什么？
+
+<kbd><b>Answer</b></kbd>：在分布式训练环境中，`rank 0` 的进程被指定为主节点（Master Node）。主节点负责以下任务：
+
+1. **初始化**：在训练开始之前，主节点负责初始化分布式训练环境，例如设置网络通信和进程组。
+2. **协调**：主节点负责协调分布式训练的各个进程，包括数据的划分、梯度的收集和参数的同步。
+3. **监控**：主节点可以监控训练进度，并在训练完成后收集和保存模型。
+4. **通信**：主节点是所有进程通信的中心点，负责接收来自其他进程的数据和梯度，并将其分发给所有进程。
+
+在多节点分布式训练中，每个节点上通常会有一个主进程，它被设置为 `rank 0`。这意味着，每个节点都可以有一个主节点，负责管理该节点上的训练任务。
+
+总之，`rank 0` 是一个特定的进程标识符，它在分布式训练中扮演着关键的角色，负责协调和管理工作。
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+这个容器通过在每个模型副本之间同步梯度来提供数据并行性。要同步的设备由输入 process_group 指定，默认情况下是 world（即所有进程）。
+
+> ⚠️ 请注意，DistributedDataParallel 不会跨参与的 GPU 切分或分片输入；用户负责定义如何执行此操作，例如通过使用 DistributedSampler。
+
+
+要在具有 N 个 GPU 的主机上使用 DistributedDataParallel，我们应该启动 N 个进程，确保每个进程专门在单个 GPU 上工作，从 0 到 N-1。这可以通过为每个进程设置 CUDA_VISIBLE_DEVICES 来实现，或者通过调用：
+
+```python
+torch.cuda.set_device(i)  # 其中 i 从 0 到 N-1。
+```
+
+在每个进程中，我们应该参考以下内容来构造这个模块：
+
+```python
+torch.distributed.init_process_group(backend='nccl',  # backend='nccl' 用于确保 GPU 之间的通信是最优的
+                                     world_size=N,  # 告诉系统整个训练集群中有多少个 GPU 参与训练，以便正确地分配数据和模型
+                                     init_method='...')
+model = DistributedDataParallel(model, device_ids=[i], output_device=i)
+```
+
+为了在每个节点上启动多个进程，我们可以使用 `torch.distributed.launch` 或 `torch.multiprocessing.spawn`。
+
+---
 
 
 
@@ -1140,6 +1489,6 @@ python train.py --resume runs/exp/weights/example_weights.pt
 
 # 参考
 
-1. 〔视频教程〕[YOLOv5入门到精通！不愧是公认的讲的最好的【目标检测全套教程】同济大佬12小时带你从入门到进阶（YOLO/目标检测/环境部署+项目实战/Python/）](https://www.bilibili.com/video/BV1YG411876u?p=13)
+1. 〔视频教程〕[YOLOv5入门到精通！不愧是公认的讲的最好的【目标检测全套教程】同济大佬12小时带我们从入门到进阶（YOLO/目标检测/环境部署+项目实战/Python/）](https://www.bilibili.com/video/BV1YG411876u?p=13)
 2. 〔PyTorch 官方文档〕[torch.cuda.amp.autocast](https://pytorch.org/docs/stable/amp.html#torch.cuda.amp.autocast)
 3. 〔PyTorch 官方文档〕[torch.cuda.amp.GradScaler](https://pytorch.org/docs/stable/amp.html#torch.cuda.amp.GradScaler)
