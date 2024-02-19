@@ -1184,7 +1184,7 @@ DDP 相对于其他并行方法（如 DataParallel）的主要优势在于其高
 ```python
 class torch.nn.parallel.DistributedDataParallel(
         module,  # 要并行化的模块
-        device_ids=None,
+        device_ids=None,  # device_ids必须用list
         output_device=None,
         dim=0, broadcast_buffers=True,
         process_group=None,
@@ -1273,7 +1273,7 @@ def example(rank, world_size):
     model = nn.Linear(10, 10).to(rank)
 
     # construct DDP model | 构造DDP模型
-    ddp_model = DDP(model, device_ids=[rank])
+    ddp_model = DDP(model, device_ids=[rank])  # device_ids必须用list
 
     # define loss function and optimizer | 定义损失函数和优化器
     loss_fn = nn.MSELoss()
@@ -1295,19 +1295,21 @@ def main():
     # 使用PyTorch的多进程方法启动多进程
     mp.spawn(
         example,  # 进程执行的函数
-        args=(world_size,),  # 进程执行函数的参数
+        args=(world_size,),  # 进程执行函数的参数（不需要传递 rank 参数，mp.spawn函数会自动传入rank参数的）
         nprocs=world_size,  # 进程的数量
-        join=True  # 是否开启进程保护（父进程是否应该等待子进程完成执行后再执行）
+        join=True  # 进程等待（父进程是否应该等待子进程完成执行后再执行）
         )
 
 
 if __name__=="__main__":
     # Environment variables which need to be set when using c10d's default "env" initialization mode.
     # 在使用 c10d 的默认 "env" 初始化模式时需要设置的环境变量
-    os.environ["MASTER_ADDR"] = "localhost"
-    os.environ["MASTER_PORT"] = "29500"
+    os.environ["MASTER_ADDR"] = "localhost"  # 设置主节点（MasterNode）的IP为本地主机
+    os.environ["MASTER_PORT"] = "29500"  # 设置主节点（MasterNode）的监听端口
     main()
 ```
+
+> ⚠️ 在 `mp.spawn()` 函数中，`args=` 参数中不需要传递 `rank` 参数，`mp.spawn` 函数会自动传入rank参数的
 
 ---
 
@@ -1424,62 +1426,1116 @@ if __name__=="__main__":
 
 总之，`rank 0` 是一个特定的进程标识符，它在分布式训练中扮演着关键的角色，负责协调和管理工作。
 
+#### 5.7.2.7 内部设计
 
+本节通过深入探讨每一步骤的细节，揭示了 `torch.nn.parallel.DistributedDataParallel` 的工作原理。
 
+〔**前提条件**〕DDP 依赖于 c10d ProcessGroup 进行通信。因此，应用程序必须在构建 DDP 之前创建 ProcessGroup 实例。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-这个容器通过在每个模型副本之间同步梯度来提供数据并行性。要同步的设备由输入 process_group 指定，默认情况下是 world（即所有进程）。
-
-> ⚠️ 请注意，DistributedDataParallel 不会跨参与的 GPU 切分或分片输入；用户负责定义如何执行此操作，例如通过使用 DistributedSampler。
-
-
-要在具有 N 个 GPU 的主机上使用 DistributedDataParallel，我们应该启动 N 个进程，确保每个进程专门在单个 GPU 上工作，从 0 到 N-1。这可以通过为每个进程设置 CUDA_VISIBLE_DEVICES 来实现，或者通过调用：
-
-```python
-torch.cuda.set_device(i)  # 其中 i 从 0 到 N-1。
-```
-
-在每个进程中，我们应该参考以下内容来构造这个模块：
-
-```python
-torch.distributed.init_process_group(backend='nccl',  # backend='nccl' 用于确保 GPU 之间的通信是最优的
-                                     world_size=N,  # 告诉系统整个训练集群中有多少个 GPU 参与训练，以便正确地分配数据和模型
-                                     init_method='...')
-model = DistributedDataParallel(model, device_ids=[i], output_device=i)
-```
-
-为了在每个节点上启动多个进程，我们可以使用 `torch.distributed.launch` 或 `torch.multiprocessing.spawn`。
+> `c10d` 是 PyTorch 中的一个库，它提供了集体通信（collective communication）的实现，这是分布式训练中用于进程间通信的一种机制。`c10d` 支持不同类型的进程组（ProcessGroup），这些进程组定义了进程之间的通信方式。
+> 
+> `ProcessGroup` 是 `c10d` 中的一个概念，它代表了一组通过某种通信协议连接在一起的进程。这些进程可以是在单个节点上的多个进程，也可以是跨多个节点的进程。`ProcessGroup` 负责管理进程之间的数据传输和同步。
+> 
+> 在 PyTorch 的 `DistributedDataParallel`（DDP）中，`ProcessGroup` 用于实现多 GPU 之间的数据并行训练。DDP 使用 `ProcessGroup` 来定义和维护分布式训练环境中的进程组，包括数据划分、梯度收集和参数同步等操作。
+> 
+> 总结来说，`c10d ProcessGroup` 是 PyTorch 中用于定义和实现分布式训练中进程间通信的一个抽象概念，它是 DDP 和 PyTorch 分布式训练中其他组件的基础。
 
 ---
+
+〔**构建**〕DDP 构造函数（constructor）接受对本地模块的引用，并将 `rank=0` 进程的 `state_dict()` 广播到组中的所有其他进程，以确保所有模型副本从完全相同的状态开始。然后，每个 DDP 进程创建一个本地 Reducer，后者将在反向传播期间负责梯度的同步。
+
+> 在 PyTorch 的 `DistributedDataParallel`（DDP）中，`Reducer` 是一个内部组件，用于在分布式训练过程中处理梯度的同步。`Reducer` 的主要职责是收集来自不同进程的梯度，然后对这些梯度进行聚合（例如，通过 allreduce 操作），以确保所有进程上的模型参数保持同步。
+> 
+> `Reducer` 的关键特点和功能包括：
+> 1. **梯度聚合**：`Reducer` 负责将来自各个进程的梯度聚合为一个共享的梯度，这通常通过 allreduce 操作实现。
+> 2. **分桶**：为了提高通信效率，`Reducer` 将参数梯度分桶（bucketing）。这意味着梯度根据它们的性质被组织到不同的桶中，每个桶中的梯度在同一时间内被聚合。
+> 3. **异步通信**：`Reducer` 支持异步通信，<font color='red'><b>这意味着在等待一个桶的梯度聚合完成的同时，可以开始处理下一个桶的梯度</b></font>。
+> 4. **自动求导钩子**：`Reducer` 在构建时注册自动求导（autograd）钩子，这些钩子在反向传播期间被触发，当梯度准备好时，它们会通知 `Reducer`。
+> 5. **前向传播分析**：如果 `find_unused_parameters` 设置为 `True`，`Reducer` 会在前向传播期间分析模型输出，以确定哪些参数参与了反向传播。
+> 
+> 在 DDP 的训练循环中，`Reducer` 在反向传播期间起关键作用，它确保了所有进程上的模型参数在每次迭代后都是同步的。这种同步是通过在所有进程之间共享梯度来实现的，从而确保了模型的快速收敛和训练效率。
+
+为了提高通信效率，`Reducer` 将参数梯度组织成桶中，并一次减少一个桶。可以通过在 DDP 构造函数中设置 `bucket_cap_mb` 参数来配置桶大小。参数梯度到桶的映射是在构建时确定的，基于桶大小限制和参数大小。模型参数按照大致上与给定模型的 `Model.parameters()` 相反的顺序分配到桶中。使用相反顺序的原因是 DDP 期望在反向传播期间梯度按照大约那个顺序准备好。下图显示了一个示例。
+
+<div align=center>
+    <img src=./imgs_markdown/2024-02-18-13-50-04.png
+    width=90%>
+    <center></center>
+</div>
+
+注意，`grad0` 和 `grad1` 在 `bucket1` 中，另外两个梯度在 `bucket0` 中。当然，这个假设可能并不总是正确的，当发生这种情况时，它可能会降低 DDP 反向速度，因为 `Reducer` 不能在最早可能的时间启动通信。
+
+除了分桶之外，`Reducer` 在构建时还注册 `autograd` 钩子，每个参数一个。这些钩子将在反向传播期间梯度准备好时触发。
+
+---
+
+〔**前向传播**〕DDP 接受输入并传递给本地模型，然后分析本地模型的输出，如果 `find_unused_parameters` 设置为 `True`。这种模式允许在模型的子图上运行反向传播，并且 DDP 通过遍历自动微分（autograd）图从模型输出**找出哪些参数参与了反向传播**，并标记所有未使用的参数为 【ready for reduction】。在反向传播过程中，Reducer 只会等待未准备好的参数，但仍会对所有桶进行求和。将参数梯度标记为准备好目前并不帮助 DDP 跳过桶，但它将防止 DDP 在反向传播期间永远等待缺失的梯度。
+
+> ⚠️ 请注意，遍历自动微分图会引入额外的开销，因此应在必要时将 `find_unused_parameters` 设置为 `True`，否则设置为 `False`。
+
+---
+
+〔**反向传播**〕`.backward()` 函数直接在损失 Tensor 上被调用，这超出了 DDP 的控制范围，DDP 使用在构建时注册的 autograd 钩子来触发梯度同步。当一个梯度准备好时，其对应的 DDP 钩子在该梯度累积器上触发，DDP 然后将该参数梯度标记为 【ready for reduction】。
+
+当一个桶中的所有梯度都准备好时，Reducer 启动对该桶的异步 allreduce，以计算所有进程上梯度的平均值。
+
+当所有桶都准备好时，Reducer 将等待所有 allreduce 操作完成。完成此操作后，平均梯度被写入所有参数的 `param.grad` 字段。因此，在反向传播之后，不同 DDP 进程上对应参数的 grad 字段应该相同。
+
+---
+
+〔**优化器步骤**〕从优化器的角度来看，它正在优化一个本地模型。DDP 进程上的所有模型副本可以保持同步，因为它们都从相同的状态开始，并且在每次迭代中都有相同的平均梯度。
+
+> ⚠️ DDP 要求所有进程中都有 Reducer 实例，以便以完全相同的顺序调用 allreduce，这是通过始终按桶索引顺序而不是实际的桶准备顺序运行 allreduce 来实现的。进程之间 allreduce 顺序的不匹配可能导致错误的结果或 DDP 反向传播挂起。
+
+#### 5.7.2.8 DDP 与 DP 的对比
+
+在我们深入了解之前，让我们先搞清楚为什么尽管增加了复杂性，我们仍然会考虑使用 DDP 而不是 DP：
+
+首先，DP 是单进程、<font color='red'><b>多线程</b></font>的，并且只能在单机上工作，而 DDP 是<font color='red'><b>多进程</b></font>的，并且既支持单机也支持多机训练。<u>即使在单机上，DP 通常也比 DDP 慢</u>，这主要是因为线程间的 GIL 争用、每迭代复制的模型，以及输入分散和输出聚集引入的额外开销。
+
+回想一下前面的教程，如果我们的模型太大，无法适应单个 GPU，我们必须使用模型并行将其拆分到多个 GPU 上。DDP 支持模型并行，但 DP 目前不支持。当 DDP 与模型并行结合使用时，每个 DDP 进程将使用模型并行，所有进程集体将使用数据并行。
+
+|方式|数据并行|模型并行|
+|:-:|:-:|:-:|
+|DP|✔️|❌|
+|DDP|✔️|✔️|
+
+#### 5.7.2.9 DDP 示例-2
+
+```python
+import os
+import sys
+import tempfile
+import torch
+import torch.distributed as dist
+import torch.nn as nn
+import torch.optim as optim
+import torch.multiprocessing as mp
+
+from torch.nn.parallel import DistributedDataParallel as DDP
+
+
+def setup(rank, world_size):
+    # rank: 进程索引
+    # world_size: 进程总量
+
+    os.environ['MASTER_ADDR'] = 'localhost'  # 设置主节点（MasterNode）的IP为本地主机
+    os.environ['MASTER_PORT'] = '12355'  # 设置主节点（MasterNode）的监听端口
+
+    # initialize the process group | 初始化进程组
+    dist.init_process_group(backend="gloo", 
+                            rank=rank, 
+                            world_size=world_size)
+
+def cleanup():
+    dist.destroy_process_group()  # 关闭进程组
+```
+
+需要注意的是：在 Windows 平台上，`torch.distributed` 包仅支持 `Gloo` `后端、FileStore` 和 `TcpStore。`
+对于 `FileStore`，请在 `init_process_group` 中的 `init_method` 参数中设置为`本地文件路径`。示例如下：
+
+```python
+init_method = "file:///f:/libtmp/some_file"
+dist.init_process_group(
+   "gloo",
+   rank=rank,
+   init_method=init_method,
+   world_size=world_size)
+```
+
+对于 TcpStore，在 Windows 上的设置方式与 Linux 相同。
+
+现在，我们创建一个示例模型（ToyModel），用 DDP 包装它，并向其提供一些模拟输入数据。
+
+> ⚠️ 请注意，由于 DDP 在构造函数中从 rank 0 进程向所有其他 DDP 进程广播模型状态，因此我们不需要担心不同的 DDP 进程从不同的初始模型参数值开始。
+
+```python
+class ToyModel(nn.Module):
+    def __init__(self):
+        super(ToyModel, self).__init__()
+        self.net1 = nn.Linear(10, 10)
+        self.relu = nn.ReLU()
+        self.net2 = nn.Linear(10, 5)
+
+    def forward(self, x):
+        return self.net2(self.relu(self.net1(x)))
+
+
+def demo_basic(rank, world_size):
+    print(f"Running basic DDP example on rank {rank}.")
+    setup(rank, world_size)
+
+    # create model and move it to GPU with id rank
+    # 创建模型并使用DDP将其送到对应的GPU中
+    model = ToyModel().to(rank)
+    ddp_model = DDP(model, device_ids=[rank])  # device_ids必须用list
+    print(f"[{rank}] 模型已创建并使用 DDP 进行了包装...")
+
+    loss_fn = nn.MSELoss()
+    optimizer = optim.SGD(ddp_model.parameters(), lr=0.001)
+
+    optimizer.zero_grad()  # 清空历史梯度信息
+    outputs = ddp_model(torch.randn(20, 10))  # 前向推理
+    labels = torch.randn(20, 5).to(rank)  # 创建GT
+    loss_fn(outputs, labels).backward()  # 计算损失
+    optimizer.step()  # 更新参数
+    print(f"[{rank}] 模型运行完毕")
+
+    cleanup()  # 关闭进程组
+    print(f"[{rank}] 关闭进程组!")
+
+
+def run_demo(demo_fn, world_size):
+    mp.spawn(demo_fn,
+             args=(world_size,),
+             nprocs=world_size,
+             join=True)
+    
+    
+if __name__ == "__main__":
+    run_demo(demo_fn=demo_basic, world_size=4)
+```
+
+结果如下：
+
+```
+Running basic DDP example on rank 0.
+Running basic DDP example on rank 2.
+Running basic DDP example on rank 3.
+Running basic DDP example on rank 1.
+[2] 模型已创建并使用 DDP 进行了包装...
+[0] 模型已创建并使用 DDP 进行了包装...
+[3] 模型已创建并使用 DDP 进行了包装...
+[1] 模型已创建并使用 DDP 进行了包装...
+[3] 模型运行完毕
+[1] 模型运行完毕
+[3] 关闭进程组!
+[1] 关闭进程组!
+[2] 模型运行完毕
+[2] 关闭进程组!
+[0] 模型运行完毕
+[0] 关闭进程组!
+```
+
+我们可以看到，进程的开始和结束并不是统一的，所以我们一般是 `rank=0` 这个主节点进行 print 操作，即：
+
+```python
+def demo_basic(rank, world_size):
+    # print(f"Running basic DDP example on rank {rank}.")
+    setup(rank, world_size)
+
+    # create model and move it to GPU with id rank
+    # 创建模型并使用DDP将其送到对应的GPU中
+    model = ToyModel().to(rank)
+    ddp_model = DDP(model, device_ids=[rank])  # device_ids必须用list
+    print(f"模型已创建并使用 DDP 进行了包装...") if rank == 0 else ...
+
+    loss_fn = nn.MSELoss()
+    optimizer = optim.SGD(ddp_model.parameters(), lr=0.001)
+
+    optimizer.zero_grad()  # 清空历史梯度信息
+    outputs = ddp_model(torch.randn(20, 10))  # 前向推理
+    labels = torch.randn(20, 5).to(rank)  # 创建GT
+    loss_fn(outputs, labels).backward()  # 计算损失
+    optimizer.step()  # 更新参数
+    print(f"模型运行完毕") if rank == 0 else ...
+
+    cleanup()  # 关闭进程组
+    print(f"关闭进程组!") if rank == 0 else ...
+
+
+def run_demo(demo_fn, world_size):
+    mp.spawn(demo_fn,
+             args=(world_size,),
+             nprocs=world_size,
+             join=True)
+    
+    
+if __name__ == "__main__":
+    run_demo(demo_fn=demo_basic, world_size=4)
+```
+
+```
+模型已创建并使用 DDP 进行了包装...
+模型运行完毕
+关闭进程组!
+```
+
+> ⚠️ 在DDP中，构造函数、前向传播和反向传播都是分布式同步点。不同进程应该启动相同数量的同步，并以相同的顺序到达这些同步点，并且**大致**同时进入每个同步点。否则，快速进程可能会提前到达并在等待掉队者时超时。因此，用户负责平衡跨进程的工作负载分布。有时，由于网络延迟、资源争用或不可预测的工作负载峰值等原因，处理速度偏差是不可避免的。为了在这些情况下避免超时，请确保在调用 `init_process_group` 时传递一个足够大的超时值。
+
+```python
+class dist.init_process_group(backend=None, 
+                              init_method=None, 
+                              timeout=None,  # 超时值
+                              world_size=-1, 
+                              rank=-1, 
+                              store=None, 
+                              group_name='', 
+                              pg_options=None)
+```
+
+`timeout`：针对进程组执行的操作的超时时间。NCCL 的后端默认值为 10 分钟，其他后端默认值为 30 分钟。这是集体操作将在之后被异步中止，并且进程将崩溃的持续时间。这样做是因为 CUDA 执行是异步的，一旦异步 NCCL 操作失败，继续执行用户代码将不再安全，因为失败的异步 NCCL 操作可能导致后续的 CUDA 操作在损坏的数据上运行。当设置 `TORCH_NCCL_BLOCKING_WAIT` 时，进程将阻塞并等待这个超时时间。
+
+#### 5.7.2.10 Save and Load Checkpoints，保存和加载检查点
+
+在训练过程中，通常会使用 `torch.save` 和 `torch.load` 来检查点模块，并从检查点恢复。当使用 DDP 时，<font color='red'>一种优化方法是在一个进程中保存模型，然后将其加载到所有进程中，从而减少写操作的开销</font>。这是正确的，**因为所有进程都从相同的参数开始，并且在反向传播中同步梯度，因此优化器应该继续将参数设置为相同的值**。如果我们使用这种优化，请确保在保存完成之前没有进程开始加载。<font color='red'><b>此外，在加载模块时，我们需要提供一个适当的 map_location 参数，以防止进程进入其他进程的设备</b></font>。如果缺少 `map_location`，`torch.load` 将首先将模块加载到 CPU，然后将每个参数复制到它保存的位置，这将导致同一台机器上的所有进程使用同一组设备。
+
+```python
+def demo_checkpoint(rank, world_size):
+    print(f"Running DDP checkpoint example on rank {rank}.")
+    setup(rank, world_size)  # 初始化进程组
+
+    model = ToyModel().to(rank)  # 定义模型
+    ddp_model = DDP(model, device_ids=[rank])  # device_ids必须用list
+
+    # ckpt保存路径
+    CHECKPOINT_PATH = tempfile.gettempdir() + "/model.checkpoint"
+    
+    if rank == 0:
+        # All processes should see same parameters as they all start from same random parameters and gradients are synchronized in backward passes. Therefore, saving it in one process is sufficient.
+        # 所有进程应该看到相同的参数，因为它们都从相同的随机参数开始，并且在反向传播中同步梯度。因此，在一个进程中保存就足够了
+        torch.save(ddp_model.state_dict(), CHECKPOINT_PATH)
+
+    # Use a barrier() to make sure that process 1 loads the model after process 0 saves it.
+    # ⚠️ 使用barrier()来确保进程1在进程0保存模型之后加载模型
+    dist.barrier()
+    
+    # configure map_location properly | 正确配置map_location
+    # ⚠️ %0确保了所有进程在加载模型时都首先将其加载到cuda:0设备上，然后根据每个进程的rank将其参数移动到正确的设备上。
+    # 这样可以避免在加载模型时出现设备冲突
+    map_location = {'cuda:%d' % 0: 'cuda:%d' % rank}
+    print(f"[rank={rank}]map_location: {map_location}")
+    weights = torch.load(CHECKPOINT_PATH, map_location=map_location)
+    ddp_model.load_state_dict(weights)
+
+    loss_fn = nn.MSELoss()
+    optimizer = optim.SGD(ddp_model.parameters(), lr=0.001)
+
+    optimizer.zero_grad()
+    outputs = ddp_model(torch.randn(20, 10))
+    labels = torch.randn(20, 5).to(rank)
+
+    loss_fn(outputs, labels).backward()
+    optimizer.step()
+
+    # Not necessary to use a dist.barrier() to guard the file deletion below as the AllReduce ops in the backward pass of DDP already served as a synchronization.
+    # 在DDP的后向传播中的AllReduce操作已经起到了同步作用，因此不需要使用dist.barrier()来保护下面的文件删除操作
+    if rank == 0:
+        os.remove(CHECKPOINT_PATH)  # 删除掉示例中的权值文件
+
+    cleanup()
+```
+
+```
+Running DDP checkpoint example on rank 3.
+Running DDP checkpoint example on rank 2.
+Running DDP checkpoint example on rank 0.
+Running DDP checkpoint example on rank 1.
+[rank=2]map_location: {'cuda:0': 'cuda:2'}
+[rank=0]map_location: {'cuda:0': 'cuda:0'}
+[rank=1]map_location: {'cuda:0': 'cuda:1'}
+[rank=3]map_location: {'cuda:0': 'cuda:3'}
+```
+
+<kbd><b>Question</b></kbd>：`dist.barrier()` 的作用？
+
+<kbd><b>Answer</b></kbd>：`dist.barrier()` 是 PyTorch 中分布式训练中的一个同步操作。它的作用是在分布式环境中的多个进程之间创建一个同步点，确保所有进程都在此同步点到达之前等待。
+
+具体来说，`dist.barrier()` 的作用包括：
+
+1. **同步点：** 当某个进程调用 `dist.barrier()` 时，它会被阻塞，直到所有参与分布式训练的进程都到达这个同步点。
+
+2. **确保一致性：** 在某些情况下，你可能希望在所有进程都完成了某个任务之后再继续进行下一步操作。`dist.barrier()` 提供了一种确保所有进程都达到某个状态后再继续执行的机制。
+
+注意事项：
+- 使用 `dist.barrier()` 时，确保所有参与分布式训练的进程都调用了该函数，否则可能会导致死锁。
+- 尽量在合适的地方使用 `dist.barrier()`，以避免不必要的等待时间。
+
+示例：
+
+```python
+import os
+import torch.distributed as dist
+import torch.multiprocessing as mp
+
+
+def setup(rank, world_size):
+    os.environ['MASTER_ADDR'] = 'localhost'
+    os.environ['MASTER_PORT'] = '12355'
+    
+    # 初始化进程组
+    dist.init_process_group(
+        backend='nccl',
+        rank=rank,
+        world_size=world_size
+    )
+    
+    
+def example(rank, world_size):
+    setup(rank=rank, world_size=world_size)  # 初始化进程组
+
+    print(f"Before barrier [rank {rank}]")
+    dist.barrier()
+    print(f"After barrier [rank {rank}]")
+    
+    # 关闭进程组
+    dist.destroy_process_group()
+    
+
+def main():
+    world_size = 4
+    
+    mp.spawn(
+        fn=example,
+        args=(world_size, ),  # 不需要传递 rank 参数，mp.spawn函数会自动传入rank参数的
+        nprocs=world_size,
+        join=True
+    )
+    
+    
+if __name__ == "__main__":
+    main()
+```
+
+```
+Before barrier [rank 0]
+Before barrier [rank 2]
+Before barrier [rank 1]
+Before barrier [rank 3]
+
+⚠️ 这里会等待一会儿再打印出下面的内容
+
+After barrier [rank 1]
+After barrier [rank 2]
+After barrier [rank 3]
+After barrier [rank 0]
+```
+
+在上面的示例中，每个进程在调用 `dist.barrier()` 之前打印一条消息，然后在调用之后再打印一条消息。你会注意到在所有进程都调用 `dist.barrier()` 之前，没有任何一个进程能够打印 "After barrier" 的消息。这展示了 `dist.barrier()` 的同步效果。
+
+#### 5.7.2.11 将 DDP 与模型并行（MP）结合（Combining DDP with Model Parallelism）
+
+DDP 也适用于多 GPU 模型。当训练具有大量数据的大型模型时，使用 DDP 包装多 GPU 模型特别有帮助。
+
+```python
+class ToyMpModel(nn.Module):
+    def __init__(self, dev0, dev1):
+        super(ToyMpModel, self).__init__()
+        self.dev0 = dev0  # 设备0
+        self.dev1 = dev1  # 设备1
+        self.net1 = torch.nn.Linear(10, 10).to(dev0)
+        self.relu = torch.nn.ReLU()
+        self.net2 = torch.nn.Linear(10, 5).to(dev1)
+
+    def forward(self, x):
+        x = x.to(self.dev0)  # 将特征图放到设备0上
+        x = self.relu(self.net1(x))
+        x = x.to(self.dev1)  # 将特征图放到设备1上
+        return self.net2(x)
+```
+
+当将多 GPU 模型传递给 DDP 时，不应设置 `device_ids` 和 `output_device`。输入和输出数据将由应用程序或模型的 `forward()` 方法放置在适当的设备上。
+
+```python
+import os
+import torch
+import torch.distributed as dist
+import torch.nn as nn
+import torch.optim as optim
+import torch.multiprocessing as mp
+
+from torch.nn.parallel import DistributedDataParallel as DDP
+
+
+def setup(rank, world_size):
+    os.environ['MASTER_ADDR'] = 'localhost'  # 设置主节点（MasterNode）的IP为本地主机
+    os.environ['MASTER_PORT'] = '12355'  # 设置主节点（MasterNode）的监听端口
+    
+    dist.init_process_group(backend='gloo',
+                            world_size=world_size,
+                            rank=rank)
+
+
+def cleanup():
+    dist.destroy_process_group()  # 关闭进程组
+
+
+class ToyMpModel(nn.Module):
+    def __init__(self, dev0, dev1):
+        super(ToyMpModel, self).__init__()
+        self.dev0 = dev0  # 设备0
+        self.dev1 = dev1  # 设备1
+        self.net1 = torch.nn.Linear(10, 10).to(dev0)
+        self.relu = torch.nn.ReLU()
+        self.net2 = torch.nn.Linear(10, 5).to(dev1)
+
+    def forward(self, x):
+        x = x.to(self.dev0)  # 将特征图放到设备0上
+        print(f"已加载到设备-{self.dev0}")
+        x = self.relu(self.net1(x))
+
+        x = x.to(self.dev1)  # 将特征图放到设备1上
+        print(f"已加载到设备-{self.dev1}")
+        return self.net2(x)
+    
+    
+def demo_model_parallel(rank, world_size):
+    print(f"Running DDP with model parallel example on rank {rank}.")
+    setup(rank, world_size)
+
+    # setup mp_model and devices for this process
+    # 确保每个进程处理两个相邻的 GPU 设备
+    dev0 = rank * 2  # 奇数
+    dev1 = rank * 2 + 1  # 偶数
+    print(f"[rank{rank}] {dev0=}    {dev1=}")
+    mp_model = ToyMpModel(dev0, dev1)
+    ddp_mp_model = DDP(mp_model)
+
+    loss_fn = nn.MSELoss()
+    optimizer = optim.SGD(ddp_mp_model.parameters(), lr=0.001)
+
+    optimizer.zero_grad()
+    # outputs will be on dev1
+    outputs = ddp_mp_model(torch.randn(20, 10))
+    labels = torch.randn(20, 5).to(dev1)
+    loss_fn(outputs, labels).backward()
+    optimizer.step()
+
+    cleanup()
+    
+    
+def run_demo(demo_fn, world_size):
+    mp.spawn(demo_fn, 
+             args=(world_size,),
+             nprocs=world_size,
+             join=True)
+
+
+if __name__ == "__main__":
+    n_gpus = torch.cuda.device_count()  # 计算GPU个数
+    print(f"{n_gpus = }")
+    
+    assert n_gpus >= 2, f"Requires at least 2 GPUs to run, but got {n_gpus}"
+    
+    # world_size = n_gpus
+    world_size = n_gpus // 2  # 因为涉及到了模型并行MP，这里我们是一个模型被分为了两部分，所以就是一个线程负责模型的两部分，需要两个GPU
+    run_demo(demo_model_parallel, world_size)
+```
+
+```
+n_gpus = 8
+
+Running DDP with model parallel example on rank 1.
+Running DDP with model parallel example on rank 2.
+Running DDP with model parallel example on rank 0.
+Running DDP with model parallel example on rank 3.
+
+[rank0] dev0=0    dev1=1
+[rank3] dev0=6    dev1=7
+[rank2] dev0=4    dev1=5
+[rank1] dev0=2    dev1=3
+
+已加载到设备-0
+已加载到设备-4
+
+已加载到设备-6
+已加载到设备-2
+
+已加载到设备-7
+已加载到设备-3
+
+已加载到设备-5
+已加载到设备-1
+```
+
+#### 5.7.2.12 使用 torch.distributed.run/torchrun 初始化 DDP
+
+我们可以利用 PyTorch Elastic 来简化 DDP 代码，更容易地初始化作业。让我们仍然使用 Toymodel 示例，并创建一个名为 `exp5-elastic_ddp.py` 的文件。
+
+```python
+import torch
+import torch.distributed as dist
+import torch.nn as nn
+import torch.optim as optim
+
+from torch.nn.parallel import DistributedDataParallel as DDP
+
+
+class ToyModel(nn.Module):
+    def __init__(self):
+        super(ToyModel, self).__init__()
+        self.net1 = nn.Linear(10, 10)
+        self.relu = nn.ReLU()
+        self.net2 = nn.Linear(10, 5)
+
+    def forward(self, x):
+        return self.net2(self.relu(self.net1(x)))
+
+
+def demo_basic():
+    dist.init_process_group("nccl")
+    rank = dist.get_rank()  # 获取线程rank
+    # print(f"Start running basic DDP example on rank {rank}.")
+
+    # create model and move it to GPU with id rank
+    device_id = rank % torch.cuda.device_count()
+    print(f"{device_id = }\t{rank = }")
+    model = ToyModel().to(device_id)
+    ddp_model = DDP(model, device_ids=[device_id])  # device_ids必须用list
+
+    loss_fn = nn.MSELoss()
+    optimizer = optim.SGD(ddp_model.parameters(), lr=0.001)
+
+    optimizer.zero_grad()
+    outputs = ddp_model(torch.randn(20, 10))
+    labels = torch.randn(20, 5).to(device_id)
+    loss_fn(outputs, labels).backward()
+    optimizer.step()
+    dist.destroy_process_group()
+
+
+if __name__ == "__main__":
+    demo_basic()
+```
+
+然后我们可以在所有节点上运行 `torch elastic` 或者 `torchrun` 命令来初始化上述创建的 DDP 作业：
+
+```bash
+#!/bin/bash
+export CUDA_VISIBLE_DEVICES=1,2,3,4,5,6,7
+
+# 方法1
+torchrun --nproc_per_node 7 --master_port 34231 learn-20240218/exp5-elastic_ddp.py
+
+# 方法2
+python -m torch.distributed.launch --nproc_per_node 7 --master_port 34231 learn-20240218/exp5-elastic_ddp.py
+```
+
+```
+device_id = 0   rank = 0
+device_id = 2   rank = 2
+device_id = 4   rank = 4
+device_id = 5   rank = 5
+device_id = 3   rank = 3
+device_id = 1   rank = 1
+device_id = 6   rank = 6
+```
+
+〔**命令解析**〕：
+- `--nproc_per_node=7`: 此参数指定每个节点上的进程数。在这里，设置为 7，意味着每个节点上将有 7 个进程，如果是一个 GPU 一个进程，那么就意味着有 7 个 GPU。
+- `--master_port=34231`: 主节点（MasterNode）监听端口
+
+#### 5.7.2.13 单机模型并行（Model Parallel，MP）练习
+
+模型并行（Model Parallel，MP）在分布式训练技术中得到了广泛应用。之前的内容解释了如何使用 DataParallel 在多个 GPU 上训练神经网络，这个特性将同一个模型复制到所有 GPU 上，每个 GPU 处理输入数据的不同的分区。尽管它可以显著加速训练过程，但它不适用于一些场景，在这些场景中，模型太大，无法放入单个 GPU 中。
+
+接下来将展示如何使用模型并行（MP）来解决该问题，与 DataParallel 不同，MP 将单个模型分割到不同的 GPU 上，而不是在每个 GPU 上复制整个模型（具体来说，假设一个模型 m 包含 10 层：当使用 DataParallel 时，每个 GPU 都将拥有这些 10 层的副本，而当在两个 GPU 上使用 MP 时，每个 GPU 可能托管 5 层）。
+
+MP 的高级思想是将模型的不同子网络放置在不同的设备上，并相应地实现 `forward` 方法，以在不同设备之间移动中间输出。由于只有模型的部分在单个设备上运行，一组设备可以共同处理更大的模型。在本文中，我们不会尝试构建巨大的模型并将它们挤压到有限数量的 GPU 上。相反，本文的重点是展示模型并行的想法。将想法应用到实际应用中取决于读者。
+
+〔**简单示例**〕
+
+让我们从一个包含两个线性层的玩具模型开始。为了在两个 GPU 上运行这个模型，只需将每个线性层放在不同的 GPU 上，并相应地移动输入和中间输出以匹配层设备。
+
+```python
+import torch
+import torch.nn as nn
+import torch.optim as optim
+
+
+class ToyModel(nn.Module):
+    def __init__(self):
+        super(ToyModel, self).__init__()
+        self.net1 = torch.nn.Linear(10, 10).to('cuda:0')
+        self.relu = torch.nn.ReLU()
+        self.net2 = torch.nn.Linear(10, 5).to('cuda:1')
+
+    def forward(self, x):
+        x = self.relu(self.net1(x.to('cuda:0')))
+        return self.net2(x.to('cuda:1'))
+```
+
+注意，上述 ToyModel 看起来与如何在单个 GPU 上实现它非常相似，除了四个 `.to(device)` 调用，这些调用将线性层和张量放置在适当的设备上。这是模型中唯一需要更改的地方。`.backward()` 和 `torch.optim` 将自动处理梯度，就像模型在单个 GPU 上一样。我们只需要确保在调用损失函数时，标签位于与输出相同的设备上。
+
+```python
+model = ToyModel()
+loss_fn = nn.MSELoss()
+optimizer = optim.SGD(model.parameters(), lr=0.001)
+
+optimizer.zero_grad()
+outputs = model(torch.randn(20, 10))
+labels = torch.randn(20, 5).to('cuda:1')  # 要与 output 的设备类型统一
+loss_fn(outputs, labels).backward()
+optimizer.step()
+```
+
+〔**将模型并行应用于现有模块**〕
+
+我们还可以仅通过几行代码更改，将现有的单 GPU 模块运行在多个 GPU 上。下面的代码展示了如何将 `torchvision.models.resnet50()` 分解到两个 GPU 上。想法是继承现有的 ResNet 模块，并在构造过程中将层分割到两个 GPU 上。然后，覆盖 forward 方法，通过相应地移动中间输出将两个子网络拼接在一起。
+
+```python
+import time
+import torch.nn as nn
+from torchvision.models.resnet import ResNet, Bottleneck, resnet50
+
+
+class ModelParallelResNet50(ResNet):
+    def __init__(self, *args, **kwargs):
+        super(ModelParallelResNet50, self).__init__(
+            Bottleneck, [3, 4, 6, 3], num_classes=1000, *args, **kwargs)
+
+        self.seq1 = nn.Sequential(
+            self.conv1,
+            self.bn1,
+            self.relu,
+            self.maxpool,
+
+            self.layer1,
+            self.layer2
+        ).to('cuda:0')
+
+        self.seq2 = nn.Sequential(
+            self.layer3,
+            self.layer4,
+            self.avgpool,
+        ).to('cuda:1')
+
+        self.fc.to('cuda:1')
+
+    def forward(self, x):
+        x = self.seq2(self.seq1(x).to('cuda:1'))
+        return self.fc(x.view(x.size(0), -1))
+    
+    
+if __name__ == "__main__":
+    
+    # warm-up
+    model = resnet50().to(0)
+    del model
+    
+    # MP
+    t1 = time.time()
+    model = ModelParallelResNet50()
+    t2 = time.time()
+    print(f"MP: {t2 - t1 = }")
+    
+    # release gpu
+    del model
+
+    # without MP
+    t1 = time.time()
+    model = resnet50().to(0)
+    t2 = time.time()
+    print(f"No MP: {t2 - t1 = }")
+```
+
+```
+MP:    t2 - t1 = 3.3101274967193604
+No MP: t2 - t1 = 0.39362549781799316
+```
+
+上述实现解决了模型太大无法放入单个 GPU 的情况。然而如果模型适合单个 GPU，它的速度会比在单个 GPU 上运行慢。这是因为，**在任何时刻，只有两个 GPU 中的一个在工作，而另一个则无所事事**。随着中间输出需要在层 2 和层 3 之间从 cuda:0 复制到 cuda:1，性能进一步恶化。
+
+让我们进行一个实验，以获得更定量的执行时间视图。在这个实验中，我们通过运行随机输入和标签来训练 ModelParallelResNet50 和现有的 torchvision.models.resnet50()。训练结束后，模型不会产生任何有用的预测，但我们可以对执行时间有一个合理的了解。
+
+```python
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torchvision.models.resnet import ResNet, Bottleneck
+import matplotlib.pyplot as plt
+plt.switch_backend('Agg')
+import numpy as np
+import timeit
+
+
+class ModelParallelResNet50(ResNet):
+    def __init__(self, *args, **kwargs):
+        super(ModelParallelResNet50, self).__init__(
+            Bottleneck, [3, 4, 6, 3], num_classes=1000, *args, **kwargs)
+
+        self.seq1 = nn.Sequential(
+            self.conv1,
+            self.bn1,
+            self.relu,
+            self.maxpool,
+
+            self.layer1,
+            self.layer2
+        ).to('cuda:0')
+
+        self.seq2 = nn.Sequential(
+            self.layer3,
+            self.layer4,
+            self.avgpool,
+        ).to('cuda:1')
+
+        self.fc.to('cuda:1')
+
+    def forward(self, x):
+        x = self.seq2(self.seq1(x).to('cuda:1'))
+        return self.fc(x.view(x.size(0), -1))
+
+
+def train(model):
+    model.train(True)
+    loss_fn = nn.MSELoss()
+    optimizer = optim.SGD(model.parameters(), lr=0.001)
+
+    one_hot_indices = torch.LongTensor(batch_size).random_(0, num_classes).view(batch_size, 1)
+
+    for _ in range(num_batches):
+        # generate random inputs and labels
+        inputs = torch.randn(batch_size, 3, image_w, image_h)
+        labels = torch.zeros(batch_size, num_classes).scatter_(1, one_hot_indices, 1)
+
+        # run forward pass
+        optimizer.zero_grad()
+        outputs = model(inputs.to('cuda:0'))
+
+        # run backward pass
+        labels = labels.to(outputs.device)
+        loss_fn(outputs, labels).backward()
+        optimizer.step()
+        
+        
+def plot(means, stds, labels, fig_name):
+    fig, ax = plt.subplots()
+    ax.bar(np.arange(len(means)), means, yerr=stds,
+        align='center', alpha=0.5, ecolor='red', capsize=10, width=0.6)
+    ax.set_ylabel('ResNet50 Execution Time (Second)')
+    ax.set_xticks(np.arange(len(means)))
+    ax.set_xticklabels(labels)
+    ax.yaxis.grid(True)
+    plt.tight_layout()
+    plt.savefig(fig_name)
+    plt.close(fig)
+        
+
+if __name__ == "__main__":
+    num_batches = 3
+    batch_size = 120
+    image_w = 128
+    image_h = 128
+    num_classes = 1000
+
+    num_repeat = 10
+
+    stmt = "train(model)"
+
+    setup = "model = ModelParallelResNet50()"
+    mp_run_times = timeit.repeat(stmt, setup, number=1, repeat=num_repeat, globals=globals())
+    mp_run_times = mp_run_times[1:]  # 舍弃第一次的结果
+    mp_mean, mp_std = np.mean(mp_run_times), np.std(mp_run_times)
+    print(f"{mp_mean = :.4f}")
+    print(f"{mp_std = :.4f}\n")
+
+    setup = "import torchvision.models as models;" + "model = models.resnet50(num_classes=num_classes).to('cuda:0')"
+    rn_run_times = timeit.repeat(stmt, setup, number=1, repeat=num_repeat, globals=globals())
+    rn_run_times = rn_run_times[1:]
+    rn_mean, rn_std = np.mean(rn_run_times), np.std(rn_run_times)
+    print(f"{rn_mean = :.4f}")
+    print(f"{rn_std = :.4f}")
+
+    plot([mp_mean, rn_mean],
+        [mp_std, rn_std],
+        ['Model Parallel', 'Single GPU'],
+        'mp_vs_rn.png')
+```
+
+```
+mp_mean = 0.5374
+mp_std = 0.0056
+
+rn_mean = 0.5002
+rn_std = 0.0039
+```
+
+<div align=center>
+    <img src=./imgs_markdown/2024-02-18-17-35-19.png
+    width=65%>
+    <center></center>
+</div>
+
+上面的 `train(model)` 方法使用 `nn.MSELoss` 作为损失函数，`optim.SGD` 作为优化器。它模拟了对 128x128 图像的训练，这些图像被组织成 3 个 Batch，每个 Batch 包含 120 张图像。然后，我们使用 `timeit` 运行 `train(model)` 方法 10 次，并绘制执行时间及其标准差。
+
+结果显示，模型并行实现的执行时间比现有的单 GPU 实现长了 (0.5374/0.5002-1)*100=7.44%。因此，我们可以得出结论，在 GPU 之间复制张量的大致开销为 7%。有改进的空间，因为我们都知道在整个执行过程中，两个 GPU 中的一个处于闲置状态。一个选项是将每个 Batch 进一步划分为一系列的分割，这样当一个分割到达第二个子网络时，接下来的分割可以被输入到第一个子网络。通过这种方式，两个连续的分割可以在两个 GPU 上同时运行。
+
+> 在上述描述中，提到的“分割”（splits）是一种假设的模型并行策略，用于优化模型并行训练中的 GPU 利用率。这种策略的核心思想是将每个训练批次（Batch）进一步细分成多个更小的部分，并确保这些部分在两个 GPU 之间均匀分布。
+> 
+> 这里是一个简化的例子来说明这个策略：
+> 
+> 假设我们有一个批次（Batch）包含 128 个图像，并且我们有两个 GPU。如果我们按照传统的模型并行方法，我们可能会将前 64 个图像分配给 GPU 0，将后 64 个图像分配给 GPU 1。这样，在处理完前 64 个图像并将其结果发送到 GPU 1 之后，GPU 0 会等待 GPU 1 处理完后 64 个图像。这种情况下，GPU 0 会有一段时间处于闲置状态。
+> 
+> 为了解决这个问题，我们可以将每个 Batch 进一步划分为多个“分割”（splits）。例如，我们可以将每个 Batch 划分为 4 个分割，每个分割包含 32 个图像。这样，每个 GPU 都会同时处理两个分割。当一个分割在 GPU 0 上处理完并到达第二个子网络时，GPU 1 已经处理完其第一个分割，并准备接收 GPU 0 的第二个分割。通过这种方式，两个 GPU 可以更有效地并行工作，减少闲置时间。
+> 
+> 请注意，这只是一个示例，实际的分割策略可能会根据模型的结构和数据的特点而有所不同。这种策略的关键是确保每个 GPU 都有连续的输入数据处理，从而减少 GPU 之间的等待时间，提高训练效率。
+>
+> 上述的方式如下图所示：
+>
+> <div align=center>
+>     <img src=./imgs_markdown/plots-MP.jpg
+>     width=100%>
+>     <center></center>
+> </div>
+
+〔**通过流水线输入 (Pipelining Inputs) 加速**〕
+
+在接下来的实验中，我们将每个包含 120 张图像的 Batch 进一步划分为 60 张图像的分割。由于 PyTorch 以异步方式启动 CUDA 操作，实现不需要 `spawn` 多个线程来达到并发性。
+
+```python
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torchvision.models.resnet import ResNet, Bottleneck
+import matplotlib.pyplot as plt
+plt.switch_backend('Agg')
+import numpy as np
+import timeit
+import prettytable
+
+
+class ModelParallelResNet50(ResNet):
+    def __init__(self, *args, **kwargs):
+        super(ModelParallelResNet50, self).__init__(
+            Bottleneck, [3, 4, 6, 3], num_classes=1000, *args, **kwargs)
+
+        self.seq1 = nn.Sequential(
+            self.conv1,
+            self.bn1,
+            self.relu,
+            self.maxpool,
+
+            self.layer1,
+            self.layer2
+        ).to('cuda:0')
+
+        self.seq2 = nn.Sequential(
+            self.layer3,
+            self.layer4,
+            self.avgpool,
+        ).to('cuda:1')
+
+        self.fc.to('cuda:1')
+
+    def forward(self, x):
+        x = self.seq2(self.seq1(x).to('cuda:1'))
+        return self.fc(x.view(x.size(0), -1))
+    
+    
+class PipelineParallelResNet50(ModelParallelResNet50):
+    """这个类使用了流水线并行技术，将输入数据分割成更小的部分，并在两个不同的GPU上并行处理。
+        seq1和seq2是ResNet50模型的不同部分，它们在不同的GPU上运行。
+        通过这种方式，可以最大化GPU的利用率和计算效率。
+    """
+    def __init__(self, split_size=60, *args, **kwargs):
+        super(PipelineParallelResNet50, self).__init__(*args, **kwargs)
+        self.split_size = split_size  # 设置split_size参数，用于将输入数据分割成更小的部分
+
+    def forward(self, x):
+        splits = iter(x.split(self.split_size, dim=0))  # 沿着batch维度进行split，并使其变为可迭代对象
+        s_next = next(splits)  # 获取下一个分割的数据
+        s_prev = self.seq1(s_next).to('cuda:1')  # 将分割的数据通过seq1处理，并将结果发送到cuda:1
+        ret = []  # 创建一个空列表，用于存储处理结果
+
+        for s_next in splits:
+            # A. ``s_prev`` runs on ``cuda:1``
+            s_prev = self.seq2(s_prev)  # 在cuda:1上处理s_prev
+            ret.append(self.fc(s_prev.view(s_prev.size(0), -1)))  # 将处理结果通过全连接层，并将结果添加到ret列表中
+
+            # B. ``s_next`` runs on ``cuda:0``, which can run concurrently with A
+            s_prev = self.seq1(s_next).to('cuda:1')  # 在cuda:0上处理s_next，并将结果发送到cuda:1
+
+        s_prev = self.seq2(s_prev)  # 处理最后一个分割的数据
+        ret.append(self.fc(s_prev.view(s_prev.size(0), -1)))  # 将处理结果添加到ret列表中
+
+        return torch.cat(ret)  # 将所有处理结果拼接起来，并返回
+
+
+def train(model):
+    model.train(True)
+    loss_fn = nn.MSELoss()
+    optimizer = optim.SGD(model.parameters(), lr=0.001)
+
+    one_hot_indices = torch.LongTensor(batch_size).random_(0, num_classes).view(batch_size, 1)
+
+    for _ in range(num_batches):
+        # generate random inputs and labels
+        inputs = torch.randn(batch_size, 3, image_w, image_h)
+        labels = torch.zeros(batch_size, num_classes).scatter_(1, one_hot_indices, 1)
+
+        # run forward pass
+        optimizer.zero_grad()
+        outputs = model(inputs.to('cuda:0'))
+
+        # run backward pass
+        labels = labels.to(outputs.device)
+        loss_fn(outputs, labels).backward()
+        optimizer.step()
+        
+        
+def plot(means, stds, labels, fig_name):
+    fig, ax = plt.subplots()
+    ax.bar(np.arange(len(means)), means, yerr=stds,
+        align='center', alpha=0.5, ecolor='red', capsize=10, width=0.6)
+    ax.set_ylabel('ResNet50 Execution Time (Second)')
+    ax.set_xticks(np.arange(len(means)))
+    ax.set_xticklabels(labels)
+    ax.yaxis.grid(True)
+    plt.tight_layout()
+    plt.savefig(fig_name)
+    plt.close(fig)
+        
+
+if __name__ == "__main__":
+    num_batches = 3
+    batch_size = 120
+    image_w = 128
+    image_h = 128
+    num_classes = 1000
+    num_repeat = 10
+    
+    ptable = prettytable.PrettyTable(["model", 'mean', 'std'])
+    ptable.border = True
+
+    stmt = "train(model)"
+
+    setup = "model = ModelParallelResNet50()"
+    mp_run_times = timeit.repeat(stmt, setup, number=1, repeat=num_repeat, globals=globals())[1:]  # 舍弃第一次的结果
+    mp_mean, mp_std = np.mean(mp_run_times), np.std(mp_run_times)
+    ptable.add_row(['Model Parallel', round(mp_mean, 4), round(mp_std, 4)])
+
+    setup = "import torchvision.models as models;" + "model = models.resnet50(num_classes=num_classes).to('cuda:0')"
+    rn_run_times = timeit.repeat(stmt, setup, number=1, repeat=num_repeat, globals=globals())[1:]
+    rn_mean, rn_std = np.mean(rn_run_times), np.std(rn_run_times)
+    ptable.add_row(['Single GPU', round(rn_mean, 4), round(rn_std, 4)])
+    
+    setup = "model = PipelineParallelResNet50()"
+    pp_run_times = timeit.repeat(stmt, setup, number=1, repeat=num_repeat, globals=globals())[1:]
+    pp_mean, pp_std = np.mean(pp_run_times), np.std(pp_run_times)
+    ptable.add_row(['Pipelining Model Parallel', round(pp_mean, 4), round(pp_std, 4)])
+    
+    print(ptable)
+
+    plot([mp_mean, rn_mean, pp_mean],
+        [mp_std, rn_std, pp_std],
+        ['Model Parallel', 'Single GPU', 'Pipelining Model Parallel'],
+        'mp_vs_rn_vs_pp.png')
+```
+
+```
++---------------------------+--------+--------+
+|           model           |  mean  |  std   |
++---------------------------+--------+--------+
+|       Model Parallel      | 0.5319 | 0.0077 |
+|         Single GPU        | 0.4971 | 0.0048 |
+| Pipelining Model Parallel | 0.5103 | 0.0099 |
++---------------------------+--------+--------+
+```
+
+<div align=center>
+    <img src=./imgs_markdown/2024-02-19-10-28-26.png
+    width=80%>
+    <center></center>
+</div>
+
+实验结果表明，将输入数据流水线化到模型并行的 ResNet50 可以加快训练过程，大约提高了 4.2328%（0.5319/0.5103-1）。这与 PyTorch 官方提供的结果相差有点大。
+
+> <div align=center>
+>     <img src=./imgs_markdown/2024-02-19-10-30-00.png
+>     width=80%>
+>     <center>PyTorch 官方提供的结果</center>
+> </div>
+>
+> 在 PyTorch 官方提供的结果中，使用 Pipline 的 MP 提升了 49% 的速度，但在我们的机器上并没有得出对应的结论（RTX 2080Ti）。
+
+
+由于在我们的流水线并行实现中引入了一个新的参数 `split_size`，目前尚不清楚这个新参数如何影响整体训练时间。直观地说，使用较小的 `split_size` 会导致许多微小的 CUDA 内核启动，而使用较大的 `split_size` 会在第一个和最后一个 split 期间导致相对较长的空闲时间。这两种情况都不理想。可能存在一个针对这个特定实验的最优 `split_size` 配置。让我们通过使用几个不同的 `split_size` 值进行实验来尝试找到它。
+
+```python
+...
+
+means = []
+stds = []
+split_sizes = [1, 3, 5, 8, 10, 12, 20, 40, 60, 80, 100]
+
+# 创建表格对象
+table = prettytable.PrettyTable()
+table.field_names = ["split_size", "mean", "std"]  # 添加列名
+table.border = True  # 设置表格格式
+
+for split_size in split_sizes:
+    setup = "model = PipelineParallelResNet50(split_size=%d)" % split_size
+    pp_run_times = timeit.repeat(stmt, setup, number=1, repeat=num_repeat, globals=globals())[1:]  # 去掉第一个结果以减少误差
+    means.append(np.mean(pp_run_times))
+    stds.append(np.std(pp_run_times))
+    # print(f"[split_size={split_size}]\n\tmean: {means[-1]:.4f}\n\tstd: {stds[-1]:.4f}")
+    table.add_row([split_size, round(means[-1], 4), round(stds[-1], 4)])  # 添加行数据
+    print(table)
+
+fig, ax = plt.subplots()
+ax.plot(split_sizes, means)
+ax.errorbar(split_sizes, means, yerr=stds, ecolor='red', fmt='ro')
+ax.set_ylabel('ResNet50 Execution Time (Second)')
+ax.set_xlabel('Pipeline Split Size')
+ax.set_xticks(split_sizes)
+ax.yaxis.grid(True)
+plt.tight_layout()
+plt.savefig("split_size_tradeoff.png")
+plt.close(fig)
+```
+
+```
++------------+--------+--------+
+| split_size |  mean  |  std   |
++------------+--------+--------+
+|     1      | 7.2939 | 0.1057 |
+|     3      | 2.7698 | 0.0721 |
+|     5      | 1.7975 |  0.02  |
+|     8      | 1.273  |  0.02  |
+|     10     | 1.0167 | 0.0288 |
+|     12     | 0.8842 | 0.0442 |
+|     20     | 0.7015 | 0.0263 |
+|     40     | 0.5397 | 0.0103 |
+|     60     | 0.5086 | 0.0157 |
+|     80     | 0.5375 | 0.0113 |
+|    100     | 0.5584 | 0.0048 |
++------------+--------+--------+
+```
+
+<div align=center>
+    <img src=./imgs_markdown/2024-02-19-10-22-14.png
+    width=80%>
+    <center></center>
+</div>
+
+结果显示，将 `split_size` 设置为 60 可以实现最快的训练速度，这导致了 54%（3.75/2.43-1）的速度提升。仍然有机会进一步加速训练过程。例如，所有在 cuda:0 上的操作都被放置在其默认流上。这意味着下一个 split 的计算无法与上一个 split 的复制操作重叠。然而，由于 prev 和 next splits 是不同的张量，重叠一个的计算与另一个的复制是没有问题的。实现需要在两个 GPU 上使用多个流，并且不同的子网络结构需要不同的流管理策略。
+
+> ⚠️ 该结果也与 PyTorch 官方提供的结果有差异，PyTorch 官方提供的结果如下：
+> 
+> <div align=center>
+>     <img src=./imgs_markdown/2024-02-19-10-32-05.png
+>     width=80%>
+>     <center>PyTorch 官方提供的结果</center>
+> </div>
+> 
+> 在该结果中，`split_size` 的最佳结果为 12，而我们的最佳结果是 60。
+
+
+💡 这篇文章展示了几种性能测量。当我们在自己的机器上运行相同代码时，可能会看到不同的数字，因为结果取决于底层硬件和软件。为了获得我们环境下的最佳性能，一个合适的方法是首先生成曲线以确定最佳的分割大小，然后使用该分割大小来流水线化输入。
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1492,3 +2548,4 @@ model = DistributedDataParallel(model, device_ids=[i], output_device=i)
 1. 〔视频教程〕[YOLOv5入门到精通！不愧是公认的讲的最好的【目标检测全套教程】同济大佬12小时带我们从入门到进阶（YOLO/目标检测/环境部署+项目实战/Python/）](https://www.bilibili.com/video/BV1YG411876u?p=13)
 2. 〔PyTorch 官方文档〕[torch.cuda.amp.autocast](https://pytorch.org/docs/stable/amp.html#torch.cuda.amp.autocast)
 3. 〔PyTorch 官方文档〕[torch.cuda.amp.GradScaler](https://pytorch.org/docs/stable/amp.html#torch.cuda.amp.GradScaler)
+3. 〔PyTorch 官方文档〕[PyTorch Distributed Overview](https://pytorch.org/tutorials/beginner/dist_overview.html)
