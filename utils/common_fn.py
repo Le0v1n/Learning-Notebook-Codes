@@ -174,7 +174,7 @@ def xprint(content:str, color=None, bg_color=None, underline=False, bold=False, 
         if not pprint:
             print(content)
         else:
-            _pprint(content)
+            _pprint.pprint(content)
             
         xprint("⚠️ The content doesn't string, some functions don't work!", color='red')
         return
