@@ -1323,7 +1323,7 @@ if __name__=="__main__":
 
 ---
 
-<kbd><b>Question</b></kbd>：节点又是什么？
+<kbd><b>Question</b></kbd>：节点又是什么？<a id="explanation-node"></a>
 
 <kbd><b>Answer</b></kbd>：在 PyTorch 的分布式训练中，<font color='red'>节点可以是一个物理服务器，也可以是一个虚拟机</font>，只要它能够运行 Python 程序并能够与网络中的其他节点通信。
 
@@ -2521,25 +2521,106 @@ plt.close(fig)
 > 
 > 在该结果中，`split_size` 的最佳结果为 12，而我们的最佳结果是 60。
 
-
 💡 这篇文章展示了几种性能测量。当我们在自己的机器上运行相同代码时，可能会看到不同的数字，因为结果取决于底层硬件和软件。为了获得我们环境下的最佳性能，一个合适的方法是首先生成曲线以确定最佳的分割大小，然后使用该分割大小来流水线化输入。
 
+## 5.8 Parallelizing Data Loading 并行化数据加载
 
+<div align=center>
+    <img src=./imgs_markdown/plots-数据加载.jpg
+    width=100%>
+    <center></center>
+</div>
 
+---
 
+〔**DP流程**〕
 
+1. Transfer minibatch data from page-locked memory to GPU 0 (master). Master GPU also holds the model. Other GPUs have a stale copy of the model.
+    将小批量 (minibatch) 数据从页锁定内存传输到 GPU 0（主 GPU）。主 GPU 还保存着模型。其他 GPU 则保存着模型的旧副本
+2. Scatter minibatch data across GPUs
+    在多个 GPU 上分散小批量数据
+3. Replicate model across GPUs
+    在多个 GPU 上复制模型
+4. Run forward pass on each GPU, compute output. PyTorch implementataion spins up separate threads to parallelize forward pass
+    在每个 GPU 上运行前向传播，计算输出。PyTorch 实现会启动 (spin up) 单独的线程来并行化前向传播
+5. Gather ouput on master GPU, compute loss
+    在主 GPU 上收集输出，计算损失
+6. Scatter loss to GPUs and run backward pass to calculate parameter gradients
+    在 GPU 上分散损失并运行反向传播以计算参数梯度
+7. Reduce gradients on GPU 0
+    在 GPU 0 上减少梯度
+8. Update model's parameters
+    更新模型的参数
 
+---
 
+〔**DDP流程**〕
 
+1. Load data from disk into page-locked memory on the host. Use multiple worker processes to parallelize data load. Distributed mini-batch sampler ensures that each process loads non-overlapping data
+    将数据从磁盘加载到主机上的页锁定内存中。使用多个工作进程来并行加载数据。**分布式小批量采样器确保每个进程加载不重叠的数据**
+2. Trasfer mini-batch data from page-locked memory to each GPU concurrently. No data broadcast is needed. Each GPU has an identical copy of the model and no model broadcast is needed either
+    同时将小批量数据从页锁定内存传输到每个 GPU。无需数据广播。每个 GPU 都有模型的相同副本，也无需模型广播
+3. Run forward pass on each GPU, compute output
+    在每个 GPU 上运行前向传播，计算输出
+4. Compute loss, run backward pass to compute gradients. Perform gradient all-reduce in parallel with gradient computation
+    计算损失，运行反向传播以计算梯度。在与梯度计算并行的情况下执行梯度全归约
+5. Update model's parameters. Because each GPU started with identical copy of the model and gradients were all-reduced, weights updates on all GPUs are identical. Thus no model sync is required.
+    更新模型的参数。<font color='red'><b>由于每个 GPU 都是从相同的模型副本开始的，并且梯度已经全归约，所以所有 GPU 上的权重更新都是相同的。因此，不需要模型同步</b></font>
 
+## 5.9 YOLOv5 开启 GPU 训练
 
+> 相关 Issue：[Multi-GPU Training 🌟 #475](https://github.com/ultralytics/yolov5/issues/475)
 
+### 5.9.1 ✔️〔推荐〕单 GPU 训练
 
+```bash
+python train.py \
+    --weights weights/yolov5s.pt \
+    --data data/coco128.yaml \
+    --hyp data/hyps/hyp.scratch-low.yaml \
+    --epochs 150 \
+    --batch-size 64 \
+    --imgsz 640 \
+    --project runs/train \
+    --name exp
+    --device 0
+```
 
+### 5.9.2 ⚠️〔不推荐〕DP 训练
 
+```bash
+python train.py \
+    --weights weights/yolov5s.pt \
+    --data data/coco128.yaml \
+    --hyp data/hyps/hyp.scratch-low.yaml \
+    --epochs 150 \
+    --batch-size 64 \
+    --imgsz 640 \
+    --project runs/train \
+    --name exp \
+    --device 0,1
+```
 
+### 5.9.3 ✔️〔推荐〕DDP 训练
 
+```bash
+python -m torch.distributed.run \
+    --nproc_per_node 4 \  # 每个节点的 GPU 数量
+    train.py \
+    --weights weights/yolov5s.pt \
+    --data data/coco128.yaml \
+    --hyp data/hyps/hyp.scratch-low.yaml \
+    --epochs 150 \
+    --batch-size 64 \
+    --imgsz 640 \
+    --project runs/train \
+    --name exp \
+    --device 0,1,2,3
+```
 
+其中，`--nproc_per_node` 表明一个节点中 GPU 的数量
+
+> 关于节点是什么，我们在这里[node的说明](#explanation-node)进行了说明。
 
 
 
