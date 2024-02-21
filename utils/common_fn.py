@@ -4,6 +4,7 @@ import shutil
 import prettytable
 import re
 import random
+import pprint as _pprint
 
 
 def print_arguments(*args, **kwargs):
@@ -132,8 +133,15 @@ def find_text_place_length(text):
     return 2 * len(text) - alpha_matches - digit_matches - punct_matches
 
 
-def xprint(content, color=None, bg_color=None, underline=False, bold=False, end='\n', 
-           horizontal_line='', horizontal_line_length='paragraph', clear=False):
+def screen_clear(clear=False):
+    if os.name == 'nt':  # 如果是Windows系统
+        os.system('cls')
+    else:  # 如果是类Unix系统
+        os.system('clear')
+
+
+def xprint(content:str, color=None, bg_color=None, underline=False, bold=False, end='\n', 
+           horizontal_line='', horizontal_line_length='paragraph', clear=False, pprint=False):
     """自用的print方法
 
     Args:
@@ -146,46 +154,31 @@ def xprint(content, color=None, bg_color=None, underline=False, bold=False, end=
         horizontal_line (str, optional): 使用哪种水平线 (- = > < . _). Defaults to ''.
         horizontal_line_length (str, optional): 水平线的长度 (full / paragraph). Defaults to 'paragraph'.
         clear (bool, optional): 是否在打印前清空终端
+        pprint (bool, optional): 如果打印的内容不是字符串，且pprint=True，则使用pprint进行打印
     """
     # 定义 ANSI 转义码
-    font_colors = {
-        'red': 31,
-        'green': 32,
-        'yellow': 33,
-        'blue': 34,
-        'magenta': 35,
-        'cyan': 36,
-        'white': 37,
-        'bright_red': 91,
-        'bright_green': 92,
-        'bright_yellow': 93,
-        'bright_blue': 94,
-        'bright_magenta': 95,
-        'bright_cyan': 96,
-        'bright_white': 97,
-        'black': 30,
-        'gray': 90,
-    }
+    font_colors = {'red': 31, 'green': 32, 'yellow': 33, 'blue': 34, 'magenta': 35, 'cyan': 36, 'white': 37, 'bright_red': 91, 
+                   'bright_green': 92, 'bright_yellow': 93, 'bright_blue': 94, 'bright_magenta': 95, 'bright_cyan': 96, 
+                   'bright_white': 97, 'black': 30, 'gray': 90,}
 
-    bg_colors = {
-        'red': 41,
-        'green': 42,
-        'yellow': 43,
-        'blue': 44,
-        'magenta': 45,
-        'cyan': 46,
-        'white': 47,
-        'bg_bright_red': 101,
-        'bg_bright_green': 102,
-        'bg_bright_yellow': 103,
-        'bg_bright_blue': 104,
-        'bg_bright_magenta': 105,
-        'bg_bright_cyan': 106,
-        'bg_bright_white': 107,
-        'bg_black': 40,
-        'bg_gray': 100,
-    }
-    
+    bg_colors = {'red': 41, 'green': 42, 'yellow': 43, 'blue': 44, 'magenta': 45, 'cyan': 46, 'white': 47, 'bg_bright_red': 101, 
+                 'bg_bright_green': 102, 'bg_bright_yellow': 103, 'bg_bright_blue': 104, 'bg_bright_magenta': 105, 
+                 'bg_bright_cyan': 106, 'bg_bright_white': 107, 'bg_black': 40, 'bg_gray': 100,}
+                 
+    if not isinstance(content, str):
+        # 清空终端内容
+        if clear:
+            screen_clear(clear=clear)
+        
+        # 直接打印
+        if not pprint:
+            print(content)
+        else:
+            _pprint(content)
+            
+        xprint("⚠️ The content doesn't string, some functions don't work!", color='red')
+        return
+        
     start_code = ''  # 开始的转义码
     end_code = '\033[0m'  # 结束的转义码
     
@@ -210,7 +203,7 @@ def xprint(content, color=None, bg_color=None, underline=False, bold=False, end=
     # 设置加粗
     if bold:
         start_code += '\033[1m'
-        
+
     # 如果需要添加水平线
     if horizontal_line:
         if horizontal_line_length == 'full':  # 打印终端宽度的水平线
@@ -223,11 +216,9 @@ def xprint(content, color=None, bg_color=None, underline=False, bold=False, end=
             line_len = find_text_place_length(max_len_line)
             start_code = horizontal_line * line_len + '\n' + start_code
 
+    # 清空终端内容
     if clear:
-        if os.name == 'nt':  # 如果是Windows系统
-            os.system('cls')
-        else:  # 如果是类Unix系统
-            os.system('clear')
+        screen_clear(clear=clear)
 
     # 打印内容
     print(start_code + content + end_code, end=end)
