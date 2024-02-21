@@ -2618,11 +2618,97 @@ python -m torch.distributed.run \
     --device 0,1,2,3
 ```
 
-其中，`--nproc_per_node` 表明一个节点中 GPU 的数量
+其中：
+- `--nproc_per_node` 表明一个节点中 GPU 的数量
+- ⚠️ `--batch` 是<font color='red'><b>总批量（Batch）大小</b></font>。它将被均匀分配到每个 GPU 上。在上面的例子中，每个 GPU 的批量大小是 64 / 2 = 32。
 
-> 关于节点是什么，我们在这里[node的说明](#explanation-node)进行了说明。
+> 💡 关于节点是什么，我们在 [node的说明](#explanation-node) 中进行了说明。
 
+---
 
+〔**使用同步的 BN：syncBN**〕
+
+```bash
+python -m torch.distributed.run \
+    --nproc_per_node 4 \  # 每个节点的 GPU 数量
+    train.py \
+    --weights weights/yolov5s.pt \
+    --data data/coco128.yaml \
+    --hyp data/hyps/hyp.scratch-low.yaml \
+    --epochs 150 \
+    --batch-size 64 \
+    --imgsz 640 \
+    --project runs/train \
+    --name exp \
+    --device 0,1,2,3 \
+    --sync-bn
+```
+
+[SyncBatchNorm](https://blog.csdn.net/weixin_44878336/article/details/125412625) 可以提高多 GPU 训练的准确性，然而，<font color='red'><b>它会显著降低训练速度</b></font>。它仅适用于多 GPU 分布式数据并行训练。
+
+> 💡 当每个 GPU 上的 `batch_size ≤ 8` 时，使用效果最佳。
+
+---
+
+〔**多节点 DDP 训练**〕
+
+⚠️ 请确保所有机器上的文件相同，包括数据集、代码库等。之后，确保机器之间能够相互通信。
+
+我们需要选择一台主机器（其他机器将与之通信的机器）。记下其地址（master_addr）并选择一个端口（master_port）。在下面的例子中，我将使用` master_addr = 192.168.1.1` 和 `master_port = 1234`。
+
+```bash
+# On master machine 0
+python -m torch.distributed.run \
+    --nproc_per_node G \  # 每个节点的 GPU 数量
+    --nnodes N \
+    --node_rank 0 \
+    --master_addr "192.168.1.1" \
+    --master_port 1234 \
+    train.py \
+    --weights weights/yolov5s.pt \
+    --data data/coco128.yaml \
+    --hyp data/hyps/hyp.scratch-low.yaml \
+    --epochs 150 \
+    --batch-size 64 \
+    --imgsz 640 \
+    --project runs/train \
+    --name exp \
+    --device 0,1,2,3 \
+```
+
+```bash
+# On master machine R
+python -m torch.distributed.run \
+    --nproc_per_node G \  # 每个节点的 GPU 数量
+    --nnodes N \
+    --node_rank 0 \
+    --master_addr "192.168.1.1" \
+    --master_port 1234 \
+    train.py \
+    --weights weights/yolov5s.pt \
+    --data data/coco128.yaml \
+    --hyp data/hyps/hyp.scratch-low.yaml \
+    --epochs 150 \
+    --batch-size 64 \
+    --imgsz 640 \
+    --project runs/train \
+    --name exp \
+    --device 0,1,2,3 \
+```
+
+其中 G 是每台机器的 GPU 数量，N 是机器的数量，R 是从 0 到 (N-1) 的机器编号。假设我们有两台机器，每台机器有两个 GPU，那么上述情况中 G = 2，N = 2，R = 1。
+
+训练将在所有 N 台机器连接后开始。输出将只在主机器上显示！
+
+⚠️ 注意事项：
+- Windows 支持未经测试，建议使用 Linux
+- `--batch` 必须是 GPU 数量的倍数
+- GPU 0 将比其他 GPU 占用更多内存，因为它需要维护 EMA 并负责检查点等操作
+- 如果我们遇到 `RuntimeError: Address already in use`，这可能是因为我们同时运行了多个训练。要解决这个问题，只需通过添加 `--master_port` 像下面这样使用一个不同的端口号：
+
+```bash
+python -m torch.distributed.run --master_port 1234 --nproc_per_node 2 ...
+```
 
 # 参考
 
