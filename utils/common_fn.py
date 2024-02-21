@@ -132,18 +132,20 @@ def find_text_place_length(text):
     return 2 * len(text) - alpha_matches - digit_matches - punct_matches
 
 
-def xprint(content, color=None, bg_color=None, underline=False, bold=False, end='\n', horizontal_line='', horizontal_line_length='paragraph'):
+def xprint(content, color=None, bg_color=None, underline=False, bold=False, end='\n', 
+           horizontal_line='', horizontal_line_length='paragraph', clear=False):
     """自用的print方法
 
     Args:
-        content (_str_): 想要print的文字
-        color (_str_, optional): red/random. Defaults to None.
-        bg_color (_str_, optional): red/random. Defaults to None.
+        content (str): 想要print的文字
+        color (str, optional): red/random. Defaults to None.
+        bg_color (str, optional): red/random. Defaults to None.
         underline (bool, optional): 是否使用下划线. Defaults to False.
         bold (bool, optional): 是否使用粗体. Defaults to False.
-        end (_str_, optional): 结尾. Defaults to '\n'.
-        horizontal_line (_str_, optional): 使用哪种水平线 (- = > < . _). Defaults to ''.
-        horizontal_line_length (_str_, optional): 水平线的长度 (full / paragraph). Defaults to 'paragraph'.
+        end (str, optional): 结尾. Defaults to '\n'.
+        horizontal_line (str, optional): 使用哪种水平线 (- = > < . _). Defaults to ''.
+        horizontal_line_length (str, optional): 水平线的长度 (full / paragraph). Defaults to 'paragraph'.
+        clear (bool, optional): 是否在打印前清空终端
     """
     # 定义 ANSI 转义码
     font_colors = {
@@ -213,14 +215,20 @@ def xprint(content, color=None, bg_color=None, underline=False, bold=False, end=
     if horizontal_line:
         if horizontal_line_length == 'full':  # 打印终端宽度的水平线
             terminal_width = shutil.get_terminal_size((80, 20)).columns  # 获取终端宽度
-            print(horizontal_line * terminal_width)  # 根据终端宽度打印水平线
+            start_code = horizontal_line * terminal_width + '\n' + start_code  # 根据终端宽度打印水平线
         if horizontal_line_length == 'paragraph':  # 根据内容打印合适宽度的水平线
             # 根据换行符分割
             lines = content.split("\n")
             max_len_line = max(lines, key=find_text_place_length)
             line_len = find_text_place_length(max_len_line)
-            print(horizontal_line * line_len)
-        
+            start_code = horizontal_line * line_len + '\n' + start_code
+
+    if clear:
+        if os.name == 'nt':  # 如果是Windows系统
+            os.system('cls')
+        else:  # 如果是类Unix系统
+            os.system('clear')
+
     # 打印内容
     print(start_code + content + end_code, end=end)
     
