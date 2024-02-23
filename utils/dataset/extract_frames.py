@@ -1,19 +1,26 @@
-"""
-+ 脚本说明：根据帧间隔对某个文件夹下指定类型的视频文件进行抽帧，得到系列图片。
-  + 视频文件所在文件夹名称: `EXAMPLE_FOLDER`
-  + 抽帧得到的文件夹名称: `EXAMPLE_FOLDER/extract_frames_results/test_vid_0001.jpg`
-+ 用途：将拍摄得到的视频转换为常用的数据集
-+ 要求：无
-"""
-import cv2
 import os
+import sys
+import cv2
 import tqdm
 import tabulate
 import threading
 
+sys.path.append(os.getcwd())
+from utils.common_fn import print_arguments, xprint, create_folder
+
+
+__doc__ = """脚本说明：根据帧间隔对某个文件夹下指定类型的视频文件进行抽帧，得到系列图片。
+    参数:
+        视频文件所在文件夹名称: EXAMPLE_FOLDER
+        抽帧得到的文件夹名称: EXAMPLE_FOLDER/extract_frames_results/test_vid_0001.jpg
+    用途：将拍摄得到的视频转换为常用的数据集
+    要求：无
+"""
+xprint(__doc__, color='blue', bold=True, horizontal_line="=", horizontal_line_num=2)
+
 
 """============================ 需要修改的地方 ==================================="""
-SRC_PATH = "Python/常用脚本/EXAMPLE_FOLDER"  # 原始视频路径
+SRC_PATH = "utils/dataset/EXAMPLE_FOLDER"  # 原始视频路径
 frame_interval = 15  # 视频采样间隔，越小采样率越高 -> 60 | 30 | 15 | 10
 video_type = ('.mp4', '.avi', '.mkv', '.mov')  # 视频格式(.mp4 | .avi)
 
@@ -71,18 +78,8 @@ _str = [
     ["保存的图片格式为", save_img_format],
 ]
 
-_str = tabulate.tabulate(_str, headers=["Key", "Value"], tablefmt='pretty')
-
-print(f"\n{_str}\n\n"
-      f"请输入 'yes' 继续，输入其他停止")
-
-_INPUT = input()
-if _INPUT != "yes":
-    exit()
-    
-if not os.path.exists(results_imgs_path):
-    os.mkdir(results_imgs_path)
-    
+print_arguments(params_dict=_str, confirm=True, show_type=True)  # 打印参数
+create_folder(results_imgs_path, verbose=True)  # 创建文件夹
     
 def process_video(vid_name, progress_bar, SUCCEED_NUM, statistics_dict):
     save_number = 1  # 记录当前视频保存的frame个数
@@ -168,6 +165,6 @@ for k, v in sorted_statistics_dict.items():
 _str = tabulate.tabulate(_str, headers=['No', 'Video Name', 'Obtained Images Number'], tablefmt='pretty')
 print(_str)
 
-_str = (f"视频拆帧 ({TOTAL_VID_NUM}个)完成! 得到[{_sum}]张[{save_img_format}]图片\n"
+_str = (f"✔️  视频拆帧 ({TOTAL_VID_NUM}个)完成! 得到[{_sum}]张[{save_img_format}]图片\n"
         f"结果保存路径为: {results_imgs_path}")
-print(_str)
+xprint(_str, color='green', horizontal_line='>')

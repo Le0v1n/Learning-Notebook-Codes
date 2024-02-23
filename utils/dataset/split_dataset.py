@@ -1,29 +1,34 @@
-"""
-- 脚本说明：将数据集按比例进行随机划分
-- 数据集结构说明：
-    example_dataset  # 数据集名称
-    └── raw_data     # 未划分的数据
-        ├── images   # 未划分的图片
-        └── label    # 未划分的标签
-- 生成的数据集结构
-    example_dataset  # 数据集名称
-    ├── raw_data     # 未划分的数据
-    │   ├── images   # 未划分的图片
-    │   └── labels   # 未划分的标签
-    ├── train        # 划分好的训练集
-    │   ├── images
-    │   └── labels
-    └── val          # 划分好的验证集
-        ├── images
-        └── labels
-"""
 import os
 import shutil
 import tqdm
 from sklearn.model_selection import train_test_split
-import tabulate
 import logging
 import datetime
+import sys
+
+sys.path.append(os.getcwd())
+from utils.common_fn import print_arguments, xprint
+
+
+__doc__ = """将数据集按比例进行随机划分
+    数据集结构说明：
+        example_dataset  # 数据集名称
+        └── raw_data     # 未划分的数据
+            ├── images   # 未划分的图片
+            └── label    # 未划分的标签
+    生成的数据集结构
+        example_dataset  # 数据集名称
+        ├── raw_data     # 未划分的数据
+        │   ├── images   # 未划分的图片
+        │   └── labels   # 未划分的标签
+        ├── train        # 划分好的训练集
+        │   ├── images
+        │   └── labels
+        └── val          # 划分好的验证集
+            ├── images
+            └── labels
+"""
+xprint(__doc__, color='blue', bold=True, horizontal_line="=", horizontal_line_num=2)
 
 
 """============================ 需要修改的地方 ==================================="""
@@ -35,7 +40,6 @@ LABEL_TYPE = ('.txt', )  # 标签的数据类型
 
 random_seed = 42  # 随机数种子
 LOG_FOLDER_NAME = "local-log"  # 存放日志的文件夹名称
-VERBOSE = True  # 终端是否打印日志（不影响日志文件的生成）
 """==============================================================================="""
 
 # 组合路径
@@ -86,40 +90,23 @@ elif val_size == 0:
 elif val_size < 0:
     raise ValueError("验证集数量不能为负!")
 
-_str = [
-    ['图片路径', images_path],
-    ['标签路径', labels_path],
-    ['',''],
-    ['图片数量', images_num],
-    ['标签数量', labels_num],
-    ['',''],
-    ['训练集大小', train_samples_num],
-    ['验证集大小', test_samples_num],
-    ["", ""],
-    ['训练集图片保存路径', train_images_save_path],
-    ['训练集标签保存路径', train_labels_save_path],
-    ['验证集图片保存路径', val_images_save_path],
-    ['验证集标签保存路径', val_labels_save_path],
-    ["", ""],
-    ["日志保存路径", log_file_path],
-    ["💡 日志是否在终端显示", VERBOSE],
-]
+xprint("⚠️  验证集数量为 0, 不推荐!", color='red', bold=True) if test_samples_num == 0 else ...
+param_dict = dict(
+    图片路径=images_path,
+    标签路径=labels_path,
+    图片数量=images_num,
+    标签数量=labels_num,
+    训练集大小=train_samples_num,
+    验证集大小=test_samples_num,
+    训练集图片保存路径=train_images_save_path,
+    训练集标签保存路径=train_labels_save_path,
+    验证集图片保存路径=val_images_save_path,
+    验证集标签保存路径=val_labels_save_path,
+    日志保存路径=log_file_path,
+    wait=True
+)
+table = print_arguments(**param_dict) 
 
-_str = tabulate.tabulate(tabular_data=_str, headers=["items", "description"], tablefmt='pretty')
-
-if test_samples_num == 0:
-    print(f"\n{_str}\n\n"
-          f"⚠️  \033[1;31m验证集数量为 0, 不推荐!\033[0m\n\n"
-          f"请输入 'yes' 继续，输入其他停止")
-else:
-    print(f"\n{_str}\n\n"
-        f"请输入 'yes' 继续，输入其他停止")
-
-_INPUT = input()
-if _INPUT != "yes":
-    exit()
-    
-    
 # 配置日志输出的格式和级别
 os.mkdir(log_folder_path) if not os.path.exists(log_folder_path) else ...
 logging.basicConfig(filename=log_file_path, 
@@ -128,12 +115,11 @@ logging.basicConfig(filename=log_file_path,
 
 # 创建日志记录器
 logger = logging.getLogger()
-logger.info(f"\n{_str}")
+logger.info(f"\n{table}")
 
-if VERBOSE:
-    # 创建控制台处理器并添加到日志记录器
-    console_handler = logging.StreamHandler()
-    logger.addHandler(console_handler)
+# 创建控制台处理器并添加到日志记录器
+# console_handler = logging.StreamHandler()
+# logger.addHandler(console_handler)
 
 # 使用sklearn进行数据集划分
 if _test_size_really != 0:
@@ -190,8 +176,8 @@ for ip in _no_labeled_images:  # ip -> image_path
     os.mkdir(cp_folder_path) if not os.path.exists(cp_folder_path) else ...
     shutil.copy(src=ip, dst=cp_folder_path)
 if _no_labeled_images:
-    print(f"已复制不存在标签的图片，请进行标注！\n"
-            f"路径为: {cp_folder_path}")
+    xprint(f"已复制不存在标签的图片，请进行标注！\n"
+           f"路径为: {cp_folder_path}", color='red', bold=True)
     exit()
 
 assert len(train_images) == len(train_labels), f"训练集图片数量和标签数量不一致!({len(train_images)}/{len(train_labels)})"
@@ -241,27 +227,27 @@ val_images = [file for file in os.listdir(val_image_save_folder) if file.lower()
 val_labels = [file for file in os.listdir(val_label_save_folder) if file.lower().endswith(LABEL_TYPE)]
 # ================================================================================
 
-_str = [
-    ['训练集图片保存路径', train_image_save_folder],
-    ['训练集标签保存路径', train_label_save_folder],
-    ['验证集图片保存路径', val_image_save_folder],
-    ['验证集标签保存路径', val_label_save_folder],
-    ['',''],
-    ['训练集图片数量', len(train_images)],
-    ['训练集标签数量', len(train_labels)],
-    ['验证集图片数量', len(val_images)],
-    ['验证集标签数量', len(val_labels)],
-    ['',''],
-    ["日志保存路径", log_file_path],
-    ["💡 日志是否在终端显示", VERBOSE],
-]
+result_dict = dict(
+    训练集图片保存路径=train_image_save_folder,
+    训练集标签保存路径=train_label_save_folder,
+    验证集图片保存路径=val_image_save_folder,
+    验证集标签保存路径=val_label_save_folder,
+    训练集图片数量=len(train_images),
+    训练集标签数量=len(train_labels),
+    验证集图片数量=len(val_images),
+    验证集标签数量=len(val_labels),
+    日志保存路径=log_file_path,
+)
 
-_str = tabulate.tabulate(tabular_data=_str, headers=["items", "description"], tablefmt='pretty')
+table = print_arguments(**result_dict)
 
-logger.info(f"\n{_str}")
-print(_str) if not VERBOSE else ...
+logger.info(f"\n{table}")
 
 if (len(train_images) + len(val_images) == images_num) and (len(train_labels) + len(val_labels) == labels_num):
     _str = (f"👌 No Problems in data numbers")
     logger.info(_str)
-    print(_str) if not VERBOSE else ...
+    xprint(_str, color='green')
+
+_str = "Finished!"
+logger.info(_str)
+xprint(_str, color='green', underline=True, horizontal_line='>', bold=True)

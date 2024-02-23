@@ -1,18 +1,25 @@
-"""
-+ 脚本说明：可以自动重命名某个文件夹下指定类型的文件。
-  + 修改前文件名称: `img1.jpg`
-  + 修改后文件名称: `Le0v1n-20231123-X-0001.jpg`
-  + 用途：统一文件名称
-  + 要求：无
-"""
 import os
+import sys
 import tqdm
 import datetime
 
+sys.path.append(os.getcwd())
+from utils.common_fn import print_arguments, xprint
+from utils.file_type import ImageFormat, LabelFormat, VideoFormat
+
+
+__doc__ = """脚本说明：可以自动重命名某个文件夹下指定类型的文件
+    修改前文件名称: img1.jpg
+    修改后文件名称: Le0v1n-20231123-X-0001.jpg
+    用途：统一文件名称
+    要求：无
+"""
+xprint(__doc__, color='blue', bold=True, horizontal_line="=", horizontal_line_num=2)
+
 
 """============================ 需要修改的地方 ==================================="""
-SRC_PATH = 'Python/常用脚本/EXAMPLE_FOLDER'  # 文件夹路径
-file_type = ('.png', '.jpg', '.jpeg', '.gif')  # 想要重命名的文件类型
+src_path = 'utils/dataset/EXAMPLE_FOLDER'  # 目标文件夹路径
+file_type = ImageFormat  # 重命名文件的文件类型
 
 # -------------------重命名相关------------------
 retain_previous_name = False  # 是否保留之前的名称
@@ -25,8 +32,20 @@ numbering_placeholder = 4  # 编号保留的占位 -> e.g. 0001, 0002, 0003, ...
 hyphen = '-'  # 连字符 -> e.g. filename-0001.jpg
 """==============================================================================="""
 
+print_arguments(
+    是否保留之前的名称=retain_previous_name,
+    新名称=new_name,
+    是否使用时间戳=use_date_stamp,
+    备注=comment,
+    是否使用顺序的编号=use_serial_numbering,
+    编号起始值=start_number,
+    编号保留的占位=numbering_placeholder,
+    连字符=hyphen,
+    confirm=True
+)
+
 # 获取目录中的所有图片文件
-files_list = [file for file in os.listdir(SRC_PATH) if file.lower().endswith(file_type)]
+files_list = [file for file in os.listdir(src_path) if file.lower().endswith(file_type)]
 
 "------------计数------------"
 TOTAL_FILES_NUM = len(files_list)  # 需要重命名的文件数量
@@ -63,12 +82,13 @@ for idx, file_name in enumerate(files_list):
     NEW_FILE_NAME += file_ext
     
     # 开始重命名文件         
-    _src = os.path.join(SRC_PATH, file_name)  # 旧文件路径
-    _dst = os.path.join(SRC_PATH, NEW_FILE_NAME)  # 新文件路径
+    _src = os.path.join(src_path, file_name)  # 旧文件路径
+    _dst = os.path.join(src_path, NEW_FILE_NAME)  # 新文件路径
     
     os.rename(_src, _dst)  # 重命名文件
     RENAME_NUM += 1
     process_bar.update(1)
 process_bar.close()
     
-print(f"👌 文件重命名完成: {RENAME_NUM}/{TOTAL_FILES_NUM}")
+xprint(f"✔️  文件重命名完成: {RENAME_NUM}/{TOTAL_FILES_NUM}"
+       f"--> {src_path}", color='green', bold=True, horizontal_line='<')

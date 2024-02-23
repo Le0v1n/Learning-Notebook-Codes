@@ -19,66 +19,57 @@
 
 [^footnote_1]: 请在文末找到对应的联系方式 :zany_face:
 
-## 2. 文件夹结构
-
-```
-├─二级文件夹1
-│  │  笔记1.md  # 存放 Markdown 格式的文件
-│  │  笔记2.md
-│  │  ...
-│  │
-│  ├─codes  # 存放代码
-│  │      code1.py
-│  │      code2.py
-│  │      ...
-│  │
-│  └─imgs_markdown  # Markdown 文档对应的图片(使用相对路径)
-│          2023-10-18-17-19-28.png
-│          2023-10-18-21-14-28.png
-│          2023-10-18-21-18-35.png
-│          ...
-├─二级文件夹2
-├─二级文件夹3
-├─二级文件夹4
-├─二级文件夹5
-├─...
-```
-
-## 3. 仓库结构
+## 2. 仓库结构
 
 ### 〔1〕root --> 根目录
 
-1. [CSDN封面(480x270).drawio](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/CSDN%E5%B0%81%E9%9D%A2(480x270).drawio): 制作CSDN封面
-
+1. [CSDN封面(480x270).drawio](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/CSDN%E5%B0%81%E9%9D%A2(480x270).drawio): 制作 CSDN 博客的封面
    
 ### 〔2〕LaTex-and-Markdown --> LaTex 和 Markdown 相关
 
-1. [LaTex常用命令.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/LaTex-and-Markdown/LaTex%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4.md): LaTex 的常用命令
-2. [Markdown常用命令.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/LaTex-and-Markdown/Markdown%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4.md): Markdown 的常用命令
+1. [LaTex公式常用语法.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/LaTex-and-Markdown/LaTex%E5%85%AC%E5%BC%8F%E5%B8%B8%E7%94%A8%E8%AF%AD%E6%B3%95.md): 与 LaTex 公式相关的常用命令
+2. [Markdown常用语法.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/LaTex-and-Markdown/Markdown%E5%B8%B8%E7%94%A8%E8%AF%AD%E6%B3%95.md): 与 Markdown 相关的常用命令
 
-### 〔3〕Dataset --> 数据集(均用于演示的小数据集)
-1. [VOCdevkit/](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Datasets/VOCdevkit): Lite 版 VOC 2012 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/124540069)
+### 〔3〕Dataset --> 数据集 (用于演示的小数据集)
+1. [📂VOCdevkit](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Datasets/VOCdevkit): Lite 版 VOC 2012 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/124540069)
+2. [📂Web](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Datasets/Web): 用于 ONNX 推理测试的数据集
+3. [📂coco128](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Datasets/coco128): 修改后的 COCO 128 数据集（128 张训练图片 + 128 张验证图片）
+4. [📂imagenet_classes_indices.csv](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Datasets/imagenet_classes_indices.csv): ImageNet 数据集 1000 个类别的中英文翻译
 
 ### 〔4〕Linux --> Linux 相关
 1. [配置Anaconda.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Linux/%E9%85%8D%E7%BD%AEAnaconda.md): 如何在 Linux 中下载、安装、配置 Anaconda | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133967607)
 2. [Linux常用命令.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Linux/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4.md): Linux 常用命令
+3. [📂shell](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Linux/shell): 存放《shell脚本基础语法（.sh ./ sh bash source shell）》的内容 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/136059003)
 
 ### 〔5〕ObjectDetection --> 目标检测相关
-1. [YOLOv5/](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/ObjectDetection/YOLOv5/): YOLOv5 相关 | 📚对应博客: [1.理论](https://blog.csdn.net/weixin_44878336/article/details/133901265)；[2.自建数据集和模型训练](https://blog.csdn.net/weixin_44878336/article/details/133915488)
+1. [📂YOLOv5](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/ObjectDetection/YOLOv5/): YOLOv5 相关内容
+   1. [📂codes](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/ObjectDetection/YOLOv5/codes): 存放 YOLOv5 相关代码
+   2. [YOLOv5-参数说明.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ObjectDetection/YOLOv5/YOLOv5-%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E.md)
+   3. [YOLOv5-模型转换.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ObjectDetection/YOLOv5/YOLOv5-%E6%A8%A1%E5%9E%8B%E8%BD%AC%E6%8D%A2.md)
+   4. [YOLOv5-理论部分.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ObjectDetection/YOLOv5/YOLOv5-%E7%90%86%E8%AE%BA%E9%83%A8%E5%88%86.md) | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133901265)
+   5. [YOLOv5-训练自己的VOC格式数据集.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ObjectDetection/YOLOv5/YOLOv5-%E8%AE%AD%E7%BB%83%E8%87%AA%E5%B7%B1%E7%9A%84VOC%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE%E9%9B%86.md) | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133915488)
+   6. [plots.drawio](plots.drawio)：作图原工程文件
+   7. [yolov5-arch.png](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ObjectDetection/YOLOv5/yolov5-arch.png)：霹雳吧啦Wz绘制的YOLOv5模型结构图
+   8. [〔Part1〕YOLOv5：原理+源码分析.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ObjectDetection/YOLOv5/%E3%80%94Part1%E3%80%95YOLOv5%EF%BC%9A%E5%8E%9F%E7%90%86%2B%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.md) | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/136025658)
+   9. [〔Part2〕YOLOv5：原理+源码分析.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ObjectDetection/YOLOv5/%E3%80%94Part2%E3%80%95YOLOv5%EF%BC%9A%E5%8E%9F%E7%90%86%2B%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.md) | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/136207890)
+   10. [〔Part3〕YOLOv5：原理+源码分析.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ObjectDetection/YOLOv5/%E3%80%94Part3%E3%80%95YOLOv5%EF%BC%9A%E5%8E%9F%E7%90%86%2B%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.md) | [📚对应博客](TODO)
 2. [目标检测模型性能衡量指标、MS COCO数据集的评价标准以及不同指标的选择推荐.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ObjectDetection/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E6%A8%A1%E5%9E%8B%E6%80%A7%E8%83%BD%E8%A1%A1%E9%87%8F%E6%8C%87%E6%A0%87%E3%80%81MS%20COCO%E6%95%B0%E6%8D%AE%E9%9B%86%E7%9A%84%E8%AF%84%E4%BB%B7%E6%A0%87%E5%87%86%E4%BB%A5%E5%8F%8A%E4%B8%8D%E5%90%8C%E6%8C%87%E6%A0%87%E7%9A%84%E9%80%89%E6%8B%A9%E6%8E%A8%E8%8D%90.md): MS COCO、目标检测数据集 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/124650328)
-3. [YOLOv5-参数说明.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ObjectDetection/YOLOv5/YOLOv5-%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E.md): YOLOv5 参数的说明以及拓展知识 | [📚对应博客](TODO)
-4. [YOLOv5-模型转换.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ObjectDetection/YOLOv5/YOLOv5-%E6%A8%A1%E5%9E%8B%E8%BD%AC%E6%8D%A2.md): YOLOv5 模型转换
+3. [📂YOLOv8](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/ObjectDetection/YOLOv8): YOLOv8相关内容
+   1. [Learning Note.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ObjectDetection/YOLOv8/Learning%20Note.md): 相关笔记
 
 ### 〔6〕Python --> Python 相关
-1. [Registry.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/Registry/Registry.md): Python 的注册机制 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133887655)
-2. [logging.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/Python%E7%9A%84logging%E6%A8%A1%E5%9D%97%EF%BC%88%E6%97%A5%E5%BF%97%E3%80%81DEBUG%E3%80%81INFO%E3%80%81WARNING%E3%80%81ERROR%E3%80%81CRITICAL%EF%BC%89.md): Python 的日志 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133868928)
-3. [配置JupyterNotebook.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/%E9%85%8D%E7%BD%AEJupyterNotebook.md): 配置 JupyterNotebook
-4. [requirements.txt](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/requirements.txt): Python 第三方库集合
-5. [Matplotlib.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/Matplotlib.md): Matplotlib 库的使用
-6. [rich 库](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/Rich-%E7%BE%8E%E5%8C%96/rich-%E7%BE%8E%E5%8C%96-%E5%BA%93.md)：Python 输出的美化工具
-7. [常用脚本](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Python/%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC): 常用的一些脚本
-8. [RGB 颜色大全](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/color_list.md): RGB 和 HEX 颜色大全 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/135003274)
-9. [labelImg 修改不同类别的颜色（点大小、标签大小、框角）](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/labelImg%E4%BF%AE%E6%94%B9%E4%B8%8D%E5%90%8C%E7%B1%BB%E5%88%AB%E7%9A%84%E9%A2%9C%E8%89%B2.md):  | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/135002957)
+1. [📂Registry](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Python/Registry): Python注册机制相关内容
+   1. [Registry.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/Registry/Registry.md): Python 的注册机制 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133887655)
+2. [📂Rich-美化（尚未完成）](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Python/Rich-%E7%BE%8E%E5%8C%96): Rich库的相关内容
+3. [📂resolve_import_methods](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Python/resolve_import_methods): 讲解了如何解决 Python 在 `import` 时出现的问题
+4. [logging.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/Python%E7%9A%84logging%E6%A8%A1%E5%9D%97%EF%BC%88%E6%97%A5%E5%BF%97%E3%80%81DEBUG%E3%80%81INFO%E3%80%81WARNING%E3%80%81ERROR%E3%80%81CRITICAL%EF%BC%89.md): Python 的日志 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133868928)
+5. [配置JupyterNotebook.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/%E9%85%8D%E7%BD%AEJupyterNotebook.md): 配置 JupyterNotebook
+6. [requirements.txt](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/requirements.txt): Python 第三方库集合
+7. [Matplotlib.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/Matplotlib.md): Matplotlib 库的使用
+8. [rich 库](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/Rich-%E7%BE%8E%E5%8C%96/rich-%E7%BE%8E%E5%8C%96-%E5%BA%93.md)：Python 输出的美化工具
+9. [常用脚本](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Python/%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC): 常用的一些脚本
+10. [RGB 颜色大全](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/color_list.md): RGB 和 HEX 颜色大全 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/135003274)
+11. [labelImg 修改不同类别的颜色（点大小、标签大小、框角）](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/labelImg%E4%BF%AE%E6%94%B9%E4%B8%8D%E5%90%8C%E7%B1%BB%E5%88%AB%E7%9A%84%E9%A2%9C%E8%89%B2.md):  | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/135002957)
 
 ### 〔7〕PyTorch --> PyTorch 相关
 1. [mmcv_Registry.md](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/PyTorch/mmcv_Registry): MMCV 的注册机制（:hammer_and_wrench:尚未完成）
