@@ -833,6 +833,14 @@ style C3 fill:transparent,stroke:#0000FF,stroke-width:2px;
 
 <kbd><b>A</b>nswer</kbd>：因为它的全称是：CSP Bottleneck with 3 convolutions。
 
+放一张总结的图片：
+
+<div align=center>
+    <img src=./imgs_markdown/plots-Bottleneck+BottleneckCSP+C3.jpg
+    width=100%>
+    <center></center>
+</div>
+
 ## 3.4 SPP（Spatial Pyramid Pooling）
 
 在 YOLOv5 中，SPP（Spatial Pyramid Pooling）是一种用于提取多尺度特征的技术，它有助于网络对不同尺度的目标进行检测。SPP 通过在不同大小的网格上进行池化操作，从而在不引入额外参数的情况下，捕捉输入特征图的不同尺度上的语义信息。
