@@ -6,8 +6,8 @@
   "shapes": [
     []
   ],
-  "imagePath": "img2.jpg",
+  "imagePath": "img1.jpg",
   "imageData": null,
-  "imageHeight": 300,
-  "imageWidth": 300
+  "imageHeight": 255,
+  "imageWidth": 255
 }

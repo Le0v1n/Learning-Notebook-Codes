@@ -1,0 +1,20 @@
++-----------------------------------------------+---------------------------------------------------------------+-----------+
+|                      SRC                      |                              DST                              | SIZE (kb) |
++-----------------------------------------------+---------------------------------------------------------------+-----------+
+|          Datasets/Web/images/book.jpg         |          Datasets/Web/images/compress_images/book.jpg         |  10.1172  |
+|       Datasets/Web/images/butterfly.jpg       |       Datasets/Web/images/compress_images/butterfly.jpg       |  77.0996  |
+|         Datasets/Web/images/camera.jpg        |         Datasets/Web/images/compress_images/camera.jpg        |  38.5342  |
+|          Datasets/Web/images/cat.jpg          |          Datasets/Web/images/compress_images/cat.jpg          |   6.2793  |
+|          Datasets/Web/images/dog.jpg          |          Datasets/Web/images/compress_images/dog.jpg          |  24.4385  |
+|      Datasets/Web/images/dogs_orange.jpg      |      Datasets/Web/images/compress_images/dogs_orange.jpg      |  67.9805  |
+|         Datasets/Web/images/female.jpg        |         Datasets/Web/images/compress_images/female.jpg        |  49.1416  |
+|      Datasets/Web/images/free-images.jpg      |      Datasets/Web/images/compress_images/free-images.jpg      |  154.4502 |
+|          Datasets/Web/images/gull.jpg         |          Datasets/Web/images/compress_images/gull.jpg         |  176.917  |
+|      Datasets/Web/images/laptop-phone.jpg     |      Datasets/Web/images/compress_images/laptop-phone.jpg     |  45.1689  |
+|        Datasets/Web/images/monitor.jpg        |        Datasets/Web/images/compress_images/monitor.jpg        |  462.0791 |
+|       Datasets/Web/images/motorcycle.jpg      |       Datasets/Web/images/compress_images/motorcycle.jpg      |  240.9092 |
+|         Datasets/Web/images/mouse.jpg         |         Datasets/Web/images/compress_images/mouse.jpg         |  90.0566  |
+|         Datasets/Web/images/panda.jpg         |         Datasets/Web/images/compress_images/panda.jpg         |   7.8311  |
+| Datasets/Web/images/share_flower_fullsize.jpg | Datasets/Web/images/compress_images/share_flower_fullsize.jpg |   74.71   |
+|         Datasets/Web/images/tiger.jpeg        |         Datasets/Web/images/compress_images/tiger.jpeg        |  532.5342 |
++-----------------------------------------------+---------------------------------------------------------------+-----------+

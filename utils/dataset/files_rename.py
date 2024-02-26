@@ -14,7 +14,7 @@ __doc__ = """脚本说明：可以自动重命名某个文件夹下指定类型�
     用途：统一文件名称
     要求：无
 """
-xprint(__doc__, color='blue', bold=True, horizontal_line="=", horizontal_line_num=2)
+xprint(__doc__, color='blue', bold=True, hl="=", hl_num=2)
 
 
 """============================ 需要修改的地方 ==================================="""
@@ -91,4 +91,4 @@ for idx, file_name in enumerate(files_list):
 process_bar.close()
     
 xprint(f"✔️  文件重命名完成: {RENAME_NUM}/{TOTAL_FILES_NUM}"
-       f"--> {src_path}", color='green', bold=True, horizontal_line='<')
+       f"--> {src_path}", color='green', bold=True, hl='<')

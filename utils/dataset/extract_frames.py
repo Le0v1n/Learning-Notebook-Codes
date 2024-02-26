@@ -16,7 +16,7 @@ __doc__ = """脚本说明：根据帧间隔对某个文件夹下指定类型的�
     用途：将拍摄得到的视频转换为常用的数据集
     要求：无
 """
-xprint(__doc__, color='blue', bold=True, horizontal_line="=", horizontal_line_num=2)
+xprint(__doc__, color='blue', bold=True, hl="=", hl_num=2)
 
 
 """============================ 需要修改的地方 ==================================="""
@@ -167,4 +167,4 @@ print(_str)
 
 _str = (f"✔️  视频拆帧 ({TOTAL_VID_NUM}个)完成! 得到[{_sum}]张[{save_img_format}]图片\n"
         f"结果保存路径为: {results_imgs_path}")
-xprint(_str, color='green', horizontal_line='>')
+xprint(_str, color='green', hl='>')

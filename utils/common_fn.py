@@ -4,7 +4,30 @@ import shutil
 import prettytable
 import re
 import random
+from datetime import datetime
 import pprint as _pprint
+import inspect
+import logging
+
+
+def check_function(obj):
+    """检查一个函数是什么类型
+
+    Args:
+        obj (any): 传入任意参数
+
+    Returns:
+        str: 
+            'function': 是一个函数
+            'callable': 是一个可调用对象
+            'variable': 是一个变量
+    """
+    if inspect.isfunction(obj):
+        return 'function'
+    elif callable(obj):  # 依次执行，因此排除了函数的可能性
+        return 'callable'
+    else:
+        return 'variable'
 
 
 def print_arguments(*args, **kwargs) -> prettytable.prettytable.PrettyTable:
@@ -48,21 +71,24 @@ def print_arguments(*args, **kwargs) -> prettytable.prettytable.PrettyTable:
     if kwargs.get('wait', False) or kwargs.get('confirm', False) or \
         kwargs.get('check', False) or kwargs.get('check_params', False):
         table.del_row(-1)
-        
-    print(table)
-    
-    if kwargs.get('wait', False) or kwargs.get('confirm', False) or \
-        kwargs.get('check', False) or kwargs.get('check_params', False):
-        user_input = input("\033[1;31mContinue (Yes/Y)?  \033[0m").lower()
-        if user_input in ['yes', 'y']:
-            pass
-        elif user_input == 'no' or user_input == 'n':
-            sys.exit("User exit!\n")
-        else:
-            print("Invalid input!")
-            sys.exit("User exit!")
+
+    # 不打印
+    if not kwargs.get('silent', False):
+        print(table)
+
+        # 检查检查，等待用户输入
+        if kwargs.get('wait', False) or kwargs.get('confirm', False) or \
+            kwargs.get('check', False) or kwargs.get('check_params', False):
+            user_input = input("\033[1;31mContinue (Yes/Y)?  \033[0m").lower()
+            if user_input in ['yes', 'y']:
+                pass
+            elif user_input == 'no' or user_input == 'n':
+                sys.exit("User exit!\n")
+            else:
+                print("Invalid input!")
+                sys.exit("User exit!")
             
-    return table
+    return table.get_string()
                 
                 
 def create_folder(fp, exist_ok=True, verbose=False):
@@ -108,22 +134,36 @@ def get_files(fp: str, file_format='image'):
     return files
 
 
-def get_file_size(fp, ndigits=4):
+def get_file_size(fp, unit='MB', ndigits=4):
     """获取文件大小
-
     Args:
-        file_path (str): 图片路径
-
+        fp (str): 文件路径
+        unit (str): 单位选项，可以是'KB', 'MB', 'GB'等
+        ndigits (int): 小数点后保留的位数
     Returns:
-        float: 文件大小（MB）
+        float: 文件大小(默认为MB)
     """
+    
     # 获取文件大小（字节）
     file_size_bytes = os.path.getsize(fp)
-
-    # 将文件大小转换为 MB
-    file_size_mb = round(file_size_bytes / (1024 * 1024), ndigits=ndigits)
-
-    return file_size_mb
+    unit = unit.upper()
+    
+    # 单位到字节倍数的映射
+    unit_multipliers = {
+        'KB': 1024,
+        'MB': 1024 * 1024,
+        'GB': 1024 * 1024 * 1024,
+    }
+    
+    # 根据单位转换文件大小
+    if unit in unit_multipliers:
+        multiplier = unit_multipliers[unit]
+        file_size = round(file_size_bytes / multiplier, ndigits=ndigits)
+    else:
+        # 默认或未知单位时使用MB
+        file_size = round(file_size_bytes / (1024 * 1024), ndigits=ndigits)
+        unit = 'MB'
+    return file_size
 
 
 def find_text_place_length(text):
@@ -154,7 +194,7 @@ def screen_clear(clear=False):
 
 
 def xprint(content:str, color=None, bg_color=None, underline=False, bold=False, end='\n', 
-           horizontal_line='', horizontal_line_length='paragraph', horizontal_line_num=1, 
+           hl='', hl_style='paragraph', hl_num=1, 
            clear=False, pprint=False):
     """自用的print方法
 
@@ -179,20 +219,25 @@ def xprint(content:str, color=None, bg_color=None, underline=False, bold=False, 
     bg_colors = {'red': 41, 'green': 42, 'yellow': 43, 'blue': 44, 'magenta': 45, 'cyan': 46, 'white': 47, 'bg_bright_red': 101, 
                  'bg_bright_green': 102, 'bg_bright_yellow': 103, 'bg_bright_blue': 104, 'bg_bright_magenta': 105, 
                  'bg_bright_cyan': 106, 'bg_bright_white': 107, 'bg_black': 40, 'bg_gray': 100,}
-                 
+    
     if not isinstance(content, str):
-        # 清空终端内容
-        if clear:
-            screen_clear(clear=clear)
+        try:
+            content = str(content)
+        except:
+            xprint("⚠️  The content doesn't convert into string, some functions don't work!", color='red')
         
-        # 直接打印
-        if not pprint:
-            print(content)
-        else:
-            _pprint.pprint(content)
+        if not isinstance(content, str):
+            # 清空终端内容
+            if clear:
+                screen_clear(clear=clear)
             
-        xprint("⚠️ The content doesn't string, some functions don't work!", color='red')
-        return
+            # 直接打印
+            if not pprint:
+                print(content)
+            else:
+                _pprint.pprint(content)
+                
+            return
         
     start_code = ''  # 开始的转义码
     end_code = '\033[0m'  # 结束的转义码
@@ -226,36 +271,116 @@ def xprint(content:str, color=None, bg_color=None, underline=False, bold=False, 
         screen_clear(clear=clear)
         
     # 如果需要添加水平线
-    if horizontal_line:
-        if horizontal_line_length == 'full':  # 打印终端宽度的水平线
+    if hl:
+        if hl_style == 'full':  # 打印终端宽度的水平线
             terminal_width = shutil.get_terminal_size((80, 20)).columns  # 获取终端宽度
-            hl = horizontal_line * terminal_width  # 根据终端宽度打印水平线
+            hl = hl * terminal_width  # 根据终端宽度打印水平线
             # 打印水平线
             xprint(hl, color=color, bg_color=None, underline=False, bold=False, end='\n', 
-                   horizontal_line=False)
+                   hl=False)
             
-        if horizontal_line_length == 'paragraph':  # 根据内容打印合适宽度的水平线
+        if hl_style == 'paragraph':  # 根据内容打印合适宽度的水平线
             # 根据换行符分割
             lines = content.split("\n")
             max_len_line = max(lines, key=find_text_place_length)
             line_len = find_text_place_length(max_len_line)
-            hl = horizontal_line * line_len
+            hl = hl * line_len
             # 打印水平线
             xprint(hl, color=color, bg_color=None, underline=False, bold=False, end='\n', 
-                   horizontal_line=False)
+                   hl=False)
 
     # 打印内容
     print(start_code + content + end_code, end=end)
     
-    if horizontal_line and horizontal_line_num > 1:  # 添加另外的水平线
+    if hl and hl_num > 1:  # 添加另外的水平线
         xprint(hl, color=color, bg_color=None, underline=False, bold=False, end='\n', 
-                horizontal_line=False)
+                hl=False)
+        
+
+def get_current_time(time_format='default') -> str:
+    """获取当前时间，并按照指定格式返回。
+
+    参数:
+    format_key (str): 时间格式的键。可以是 'default', 'format1'，也可以直接传入%Y%m%d-%H%M%S。
+        'default': '%Y%m%d-%H%M%S',  # 年月日时分秒 --> 20240226-102028
+        'format1': '%y%m%d-%H%M%S',  # 年月日时分秒 --> 240226-102515
+        'format2': '%Y-%m-%d %H:%M:%S',  # 年-月-日 时:分:秒 --> 2024-02-26 10:24:26 
+
+    返回:
+    str: 按照指定格式格式化的当前时间。
+    """
+    time_formats = {
+        'default': '%Y%m%d-%H%M%S',  # 年月日时分秒 --> 20240226-102028
+        'format1': '%y%m%d-%H%M%S',  # 年月日时分秒 --> 240226-102515
+        'format2': '%Y-%m-%d %H:%M:%S',  # 年-月-日 时:分:秒 --> 2024-02-26 10:24:26 
+    }
     
+    # 获取当前时间
+    current_time = datetime.now()
+    
+    if time_format.lower() in time_formats:
+        return current_time.strftime(time_formats[time_format.lower()])
+    else:
+        return current_time.strftime(time_format)
+
+
+def get_logger(log_save_path: str = None, verbose: bool = False) -> logging.RootLogger:
+    # 获取调用get_logger()函数的信息
+    current_frame = inspect.stack()[1]  # 获取调用栈中的当前帧
+    caller_file_path = current_frame.filename  # 💡 获取当前帧的文件名
+    caller_file_base_path = os.path.basename(caller_file_path) # 💡 获取当前帧的文件名
+    caller_function_name = current_frame.function  # 💡 获取当前帧的函数名
+    logger_name = f"Logging-{caller_file_base_path}-{caller_function_name}-{get_current_time('%Y%m%d_%H%M%S')}.log"
+    
+    if not log_save_path:  # 如果没有传入日志的保存路径
+        log_save_path = os.path.join(os.path.dirname(caller_file_path), 'local-logs', logger_name)
+    else:  # 如果传入了日志的保存路径
+        assert isinstance(log_save_path, str), f"❌  log_save_path接收了错误的参数: {log_save_path}({type(log_save_path)})!"
+        log_save_path = os.path.join(log_save_path, 'local-logs', logger_name)
+
+    create_folder(fp=os.path.dirname(log_save_path))
+
+    logging.basicConfig(filename=log_save_path, 
+                        level=logging.INFO, 
+                        format='%(asctime)s - %(levelname)s - %(message)s')
+    
+    # 创建日志记录器
+    logger = logging.getLogger()
+
+    if verbose:
+        # 创建控制台处理器并添加到日志记录器
+        console_handler = logging.StreamHandler()
+        logger.addHandler(console_handler)
+        
+    return logger
+
+
+def get_logger_save_path(logger: logging.RootLogger, relative=True) -> str:
+    """返回logger文件的保存路径(相对路径)
+
+    Args:
+        logger (logging.RootLogger): logging对象
+        relative (bool, optional): 是否返回相对路径 (False则返回绝对路径). Defaults to True.
+
+    Returns:
+        str: 返回logger的文件路径
+    """
+    lsp = logger.handlers[0].baseFilename  # logging_save_path
+    
+    if relative:
+        lsp = os.path.relpath(lsp, os.getcwd())
+    return lsp
+
 
 if __name__ == "__main__":
     parma1 = "images"
     param2 = "output_images"
     param3 = 2
+    param4 = dict(
+        p1='abc',
+        p2=123
+    )
+    param5 = ['1', 'abc']
     
     print_arguments(parma1, param2, param3, wait=True, table_verbose=False, param_type=True)
 
@@ -268,5 +393,16 @@ if __name__ == "__main__":
     # xprint("这是一段黄色加粗带下划线的文本", color='yellow', underline=True, bold=True)
     # xprint("这是一段黄色加粗带下划线的文本\n", color='yellow', underline=True, bold=True, horizontal_line="-")
     xprint("This is a line\这是第二行，会比第一行长很多 (more and more)！！！！！", 
-           color='yellow', underline=True, bold=True, horizontal_line=">", horizontal_line_num=2)
+           color='yellow', underline=True, bold=True, hl=">", hl_num=2)
     xprint("This is a test", color='random', bg_color='random', underline=True, bold=True)
+    xprint(param4, color='random', bg_color='random', underline=True, bold=True, hl="<")
+    xprint(param5, color='random', bg_color='random', underline=True, bold=True, hl="<")
+
+
+    # 使用默认格式获取当前时间
+    print(get_current_time())
+    print(get_current_time('format1'))
+    print(get_current_time('format2'))
+    print(get_current_time('format3'))
+    print(get_current_time('format3'))
+    print(get_current_time('%Y%m%d-%H%M'))

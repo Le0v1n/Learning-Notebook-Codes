@@ -75,9 +75,9 @@ print_arguments(
 )
 
 if SUCCEED_NUM + SKIP_NUM == NUM_B:
-    xprint("✔️  No Problems", color='red', bold=True, horizontal_line=">", horizontal_line_length='full')
+    xprint("✔️  No Problems", color='red', bold=True, hl=">", hl_style='full')
 else:
-    xprint("❌  有问题，请仔细核对!", color='red', bold=True, horizontal_line=">", horizontal_line_length='full')
+    xprint("❌  有问题，请仔细核对!", color='red', bold=True, hl=">", hl_style='full')
     print_arguments(
         SUCCEED_NUM=SUCCEED_NUM,
         SKIP_NUM=SKIP_NUM,

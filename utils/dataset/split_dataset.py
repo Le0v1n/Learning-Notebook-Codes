@@ -28,7 +28,7 @@ __doc__ = """将数据集按比例进行随机划分
             ├── images
             └── labels
 """
-xprint(__doc__, color='blue', bold=True, horizontal_line="=", horizontal_line_num=2)
+xprint(__doc__, color='blue', bold=True, hl="=", hl_num=2)
 
 
 """============================ 需要修改的地方 ==================================="""
@@ -250,4 +250,4 @@ if (len(train_images) + len(val_images) == images_num) and (len(train_labels) + 
 
 _str = "Finished!"
 logger.info(_str)
-xprint(_str, color='green', underline=True, horizontal_line='>', bold=True)
+xprint(_str, color='green', underline=True, hl='>', bold=True)
