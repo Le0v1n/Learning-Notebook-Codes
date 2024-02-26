@@ -272,8 +272,8 @@ def xprint(content:str, color=None, bg_color=None, underline=False, bold=False, 
         
     # 如果需要添加水平线
     if hl:
+        terminal_width = shutil.get_terminal_size((80, 20)).columns  # 获取终端宽度
         if hl_style == 'full':  # 打印终端宽度的水平线
-            terminal_width = shutil.get_terminal_size((80, 20)).columns  # 获取终端宽度
             hl = hl * terminal_width  # 根据终端宽度打印水平线
             # 打印水平线
             xprint(hl, color=color, bg_color=None, underline=False, bold=False, end='\n', 
@@ -283,14 +283,18 @@ def xprint(content:str, color=None, bg_color=None, underline=False, bold=False, 
             # 根据换行符分割
             lines = content.split("\n")
             max_len_line = max(lines, key=find_text_place_length)
-            line_len = find_text_place_length(max_len_line)
+            line_len = max(5, find_text_place_length(max_len_line))
+            line_len = min(line_len, terminal_width)
             hl = hl * line_len
             # 打印水平线
             xprint(hl, color=color, bg_color=None, underline=False, bold=False, end='\n', 
                    hl=False)
 
     # 打印内容
-    print(start_code + content + end_code, end=end)
+    if pprint:
+        _pprint.pprint(content)
+    else:
+        print(start_code + content + end_code, end=end)
     
     if hl and hl_num > 1:  # 添加另外的水平线
         xprint(hl, color=color, bg_color=None, underline=False, bold=False, end='\n', 
