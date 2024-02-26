@@ -67,13 +67,14 @@
 6. [requirements.txt](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/requirements.txt): Python 第三方库集合
 7. [Matplotlib.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/Matplotlib.md): Matplotlib 库的使用
 8. [rich 库](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/Rich-%E7%BE%8E%E5%8C%96/rich-%E7%BE%8E%E5%8C%96-%E5%BA%93.md)：Python 输出的美化工具
-9. [常用脚本](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Python/%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC): 常用的一些脚本
-10. [RGB 颜色大全](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/color_list.md): RGB 和 HEX 颜色大全 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/135003274)
-11. [labelImg 修改不同类别的颜色（点大小、标签大小、框角）](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/labelImg%E4%BF%AE%E6%94%B9%E4%B8%8D%E5%90%8C%E7%B1%BB%E5%88%AB%E7%9A%84%E9%A2%9C%E8%89%B2.md):  | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/135002957)
+9.  [RGB 颜色大全](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/color_list.md): RGB 和 HEX 颜色大全 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/135003274)
+10. [labelImg 修改不同类别的颜色（点大小、标签大小、框角）](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/labelImg%E4%BF%AE%E6%94%B9%E4%B8%8D%E5%90%8C%E7%B1%BB%E5%88%AB%E7%9A%84%E9%A2%9C%E8%89%B2.md) | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/135002957)
+11. [如何在VSCode中带有参数的Debug.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/%E5%A6%82%E4%BD%95%E5%9C%A8VSCode%E4%B8%AD%E5%B8%A6%E6%9C%89%E5%8F%82%E6%95%B0%E7%9A%84Debug.md) | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/136252019)
 
 ### 〔7〕PyTorch --> PyTorch 相关
 1. [mmcv_Registry.md](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/PyTorch/mmcv_Registry): MMCV 的注册机制（:hammer_and_wrench:尚未完成）
 2. [PyTorch的hook函数.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/PyTorch/PyTorch%E7%9A%84hook%E5%87%BD%E6%95%B0%EF%BC%88register_hook%E3%80%81register_forward_hook%E3%80%81register_backward_hook%E3%80%81register_forward_pre_hook%EF%BC%89.md): PyTorch 的 hook 函数 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133859089)
+3. [AMP训练.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/PyTorch/AMP%E8%AE%AD%E7%BB%83.md) | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/136071842)
 
 ### 〔8〕SemanticSegmentation --> 语义分割相关
 1. [PP-LiteSeg.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/SemanticSegmentation/PP-LiteSeg.md)：PP-LiteSeg（百度飞桨）| [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/132211283) | 🎥对应视频：[1.理论](https://www.bilibili.com/video/BV1Xr4y1d7Y2)；[2.代码](https://www.bilibili.com/video/BV18p4y1P7dG)
