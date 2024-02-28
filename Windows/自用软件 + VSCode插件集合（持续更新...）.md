@@ -114,6 +114,44 @@ VSCode 中的 Python 格式化默认使用 autopep8 格式化代码，默认长�
 
 打开 VSCode 设置，搜索 `Explorer:Compact Folders`，将勾选取消。
 
+## 2.5 VSCode 光标动画
+
+```bash
+设置 --> 文本编辑器 --> 光标 --> Cursor Blinking --> smooth
+```
+
+## 2.6 修改 Markdown Preview Enhanced 的字体
+
+```bash
+ctrl + shift + P 
+                 --> Markdown Preview Enhanced: Customize CSS (Global)  # 全局修改
+                 --> Markdown Preview Enhanced: Customize CSS (Workspace)  # 工作区修改
+--> 修改 style.less 这个 css 文件
+```
+
+下面是我用的 `style.less` 文件内容：
+
+```css
+
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+.markdown-preview.markdown-preview {
+  // modify your style here
+  // eg: background-color: blue;
+}
+
+html body {
+  font-family: Consolas, Monaco, 'Courier New', monospace;
+  font-size: 16px;
+  font-weight: normal;
+  color: #000000;
+  background-color: #ffffff;
+}
+```
+
+
+
 # 3. 软件配置
 ## 3.1 draw.io 字体设置
 
