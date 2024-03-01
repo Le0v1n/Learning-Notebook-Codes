@@ -8,6 +8,7 @@ from datetime import datetime
 import pprint as _pprint
 import inspect
 import logging
+import argparse
 
 
 def check_function(obj):
@@ -48,11 +49,19 @@ def print_arguments(*args, **kwargs) -> prettytable.prettytable.PrettyTable:
     table.align["name"] = 'l'
     table.align["value"] = 'l'
     
+        
     # 添加*args参数
     for arg in args:
         table.add_row([f"{len(table.rows)+1}", type(arg), "", arg])
-        
-    # 解决 params_dict=[[param1, param2], ...]
+
+    # ========== 处理 argparse.Namespace ==========
+    _args = kwargs.get('argparse', None)
+    if isinstance(_args, argparse.Namespace):
+        for k, v in vars(_args).items():
+            table.add_row([f"{len(table.rows)+1}", type(v), k, v])
+        del kwargs['argparse']
+
+    # ========== 处理params_dict=[[param1, param2], ...] ==========
     params_dict = kwargs.get('params_dict', None)
     if isinstance(params_dict, list):  # 判断是不是list
         for p in params_dict:
