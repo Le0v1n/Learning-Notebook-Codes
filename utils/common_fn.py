@@ -41,7 +41,20 @@ def print_arguments(*args, **kwargs) -> prettytable.prettytable.PrettyTable:
         1. params_dict=[[param1, param2], ...]则会自动打印
         2. wait=True或confirm=True或check_True或check_params，则会等待用户输入yes后程序会继续执行，目的是检查参数是否正确
         3. show_type=True: 则会显示传参时的参数类型
+        4. only_confirm/only_wait=True: 仅开启参数检查
     """
+    # only-confirm
+    if kwargs.get('only_wait', False) or kwargs.get('only_confirm', False) or \
+        kwargs.get('only_check', False) or kwargs.get('only_check_params', False):
+        user_input = input("\033[1;31mContinue (Yes/Y)?  \033[0m").lower()
+        if user_input in ['yes', 'y']:
+            return
+        elif user_input == 'no' or user_input == 'n':
+            sys.exit("User exit!\n")
+        else:
+            print("Invalid input!")
+            sys.exit("User exit!")
+    
     table = prettytable.PrettyTable(["index", "type", "name", "value"])
     table.border = kwargs.get("table_border", True)
     table.align["index"] = 'c'
