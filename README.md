@@ -2,7 +2,7 @@
 
 ## TODO
 
-- [ ] 📔 <font color='blue'>20240220</font> 学习 `glob`
+- [ ] 📔 <font color='blue'>20240306</font> 学习 `glob`
 - [ ] 📔 <font color='blue'>20240220</font> 编写 `知识蒸馏` 相关文档
 - [ ] 📔 <font color='blue'>20240131</font> 编写 `tqdm.rich` 相关文档
 - [ ] 📔 <font color='blue'>20240131</font> 更新 `rich` 相关文档
