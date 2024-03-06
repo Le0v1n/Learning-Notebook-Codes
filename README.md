@@ -11,14 +11,12 @@
 ## 1. 简介
 
 这个仓库存放了我日常的笔记。
-+ 如果你有疑问请联系我 :smile: [^footnote_1]
++ 如果你有疑问请[联系我](#contactme) :smile:
 + 如果对你有帮助，请 :star: 一下
 
 更多内容请见：
 1. [CSDN 博客-Le0v1n](https://blog.csdn.net/weixin_44878336)：这里有很多有趣的内容
 2. [Bilibili 视频-L0o0v1N](https://space.bilibili.com/13187602)：这里有视频版内容
-
-[^footnote_1]: 请在文末找到对应的联系方式 :zany_face:
 
 ## 2. 仓库结构
 
@@ -101,9 +99,8 @@
 1. 因为 Github 仓库有最大容量限制，所以会搬运来自 [我的 CSDN 博客]((https://blog.csdn.net/weixin_44878336)) 上的图片；
 2. 如果文章有问题（语法、链接错误、文字、版权等），请联系我！[^footnote_2]
 
-[^footnote_2]: 请在文末找到对应的联系方式 :zany_face:
 
-# 联系我
+# 联系我 <a id='contactme'></a>
 
 1. :e-mail: [发邮件](mailto:zjkljd@163.com)
 2. :speech_balloon: [在 CSDN 上私信我](https://blog.csdn.net/weixin_44878336)
