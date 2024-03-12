@@ -3,10 +3,14 @@ import sys
 from tqdm.rich import tqdm
 from PIL import Image, ImageOps, ImageFilter
 import prettytable
+from utils.generator import create_folder
+from utils.getter import get_file_size
+
+from utils.outer import print_arguments, xprint
 
 sys.path.append(os.getcwd())
-from utils.common_fn import xprint, print_arguments, get_file_size, create_folder, get_current_time
-from utils.file_type import ImageFormat
+from utils.getter import get_current_time
+from utils.items import ImageFormat
 
 
 __doc__ = """压缩图片

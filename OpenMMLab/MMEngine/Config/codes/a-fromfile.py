@@ -3,7 +3,7 @@ import sys
 from mmengine.config import Config
 
 sys.path.append(os.getcwd())
-from utils.common_fn import xprint
+from utils.outer import xprint
 
 
 cfg = Config.fromfile('OpenMMLab/MMEngine/codes/example_configs/learn_read_config.py')

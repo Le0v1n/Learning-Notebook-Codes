@@ -6,8 +6,10 @@ import logging
 import datetime
 import sys
 
+from utils.outer import print_arguments
+
 sys.path.append(os.getcwd())
-from utils.common_fn import print_arguments, xprint
+from utils.outer import xprint
 
 
 __doc__ = """将数据集按比例进行随机划分

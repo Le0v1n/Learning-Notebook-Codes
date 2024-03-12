@@ -5,7 +5,7 @@ import torch.nn as nn
 from mmengine import Registry
 
 sys.path.append(os.getcwd())
-from utils.common_fn import xprint
+from utils.outer import xprint
 
 
 ACTIVATION = Registry(

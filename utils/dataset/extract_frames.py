@@ -4,9 +4,12 @@ import cv2
 import tqdm
 import tabulate
 import threading
+from utils.generator import create_folder
+
+from utils.outer import print_arguments
 
 sys.path.append(os.getcwd())
-from utils.common_fn import print_arguments, xprint, create_folder
+from utils.outer import xprint
 
 
 __doc__ = """脚本说明：根据帧间隔对某个文件夹下指定类型的视频文件进行抽帧，得到系列图片。

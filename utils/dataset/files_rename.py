@@ -2,10 +2,13 @@ import os
 import sys
 import tqdm
 import datetime
+from utils.items import ImageFormat, LabelFormat
+
+from utils.outer import print_arguments
 
 sys.path.append(os.getcwd())
-from utils.common_fn import print_arguments, xprint
-from utils.file_type import ImageFormat, LabelFormat, VideoFormat
+from utils.outer import xprint
+from utils.items import VideoFormat
 
 
 __doc__ = """脚本说明：可以自动重命名某个文件夹下指定类型的文件

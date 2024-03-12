@@ -2,10 +2,12 @@ import os
 import sys
 import tqdm
 
+from utils.outer import print_arguments
+
 # 将项目路径添加到pwd中
 sys.path.append(os.getcwd())
 
-from utils.common_fn import print_arguments, xprint
+from utils.outer import xprint
 
 __doc__ = """脚本说明：
     Functions：根据文件夹A删除冗余的（不匹配A）的文件夹B。

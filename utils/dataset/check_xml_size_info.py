@@ -3,10 +3,13 @@ import sys
 from PIL import Image
 import xml.etree.ElementTree as ET
 from tqdm.rich import tqdm
+from utils.getter import get_logger
+
+from utils.outer import print_arguments, xprint
 
 sys.path.append(os.getcwd())
-from utils.common_fn import xprint, print_arguments, get_logger, get_logger_save_path
-from utils.file_type import ImageFormat
+from utils.getter import get_logger_save_path
+from utils.items import ImageFormat
 
 
 __doc__ = """脚本说明：根据图片修改xml文件中的size尺寸信息

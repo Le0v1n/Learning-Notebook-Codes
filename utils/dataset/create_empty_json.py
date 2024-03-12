@@ -4,10 +4,13 @@ import numpy as np
 import cv2
 import json
 from tqdm.rich import tqdm
+from utils.getter import get_logger
+
+from utils.outer import print_arguments, xprint
 
 sys.path.append(os.getcwd())
-from utils.common_fn import xprint, print_arguments, get_logger, get_logger_save_path
-from utils.file_type import ImageFormat
+from utils.getter import get_logger_save_path
+from utils.items import ImageFormat
 
 
 __doc__ = """脚本说明：为负样本生成空的json文件，如果保存目录中有json文件则不创建（确保正样本的json文件不会被覆盖）
