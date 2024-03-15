@@ -73,9 +73,10 @@ Semantic, instance-wise, dense pixel annotations of 30 classes](https://www.city
 
 在这项工作中，我们提出了一种名为 Fast-SCNN 的快速分割卷积神经网络，它是一种超越实时的语义分割算法，将先前的两个分支设置与经典的编码器-解码器框架相结合（如[图 1](#fig1) 所示）。
 
+<a id='fig1'></a>
 <div align=center>
     <img src=./imgs_markdown/2024-03-14-20-21-55.png
-    width=100%><a id='fig1'></a>
+    width=100%>
     <center>图 1. Fast-SCNN 通过在两个分支（编码器）之间共享计算来构建一个超越实时的语义分割网络</center></br>
 </div>
 
@@ -136,9 +137,10 @@ Fast-SCNN 的模型容量被特意保持较低。原因有两个：
 
 然而，最先进的实时语义分割仍然具有挑战性，并且通常需要高端的 GPU。受到两个分支方法的启发，Fast-SCNN 引入了一个共享的浅层网络路径来编码细节，同时在低分辨率下高效地学习上下文（如[图 2](#fig2) 所示）。
 
+<a id='fig2'></a>
 <div align=center>
     <img src=./imgs_markdown/2024-03-15-09-25-46.png
-    width=80%><a id='fig2'></a>
+    width=80%>
     <center>图 2. Fast-SCNN 与编码器-解码器和两个分支架构的示意比较。编码器-解码器在多个分辨率上使用多个跳跃连接，通常是由深度卷积块产生的。两个分支方法利用低分辨率的全局特征和浅层空间细节。Fast-SCNN 在我们的学习下采样模块中同时编码空间细节和全局上下文的初始层。</center></br>
 </div>
 
@@ -166,9 +168,10 @@ Fast-SCNN 在很大程度上依赖于深度可分离卷积和残差瓶颈块。�
 
 Fast-SCNN 受到了两个分支架构和具有跳跃连接的编码器-解码器网络的启发。我们注意到早期层通常提取低级特征。我们重新解释跳跃连接作为一个学习下采样模块，使我们能够融合这两种框架的关键思想，并构建一个快速的语义分割模型。[图 1](#fig1) 和[表 1](#table1) 展示了 Fast-SCNN 的布局。接下来，我们将讨论我们的动机，并更详细地描述我们的构建模块。
 
+<a id='table1'></a>
 <div align=center>
     <img src=./imgs_markdown/2024-03-15-09-40-12.png
-    width=60%><a id='table1'></a>
+    width=60%>
     <center>表 1. Fast-SCNN 使用标准卷积(Conv2D)、深度可分离卷积(DSConv)、反向残差瓶颈块(bottleneck)、金字塔池化模块(PPM)和特征融合模块(FFM)。参数 t、c、n 和 s 分别表示瓶颈块的扩展因子、输出通道数、重复块的次数和应用于重复块的第一个序列的步幅参数。水平线分隔了模块：学习下采样、全局特征提取器、特征融合和分类器（从上到下）。</center>
 </div>
 
@@ -190,9 +193,10 @@ Fast-SCNN 受到了两个分支架构和具有跳跃连接的编码器-解码器
 
 全局特征提取器模块旨在捕捉图像分割的全局上下文。与通常在输入图像的低分辨率版本上操作的常见两个分支方法不同，我们的模块直接使用学习下采样模块的输出（位于原始输入的 1/8 分辨率）。模块的详细结构如[表 1](#table1) 所示。我们使用了 MobileNet-V2 引入的高效瓶颈残差块（[表 2](#table2)）。特别地，当输入和输出大小相同时，我们为瓶颈残差块使用了残差连接。我们的瓶颈块使用了高效的深度可分离卷积，从而减少了参数和浮点运算的数量。此外，我们在末尾添加了金字塔池化模块（PPM），以聚合不同区域的上下文信息。
 
+<a id='table2'></a>
 <div align=center>
     <img src=./imgs_markdown/2024-03-15-09-47-54.png
-    width=60%><a id='table2'></a>
+    width=60%>
     <center></center>
 </div>
 
@@ -202,9 +206,10 @@ Fast-SCNN 受到了两个分支架构和具有跳跃连接的编码器-解码器
 
 类似于 ICNet 和 ContextNet，我们更倾向于简单地将特征相加以确保效率。或者，可以使用更复杂的特征融合模块以达到更好的准确性，但会牺牲运行时性能。特征融合模块的详细信息如[表 3](#table3) 所示。
 
+<a id='table3'></a>
 <div align=center>
     <img src=./imgs_markdown/2024-03-15-09-51-42.png
-    width=60%><a id='table3'></a>
+    width=60%>
     <center></center>
 </div>
 
@@ -254,15 +259,17 @@ Batch normalization 在每个非线性函数之前使用。Dropout 仅在最后�
 
 我们在 Cityscapes 的保留测试集上评估了 Fast-SCNN 的整体性能。在[表 4](#table4) 中，我们将 Fast-SCNN 与其他最先进的实时语义分割方法（ContextNet、BiSeNet、GUN 、ENet 和 ICNet）以及离线方法（PSPNet 和 DeepLab-V2）进行了比较。Fast-SCNN 实现了 68.0%的 mIoU，略低于 BiSeNet（71.5%）和 GUN（70.4%）。ContextNet 在这里只达到了 66.1%。
 
+<a id='table4'></a>
 <div align=center>
     <img src=./imgs_markdown/2024-03-15-10-11-14.png
-    width=60%><a id='table4'></a>
+    width=60%>
     <center>表 4. 在 Cityscapes 测试集上，与其他最先进的语义分割方法相比，所提出的 Fast-SCNN 的类别 mIoU 和总 mIoU。参数数量以百万为单位列出。</center>
 </div></br>
 
+<a id='table5'></a>
 <div align=center>
     <img src=./imgs_markdown/2024-03-15-10-10-31.png
-    width=70%><a id='table5'></a>
+    width=70%>
     <center>表 5. 在 Nvidia Titan X（Maxwell，3072 个 CUDA 核心）上使用 TensorFlow 的运行时间（fps）。带有 * 的方法表示在 Nvidia Titan Xp（Pascal，3840 个 CUDA 核心）上的结果。显示了 Fast-SCNN 的两个版本：使用 softmax 输出（我们的 prob）和使用对象标签输出（我们的 cls）。</center>
 </div></br>
 
@@ -270,9 +277,10 @@ Batch normalization 在每个非线性函数之前使用。Dropout 仅在最后�
 
 最后，我们将跳跃连接的贡献置零，并测量 Fast-SCNN 的性能。在验证集上，mIoU 从 69.22% 降至 64.30%。在[图 3](#fig3) 中，我们比较了定性结果。正如预期的那样，Fast-SCNN 在边界和小尺寸物体周围，特别受益于跳跃连接的作用。
 
+<a id='fig3'></a>
 <div align=center>
     <img src=./imgs_markdown/2024-03-15-10-28-09.png
-    width=100%><a id='fig3'></a>
+    width=100%>
     <center>图 3. Fast-SCNN 的分割结果可视化。第一列：输入的 RGB 图像；第二列：Fast-SCNN 的输出；最后一列：在将跳跃连接的贡献置零后的 Fast-SCNN 的输出。在所有的结果中，Fast-SCNN 特别在边界和小尺寸物体上受益于跳跃连接。</center>
 </div></br>
 
@@ -280,9 +288,10 @@ Batch normalization 在每个非线性函数之前使用。Dropout 仅在最后�
 
 高容量的 DCNN，如 R-CNN 和 PSPNet，已经证明通过不同的辅助任务可以提升性能。由于我们专门设计了低容量的 Fast-SCNN，现在我们想测试在是否进行预训练以及是否使用额外的弱标注数据的情况下的性能。据我们所知，以往没有研究过预训练和额外弱标注数据对低容量 DCNN 的影响。[表 6](#table6) 显示了结果。
 
+<a id='table6'></a>
 <div align=center>
     <img src=./imgs_markdown/2024-03-15-10-20-13.png
-    width=60%><a id='table6'></a>
+    width=60%>
     <center>表 6. Cityscapes 验证集上不同 Fast-SCNN 设置的类别 mIoU</center>
 </div></br>
 
@@ -292,9 +301,10 @@ Batch normalization 在每个非线性函数之前使用。Dropout 仅在最后�
 
 值得注意的是，使用辅助任务是非常复杂的，因为它需要在网络中进行架构修改。此外，许可限制和资源不足进一步限制了这样的设置。由于我们证明了 ImageNet 预训练和弱标注数据对于我们的低容量 DCNN 并没有显著的益处，因此可以节省这些成本。[图 4](#fig4) 显示了训练曲线。使用粗略数据的 Fast-SCNN 在迭代次数方面训练较慢，这是由于弱标签质量的影响。两个 ImageNet 预训练版本在早期时期表现较好（仅使用训练集训练时达到 400 个时期，使用额外的粗略标注数据训练时达到 100 个时期）。这意味着，当我们从头开始训练模型时，我们只需要更长时间的训练才能达到类似的准确性。
 
+<a id='fig4'></a>
 <div align=center>
     <img src=./imgs_markdown/2024-03-15-10-22-31.png
-    width=80%><a id='fig4'></a>
+    width=80%>
     <center>图 4. Cityscapes 上的训练曲线。上方显示了迭代次数 (Iterations) 的准确率，下方显示了 Epoch 的准确率。虚线表示 Fast-SCNN 的 ImageNet 预训练。</center>
 </div></br>
 
@@ -302,9 +312,10 @@ Batch normalization 在每个非线性函数之前使用。Dropout 仅在最后�
 
 由于我们对可能没有完整分辨率输入或无法访问强大 GPU 的嵌入式设备感兴趣，我们通过在一半和四分之一的输入分辨率下进行性能研究来结束我们的评估（见[表 7](#table7)）。
 
+<a id='table7'></a>
 <div align=center>
     <img src=./imgs_markdown/2024-03-15-10-24-56.png
-    width=45%><a id='table7'></a>
+    width=45%>
     <center>表7. Fast-SCNN在Cityscapes测试集上不同输入分辨率下的运行时间和准确率</center>
 </div></br>
 
@@ -312,9 +323,10 @@ Batch normalization 在每个非线性函数之前使用。Dropout 仅在最后�
 
 我们强调，<font color='red'><b>Fast-SCNN 无需修改即可直接适用于较低的输入分辨率，使其非常适用于嵌入式设备</b></font>。
 
+<a id='fig5'></a>
 <div align=center>
     <img src=./imgs_markdown/2024-03-15-10-30-57.png
-    width=100%><a id='fig5'></a>
+    width=100%>
     <center>图 5. Fast-SCNN 在 Cityscapes 验证集上的定性结果。第一列：输入的 RGB 图像；第二列：真实标签；最后一列：Fast-SCNN 的输出。Fast-SCNN 获得了 68.0% 的类别级别 mIoU 和 84.7% 的类别级别 mIoU。</center>
 </div></br>
 
