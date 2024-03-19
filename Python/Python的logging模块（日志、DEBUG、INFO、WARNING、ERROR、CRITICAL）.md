@@ -996,38 +996,3 @@ atefmt`：定义了时间戳的格式，包括年月日和时分秒。
 这个配置文件定义了一个简单的日志系统，根日志记录器将日志消息输出到控制台，并使用了名为 "simpleFormatter" 的格式化器，以指定日志消息的输出格式。日志消息的级别从 `DEBUG` 到更高级别的都会被记录。
 
 我们可以在代码中使用这个配置文件来配置 `logging` 模块，以实现相同的日志记录行为。
-
-### 3.6.2 加载配置文件
-
-```python
-import logging
-import logging.config
-
-
-# 1. 加载配置文件
-logging.config.fileConfig("logging.cfg")
-
-# 2. 创建 logger
-logger = logging.getLogger()
-
-# 3. 记录日志
-logger.debug("这是一条[debug]日志!")
-logger.info("这是一条[info]日志!")
-logger.warning("这是一条[warning]日志!")
-logger.error("这是一条[error]日志!")
-logger.critical("这是一条[critical]日志!")
-```
-
-console 的结果：
-
-```
-2023-10-16 20:23:22 - root - DEBUG - 这是一条[debug]日志!
-2023-10-16 20:23:22 - root - INFO - 这是一条[info]日志!
-2023-10-16 20:23:22 - root - WARNING - 这是一条[warning]日志!
-2023-10-16 20:23:22 - root - ERROR - 这是一条[error]日志!
-2023-10-16 20:23:22 - root - CRITICAL - 这是一条[critical]日志!
-```
-
-# 知识来源
-1. [python logging 日志模块详解](https://zhuanlan.zhihu.com/p/454463040)
-2. [Python基础之标准库logging 你还在用print来调试程序吗，OUT啦](https://www.bilibili.com/video/BV1sK4y1x7e1/)
