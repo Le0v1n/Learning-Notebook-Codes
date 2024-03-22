@@ -18,24 +18,49 @@ def generator_palette_for_classes(num_classes, task):
     return palette
 
                 
-def create_folder(fp, exist_ok=True, verbose=False):
+def create_folder(dst_dir, increment=False, verbose=False) -> str:
     """创建文件夹
-        当父级文件夹存在是，调用os.mkdir方法
-        当父级文件夹不存在时，调用os.makedirs方法
 
-    Args:
-        fp (str): 要创建的文件夹路径
-        exist_ok (bool, optional): 建议为True，如果为False，当fp存在时可能会报错. Defaults to True.
+    - Args:
+        - `dst_dir (str)`: 文件夹路径
+        - `increment (bool)`: 是否开启递增文件夹模式. Defaults to False.
+            - `increment=True`: 若目标文件夹存在，则创建一个带有后缀的文件夹进行区分，如 runs/train 存在 -> 创建 runs/train2
+            - `increment=False`: 若目标文件夹存在，则不再创建
+            - 💡  默认为 False
+        - `verbose (bool)`: 详细输出. Defaults to False.
+    
+    - Return:
+        - `dst_dir (str)`: 返回最终的文件夹路径
+        
+    - ⚠️  WARNING：当开启 `increment=True`，请注意接受该函数的返回值，因为 `dst_dir` 已被更新
     """
-    if os.path.exists(fp):  # 如果文件夹存在，则不创建
-        xprint(f"⚠️  Folder {fp} has existed!", color='yellow') if verbose else ...
-        return
-    elif not os.path.exists(os.path.dirname(fp)):  # 如果父级文件夹不存在，则发出警告
-        xprint(f"⚠️  The parent folder doesn't exists!", color='yellow')
-        os.makedirs(fp, exist_ok=exist_ok)
-    else:  # 如果父级文件夹存在且文件夹不存在，那么创建
-        xprint(f"✔️  Folder {fp} has been created!") if verbose else ...
-        os.mkdir(fp)
+    assert isinstance(dst_dir, str), f"❌  请传入一个文件夹路径而非 {dst_dir}!"
+
+    # 如果文件夹存在
+    if os.path.exists(dst_dir):
+        if increment:  # 文件夹递增
+            path = Path(dst_dir)
+            suffix = 1
+            while path.exists():
+                suffix += 1
+                path = Path(dst_dir + str(suffix))
+            dst_dir = str(path)
+            xprint(f"⚠️  Folder has existed, create increment folder -> {dst_dir}", color='yellow') if verbose else ...
+
+            # 递归调用自身来创建新的文件夹
+            return create_folder(dst_dir, verbose=verbose, increment=increment)
+        else:
+            xprint(f"⚠️  Folder {dst_dir} has existed!", color='yellow') if verbose else ...
+
+    # 如果文件夹不存在
+    else:
+        if not os.path.exists(os.path.dirname(dst_dir)):  # 如果父级文件夹不存在，则发出警告
+            xprint(f"⚠️  WARNING: The parent folder doesn't exist for {dst_dir}!", color='yellow')
+        
+        os.makedirs(dst_dir, exist_ok=True)
+        xprint(f"✔️  Folder {dst_dir} has been created!", color='yellow') if verbose else ...
+    
+    return dst_dir
 
 
 def rgb2hex(rgb_color: Union[tuple, list]) -> str:
