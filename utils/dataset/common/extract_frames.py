@@ -1,7 +1,7 @@
 import os
 import sys
 import cv2
-import tqdm
+from tqdm import tqdm
 import tabulate
 import threading
 from utils.generator import create_folder
@@ -10,6 +10,8 @@ from utils.outer import print_arguments
 
 sys.path.append(os.getcwd())
 from utils.outer import xprint
+from items import VideoFormat
+from utils.getter import get_files
 
 
 __doc__ = """脚本说明：根据帧间隔对某个文件夹下指定类型的视频文件进行抽帧，得到系列图片。
@@ -23,33 +25,29 @@ xprint(__doc__, color='blue', bold=True, hl="=", hl_num=2)
 
 
 """============================ 需要修改的地方 ==================================="""
-SRC_PATH = "utils/dataset/EXAMPLE_FOLDER"  # 原始视频路径
-frame_interval = 15  # 视频采样间隔，越小采样率越高 -> 60 | 30 | 15 | 10
-video_type = ('.mp4', '.avi', '.mkv', '.mov')  # 视频格式(.mp4 | .avi)
+videos_dir = "utils/dataset/_example_dataset"  # 原始视频路径
+frames_save_path = 'utils/dataset/_example_dataset/extract_frames'  # 保存图片文件夹名称
 
-DST_PATH = f"images-{frame_interval}"  # 保存图片文件夹名称
-save_img_format = '.jpg'  # 保存的图片格式(.jpg | .png)
-
+sample_interval = 15  # 视频采样间隔，越小采样率越高 -> 60 | 30 | 15 | 10
 video_default_fps = 25  # [optional] 视频默认的帧数
+
+save_img_format = '.jpg'  # 保存的图片格式(.jpg | .png)
 """==============================================================================="""
 
-# 构建路径
-results_imgs_path = os.path.join(os.path.dirname(SRC_PATH), DST_PATH)  # 保存图片路径
-
 # 得到存放所有视频的list
-video_list = [x for x in os.listdir(SRC_PATH) if os.path.splitext(x)[-1] in video_type]
+video_list = get_files(videos_dir, extension=VideoFormat, path_style=None)
 
 "------------计数------------"
-TOTAL_VID_NUM = len(video_list)
-SUCCEED_NUM = 0  # 完成视频的个数
+count_video_num = len(video_list)
+count_finished = 0  # 完成视频的个数
 "---------------------------"
 
 def calculate_video_duration(video_list):
     total_duration = 0
 
     # 使用tqdm库创建一个进度条
-    for file_name in tqdm.tqdm(video_list, desc='计算视频时长', unit='个'):
-        file_path = os.path.join(SRC_PATH, file_name)
+    for file_name in tqdm(video_list, desc='计算视频时长', unit='个'):
+        file_path = os.path.join(videos_dir, file_name)
         
         # 使用OpenCV读取视频文件
         video_capture = cv2.VideoCapture(file_path)  
@@ -69,26 +67,25 @@ def calculate_video_duration(video_list):
 # 调用函数计算总时长
 total_duration = calculate_video_duration(video_list)
 
-_str = [
-    ["[SRC]视频路径为", SRC_PATH],
-    ["视频个数", TOTAL_VID_NUM],
-    ["视频默认帧率", video_default_fps],
-    ["采样间隔", f"{frame_interval} fps"],
-    ["视频总时长", f"{total_duration:.2f} 秒"],
-    ["预计数量", f"{total_duration * (video_default_fps / frame_interval):.2f} 秒"],
-    ['',''],
-    ["[DST]图片保存路径为", results_imgs_path],
-    ["保存的图片格式为", save_img_format],
-]
+print_arguments(
+    视频路径为=videos_dir,
+    视频个数=count_video_num,
+    视频默认帧率=video_default_fps,
+    采样间隔=f"{sample_interval} fps",
+    视频总时长=f"{total_duration:.2f} 秒",
+    预计数量=f"{total_duration * (video_default_fps / sample_interval):.2f} 秒",
+    图片保存路径为=frames_save_path,
+    保存的图片格式为=save_img_format,
+    wait=True
+)
 
-print_arguments(params_dict=_str, confirm=True, show_type=True)  # 打印参数
-create_folder(results_imgs_path, verbose=True)  # 创建文件夹
+create_folder(frames_save_path, verbose=False)  # 创建文件夹
     
 def process_video(vid_name, progress_bar, SUCCEED_NUM, statistics_dict):
     save_number = 1  # 记录当前视频保存的frame个数
     vid_pre, vid_ext = os.path.splitext(vid_name)  # 获取文件名和后缀
     
-    vid_path = os.path.join(SRC_PATH, vid_name)  # 视频完整路径
+    vid_path = os.path.join(videos_dir, vid_name)  # 视频完整路径
     
     # 创建VideoCapture对象
     vc = cv2.VideoCapture(vid_path)
@@ -108,13 +105,13 @@ def process_video(vid_name, progress_bar, SUCCEED_NUM, statistics_dict):
             break
 
         # 每隔 frame_interval 帧保存一次图片
-        if frame_count % frame_interval == 0:
+        if frame_count % sample_interval == 0:
             # 生成图片文件名
             frame_name = f"{vid_pre}_{save_number:05d}{save_img_format}"
-            frame_path = os.path.join(results_imgs_path, frame_name)  # Python\常用脚本\EXAMPLE_FOLDER\extract_frames_results\test_vid_0016.jpg
+            frame_path = os.path.join(frames_save_path, frame_name)  # Python\常用脚本\EXAMPLE_FOLDER\extract_frames_results\test_vid_0016.jpg
 
             progress_bar.set_description(f"\033[1;31m{vid_name}\033[0m -> "
-                                            f"\033[1;36m{save_number * frame_interval:08d}\033[0m"
+                                            f"\033[1;36m{save_number * sample_interval:08d}\033[0m"
                                             f" ({save_number:05d})")  # 更新tqdm的描述
             # 保存帧为图片
             cv2.imwrite(frame_path, frame)
@@ -137,7 +134,7 @@ threads = []  # 保存线程的list
 for vid_name in video_list:  # 遍历所有的视频
     t = threading.Thread(target=process_video, args=(vid_name, 
                                                      progress_bar, 
-                                                     SUCCEED_NUM, 
+                                                     count_finished, 
                                                      statistics_dict))
     threads.append(t)
     t.start()
@@ -168,6 +165,6 @@ for k, v in sorted_statistics_dict.items():
 _str = tabulate.tabulate(_str, headers=['No', 'Video Name', 'Obtained Images Number'], tablefmt='pretty')
 print(_str)
 
-_str = (f"✔️  视频拆帧 ({TOTAL_VID_NUM}个)完成! 得到[{_sum}]张[{save_img_format}]图片\n"
-        f"结果保存路径为: {results_imgs_path}")
+_str = (f"✔️  视频拆帧 ({count_video_num}个)完成! 得到[{_sum}]张[{save_img_format}]图片\n"
+        f"结果保存路径为: {frames_save_path}")
 xprint(_str, color='green', hl='>')

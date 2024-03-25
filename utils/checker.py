@@ -4,6 +4,8 @@ import argparse
 import torch
 import re
 import inspect
+from PIL import Image
+
 from typing import Optional, Union
 sys.path.append(os.getcwd())
 
@@ -215,6 +217,30 @@ def add_suffix(fp: str, suffix: str) -> str:
     __prefix, __extension = os.path.splitext(__file_name)
     
     return os.path.join(__dir, __prefix + suffix + __extension)
+
+
+def is_rgb_image(file_path: str) -> bool:
+    """检查一张图片是不是rgb或rgba图片
+
+    Args:
+        file_path (str): 图片的路径
+
+    Returns:
+        bool: 是否为rgb或rgba图片
+    """
+    try:
+        # 打开图片
+        with Image.open(file_path) as img:
+            # 检查图片的模式是否为RGB或RGBA
+            return img.mode in ['RGB', 'RGBA']
+    except IOError:
+        # 如果打开图片时出现错误，返回False
+        return False
+    
+    
+def is_pillow_obj(image):
+    return hasattr(image, 'mode') and isinstance(image.mode, str)
+
     
 if __name__ == "__main__":
     _gpu = process_gpu(gpus_id='1,2,3,4')
