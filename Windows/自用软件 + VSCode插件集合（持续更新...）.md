@@ -31,14 +31,15 @@
 29. <kbd>待办事项</kbd>：[滴答清单(Web)](https://www.dida365.com/webapp/#q/all/tasks) | [滴答清单(客户端)](https://www.dida365.com/about/download)
 30. <kbd>铃声制作</kbd>：[酷狗铃声制作专家(需下载酷狗音乐)](https://download.kugou.com/)
 31. <kbd>视频剪辑</kbd>：[剪映专业版](https://www.capcut.cn/)
-31. <kbd>手机与电脑传输文件</kbd>：[KDE Connect](https://kdeconnect.kde.org/) | [LANDrop](https://landrop.app/#downloads)
-32. <kbd>平板充当电脑副屏</kbd>：[SpaceDesk](https://www.spacedesk.net/zh/)
-33. <kbd>按空格快速预览文件</kbd>：[QuickLook](https://github.com/QL-Win/QuickLook)
-34. <kbd>右键管理</kbd>：[ContextMenuManager](https://github.com/BluePointLilac/ContextMenuManager)
-35. <kbd>Windows 10 音量模块修改</kbd>（<font color='red'>有 Bug：多媒体暂停和继续播放无效</font>）：[ModernFlyouts](https://github.com/ModernFlyouts-Community/ModernFlyouts)
-36. <kbd>Windows 10 任务栏居中</kbd>：[StartIsBack++](https://www.ghxi.com/startisback.html)
-37. <kbd>Windows 10/11 资源监控</kbd>：[TrafficMonitor](https://github.com/zhongyang219/TrafficMonitor)（下载 x64 即可）
-38. <kbd>哔哩哔哩视频下载</kbd>：[BBDown](https://github.com/nilaoda/BBDown)
+32. <kbd>手机与电脑传输文件</kbd>：[KDE Connect](https://kdeconnect.kde.org/) | [LANDrop](https://landrop.app/#downloads)
+33. <kbd>平板充当电脑副屏</kbd>：[SpaceDesk](https://www.spacedesk.net/zh/)
+34. <kbd>按空格快速预览文件</kbd>：[QuickLook](https://github.com/QL-Win/QuickLook)
+35. <kbd>右键管理</kbd>：[ContextMenuManager](https://github.com/BluePointLilac/ContextMenuManager)
+36. <kbd>Windows 10 音量模块修改</kbd>（<font color='red'>有 Bug：多媒体暂停和继续播放无效</font>）：[ModernFlyouts](https://github.com/ModernFlyouts-Community/ModernFlyouts)
+37. <kbd>Windows 10 任务栏居中</kbd>：[StartIsBack++](https://www.ghxi.com/startisback.html)
+38. <kbd>Windows 10/11 资源监控</kbd>：[TrafficMonitor](https://github.com/zhongyang219/TrafficMonitor)（下载 x64 即可）
+39. <kbd>哔哩哔哩视频下载</kbd>：[BBDown](https://github.com/nilaoda/BBDown)
+40. <kbd>等宽字体推荐</kbd>：[Sarasa Mono SC](https://github.com/be5invis/Sarasa-Gothic)（在 VSCode 中，中文是英文宽度的两倍，实现完美排版）
 
 
 # 2. VSCode 配置
