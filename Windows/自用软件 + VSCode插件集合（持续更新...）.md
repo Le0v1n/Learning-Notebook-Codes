@@ -108,12 +108,15 @@ VSCode 中的 Python 格式化默认使用 autopep8 格式化代码，默认长�
 
 <a></a>
 <div align=center>
-    <img src=./imgs_markdown/2024-04-02-12-07-51.png
+    <img src=./imgs_markdown/2024-04-02-13-36-45.png
     width=100%>
     <center></center>
 </div></br>
 
-> 建议在修改之后重启一下 VSCode
+```
+--max-line-length
+150
+```
 
 ## 2.4 解决 VSCode 文件夹折叠问题
 
