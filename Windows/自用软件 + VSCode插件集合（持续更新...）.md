@@ -98,16 +98,20 @@ VSCode 中的 Python 格式化默认使用 autopep8 格式化代码，默认长�
 在 `setting.json` 添加设置：
 
 ```json
-    "python.formatting.autopep8Args": [
-        "--max-line-length=150"
-    ],
+    "[python]": {
+        "editor.formatOnType": true,
+        "editor.defaultFormatter": "ms-python.autopep8"
+    },
 ```
 
-若 autopep8 格式化无效，不起作用，可以添加 `--experimental` 参数：
+之后我们在设置中搜索 `autopep`，按照如图所示进行修改即可。
 
-```json
-    "python.formatting.autopep8Args": ["--max-line-length", "150", "--experimental"],
-```
+<a></a>
+<div align=center>
+    <img src=./imgs_markdown/2024-04-02-12-07-51.png
+    width=100%>
+    <center></center>
+</div></br>
 
 > 建议在修改之后重启一下 VSCode
 
