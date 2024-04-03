@@ -40,6 +40,7 @@
 38. <kbd>Windows 10/11 资源监控</kbd>：[TrafficMonitor](https://github.com/zhongyang219/TrafficMonitor)（下载 x64 即可）
 39. <kbd>哔哩哔哩视频下载</kbd>：[BBDown](https://github.com/nilaoda/BBDown)
 40. <kbd>等宽字体推荐</kbd>：[Sarasa Mono SC](https://github.com/be5invis/Sarasa-Gothic)（在 VSCode 中，中文是英文宽度的两倍，实现完美排版）
+41. <kbd>快速预览文件内容</kbd>：[QuickLook](https://github.com/QL-Win/QuickLook)（在 Windows 系统中实现像 MAC 那样按空格预览文件）
 
 
 # 2. VSCode 配置
