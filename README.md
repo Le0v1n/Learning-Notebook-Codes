@@ -12,7 +12,7 @@
 
 这个仓库存放了我日常的笔记。
 + 如果你有疑问请[联系我](#contactme) :smile:
-+ 如果对你有帮助，请 :star: 一下
++ 如果对你有帮助，请 🌟 一下
 
 更多内容请见：
 1. [CSDN 博客-Le0v1n](https://blog.csdn.net/weixin_44878336)：这里有很多有趣的内容
@@ -92,12 +92,13 @@
 
 ### 〔11〕ONNX --> ONNX 相关
 1.  [onnx基础.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ONNX/onnx%E5%9F%BA%E7%A1%80.md)：onnx 基础知识 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/135820896)
-2.  [PyTorch2ONNX-分类模型.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ONNX/PyTorch2ONNX-%E5%88%86%E7%B1%BB%E6%A8%A1%E5%9E%8B.md)：PyTorch2ONNX实战（分类网络） | [📚对应博客]()
+2.  [PyTorch2ONNX-分类模型.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ONNX/PyTorch2ONNX-%E5%88%86%E7%B1%BB%E6%A8%A1%E5%9E%8B.md)：PyTorch2ONNX 实战（分类网络） | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/135915692)
+3. 📂 code：存放相关代码
 
 # 其他说明
 
-1. 因为 Github 仓库有最大容量限制，所以会搬运来自 [我的 CSDN 博客]((https://blog.csdn.net/weixin_44878336)) 上的图片；
-2. 如果文章有问题（语法、链接错误、文字、版权等），请[联系我](#contactme)!
+1. 因为 Github 仓库有最大容量限制，所以部分文章的图片引用来自 [我的 CSDN 博客]((https://blog.csdn.net/weixin_44878336))。
+2. 如果文章有问题（语法、链接错误、文字、版权等），请[联系我](#contactme)。
 
 
 # 联系我 <a id='contactme'></a>
