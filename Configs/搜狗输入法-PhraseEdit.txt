@@ -50,6 +50,10 @@
 a,5=😦
 aa,5=😦
 angry,5=😠
+bash,5=
+```bash
+
+```
 bdyj,5=🙄
 bofh,5=▶️
 bold,5=<b></b>
@@ -60,6 +64,11 @@ center,5=
 </div>
 co,5=×
 co,4=❌
+cpp,5=
+```cpp
+
+```
+
 details,5=
 <details><summary></summary>
 
@@ -70,6 +79,7 @@ dv,5=√
 dv,4=✔️
 dv,3=✅
 email,5=📧
+eye,5=👀
 ffgexm,5===========  ==========
 ffgexm,4=----------  ----------
 ffgexm,3=>>>>>>  >>>>>>
@@ -78,14 +88,27 @@ fjbdyj,5=🙄
 folder,5=📂
 font,5=<font color='red'><b></b></font>
 font,4=<font color='red'></font>
+glasses,5=👓
 hehe,5=🙂
 hxji,5=🤪
+img,5=
+<a></a>
+<div align=center>
+    <img src=
+    width=90%>
+    <center></center>
+</div></br>
+
 info,5=ℹ️
 insertimg,5=
 <div align=center>
     <img src=
     width=100%>
 </div>
+java,5=
+```java
+
+```
 jbvi,5=🚫
 jkgc,5=⚠️
 jkgc,4=☣️
@@ -104,10 +127,23 @@ ok,4=🆗
 pen,5=✒️
 phone,5=📱
 play,5=▶️
+python,5=
+```python
+
+```
+
 sh,5=↑
+shit,5=💩
 soon,5=🔜
 stop,5=⏹️
 tkvi,5=⏹️
+tupm,5=
+<a></a>
+<div align=center>
+    <img src=
+    width=90%>
+    <center></center>
+</div></br>
 ualz,5=⏳
 ualz,4=⌛
 ugqi,5=😠
@@ -127,8 +163,24 @@ xn,4=😄
 xniz,5=🤡
 xx,5=↓
 ybyt,5=🎵
+yjjk,5=👀
+yjjk,4=👓
 yz,5=→
 zo,5=←
+CPP,5=
+```cpp
+
+```
+
+Java,5=
+```java
+
+```
+
+Python,5=
+```python
+
+```
 QA,5=
 <kbd><b>Question</b></kbd>：
 
