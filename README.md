@@ -41,6 +41,10 @@
 1. [配置Anaconda.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Linux/%E9%85%8D%E7%BD%AEAnaconda.md): 如何在 Linux 中下载、安装、配置 Anaconda | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133967607)
 2. [Linux常用命令.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Linux/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4.md): Linux 常用命令
 3. [📂shell](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Linux/shell): 存放《shell脚本基础语法（.sh ./ sh bash source shell）》的内容 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/136059003)
+4. [📂Git](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Linux/Git): 如何在 Ubuntu 上使用 Git | 📚对应博客：
+   1. [〔Part1〕Git基础教程](https://blog.csdn.net/weixin_44878336/article/details/122470219)
+   2. [〔Part2〕Git进阶教程：分支](https://blog.csdn.net/weixin_44878336/article/details/122481847)
+   3. [〔Part3〕Git实战教程：本地仓库、远程仓库](https://blog.csdn.net/weixin_44878336/article/details/122484071)
 
 ### 〔5〕ObjectDetection --> 目标检测相关
 1. [📂YOLOv5](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/ObjectDetection/YOLOv5/): YOLOv5 相关内容
