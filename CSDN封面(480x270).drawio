@@ -1,6 +1,6 @@
-<mxfile host="Electron" modified="2024-04-16T09:41:08.656Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.6.5 Chrome/114.0.5735.243 Electron/25.3.1 Safari/537.36" etag="62B87n_T7b6lXZQ2UTPN" version="21.6.5" type="device" pages="28">
+<mxfile host="Electron" modified="2024-04-17T02:34:16.185Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.6.5 Chrome/114.0.5735.243 Electron/25.3.1 Safari/537.36" etag="yGIjfb33c7IFJMeEABaY" version="21.6.5" type="device" pages="29">
   <diagram name="LOGO" id="-zhb3GBFoAUP3NOcfG9p">
-    <mxGraphModel dx="1420" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="480" pageHeight="270" math="0" shadow="0">
+    <mxGraphModel dx="1404" dy="1084" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="480" pageHeight="270" math="0" shadow="0">
       <root>
         <mxCell id="FS2vHGzdvkia62v9XX6N-0" />
         <mxCell id="FS2vHGzdvkia62v9XX6N-1" parent="FS2vHGzdvkia62v9XX6N-0" />
@@ -639,30 +639,41 @@
     </mxGraphModel>
   </diagram>
   <diagram name="〔Part3〕Git实战教程" id="_kXb8h8iP6xsr-qmqKmK">
-    <mxGraphModel dx="1420" dy="830" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="480" pageHeight="270" math="0" shadow="0">
+    <mxGraphModel dx="1404" dy="814" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="480" pageHeight="270" math="0" shadow="0">
       <root>
         <mxCell id="uYn9hH_m5TbtXUMUQ6-A-0" />
         <mxCell id="uYn9hH_m5TbtXUMUQ6-A-1" parent="uYn9hH_m5TbtXUMUQ6-A-0" />
-        <mxCell id="uYn9hH_m5TbtXUMUQ6-A-2" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#FF9999;strokeWidth=2;" edge="1" parent="uYn9hH_m5TbtXUMUQ6-A-1">
+        <mxCell id="uYn9hH_m5TbtXUMUQ6-A-2" value="" style="endArrow=none;html=1;rounded=0;strokeColor=#FF9999;strokeWidth=2;" parent="uYn9hH_m5TbtXUMUQ6-A-1" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="5" y="100" as="sourcePoint" />
             <mxPoint x="478" y="100" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="uYn9hH_m5TbtXUMUQ6-A-3" value="〔Part3〕Git 实战教程" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Times New Roman;fontStyle=1;labelBorderColor=none;fontColor=#FF0000;fontSize=46;" vertex="1" parent="uYn9hH_m5TbtXUMUQ6-A-1">
+        <mxCell id="uYn9hH_m5TbtXUMUQ6-A-3" value="〔Part3〕Git 实战教程" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Times New Roman;fontStyle=1;labelBorderColor=none;fontColor=#FF0000;fontSize=46;" parent="uYn9hH_m5TbtXUMUQ6-A-1" vertex="1">
           <mxGeometry y="103" width="480" height="74" as="geometry" />
         </mxCell>
-        <mxCell id="uYn9hH_m5TbtXUMUQ6-A-4" value="创建仓库、ssh、.gitignore、上传分支、克隆项目、拉取代码" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Times New Roman;fontStyle=1;labelBorderColor=none;fontColor=#000000;fontSize=26;" vertex="1" parent="uYn9hH_m5TbtXUMUQ6-A-1">
+        <mxCell id="uYn9hH_m5TbtXUMUQ6-A-4" value="创建仓库、ssh、.gitignore、上传分支、克隆项目、拉取代码" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Times New Roman;fontStyle=1;labelBorderColor=none;fontColor=#000000;fontSize=26;" parent="uYn9hH_m5TbtXUMUQ6-A-1" vertex="1">
           <mxGeometry y="179" width="480" height="89" as="geometry" />
         </mxCell>
-        <mxCell id="uYn9hH_m5TbtXUMUQ6-A-5" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Git-logo.svg/1200px-Git-logo.svg.png;" vertex="1" parent="uYn9hH_m5TbtXUMUQ6-A-1">
+        <mxCell id="uYn9hH_m5TbtXUMUQ6-A-5" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Git-logo.svg/1200px-Git-logo.svg.png;" parent="uYn9hH_m5TbtXUMUQ6-A-1" vertex="1">
           <mxGeometry x="142" y="9" width="189" height="78.91" as="geometry" />
         </mxCell>
-        <mxCell id="uYn9hH_m5TbtXUMUQ6-A-6" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://1000logos.net/wp-content/uploads/2021/05/GitHub-logo.png;" vertex="1" parent="uYn9hH_m5TbtXUMUQ6-A-1">
+        <mxCell id="uYn9hH_m5TbtXUMUQ6-A-6" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://1000logos.net/wp-content/uploads/2021/05/GitHub-logo.png;" parent="uYn9hH_m5TbtXUMUQ6-A-1" vertex="1">
           <mxGeometry x="8" y="18.079999999999984" width="108" height="60.75" as="geometry" />
         </mxCell>
-        <mxCell id="uYn9hH_m5TbtXUMUQ6-A-7" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://1000logos.net/wp-content/uploads/2022/03/Gitlab-Logo-2011.png;" vertex="1" parent="uYn9hH_m5TbtXUMUQ6-A-1">
+        <mxCell id="uYn9hH_m5TbtXUMUQ6-A-7" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://1000logos.net/wp-content/uploads/2022/03/Gitlab-Logo-2011.png;" parent="uYn9hH_m5TbtXUMUQ6-A-1" vertex="1">
           <mxGeometry x="356" y="14.15" width="122" height="68.62" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="计算机视觉领域（CV）论文中“圈加”、“圈乘”和“点乘”的解释以及代码示例" id="PIS3ennY8UhzNP8UX5a2">
+    <mxGraphModel dx="1420" dy="830" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="480" pageHeight="270" math="0" shadow="0">
+      <root>
+        <mxCell id="PIIYnyNsAhzmT2tevVGW-0" />
+        <mxCell id="PIIYnyNsAhzmT2tevVGW-1" parent="PIIYnyNsAhzmT2tevVGW-0" />
+        <mxCell id="PIIYnyNsAhzmT2tevVGW-3" value="&lt;font color=&quot;#000000&quot;&gt;计算机视觉领域&lt;br&gt;论文中&lt;/font&gt;&lt;br&gt;⊕&amp;nbsp; &amp;nbsp; &amp;nbsp;⊗&amp;nbsp; &amp;nbsp; ⊙&lt;br&gt;&lt;font color=&quot;#000000&quot;&gt;的解释以及代码示例&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Times New Roman;fontStyle=1;labelBorderColor=none;fontColor=#FF0000;fontSize=46;" vertex="1" parent="PIIYnyNsAhzmT2tevVGW-1">
+          <mxGeometry y="1" width="480" height="269" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
