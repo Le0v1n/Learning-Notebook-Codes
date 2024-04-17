@@ -24,10 +24,12 @@
 
 1. [CSDN封面(480x270).drawio](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/CSDN%E5%B0%81%E9%9D%A2(480x270).drawio): 制作 CSDN 博客的封面
    
-### 〔2〕LaTex-and-Markdown --> LaTex 和 Markdown 相关
+### 〔2〕Writing --> 与写作相关的
 
 1. [LaTex公式常用语法.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/LaTex-and-Markdown/LaTex%E5%85%AC%E5%BC%8F%E5%B8%B8%E7%94%A8%E8%AF%AD%E6%B3%95.md): 与 LaTex 公式相关的常用命令
 2. [Markdown常用语法.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/LaTex-and-Markdown/Markdown%E5%B8%B8%E7%94%A8%E8%AF%AD%E6%B3%95.md): 与 Markdown 相关的常用命令
+3. [Office/Office.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Writing/Office/Office.md)：Office 技巧 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133986172)
+4. [Office/论文模板.docx](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Writing/Office/%E8%AE%BA%E6%96%87%E6%A8%A1%E6%9D%BF.docx)：大论文模板
 
 ### 〔3〕Dataset --> 数据集 (用于演示的小数据集)
 1. [📂VOCdevkit](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Datasets/VOCdevkit): Lite 版 VOC 2012 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/124540069)
@@ -82,7 +84,6 @@
  1.  [KMS.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/KMS%20Host.md)：KMS 主机配置 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133934093)
  2.  [WSL2.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/WSL2.md)：WSL2 的安装 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133967607)
  3.  [自用软件 + VSCode插件集合（持续更新...）.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/%E8%87%AA%E7%94%A8%E8%BD%AF%E4%BB%B6%20%2B%20VSCode%E6%8F%92%E4%BB%B6%E9%9B%86%E5%90%88%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0...%EF%BC%89.md) | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133272093)
- 4.  [Office.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/Office/Office.md)：Office 技巧 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133986172)
 
 ### 〔10〕常用配置文件 --> 存放常用的配置文件
 1.  [PotPlayerMini64.reg](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/PotPlayerMini64.reg): PotPlayer 配置文件
