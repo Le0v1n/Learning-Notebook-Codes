@@ -76,6 +76,7 @@
 9.  [RGB 颜色大全](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/color_list.md): RGB 和 HEX 颜色大全 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/135003274)
 10. [labelImg 修改不同类别的颜色（点大小、标签大小、框角）](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/labelImg%E4%BF%AE%E6%94%B9%E4%B8%8D%E5%90%8C%E7%B1%BB%E5%88%AB%E7%9A%84%E9%A2%9C%E8%89%B2.md) | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/135002957)
 11. [如何在VSCode中带有参数的Debug.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/%E5%A6%82%E4%BD%95%E5%9C%A8VSCode%E4%B8%AD%E5%B8%A6%E6%9C%89%E5%8F%82%E6%95%B0%E7%9A%84Debug.md) | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/136252019)
+12. [Python中的os模块和sys模块](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/Python%E4%B8%AD%E7%9A%84os%E6%A8%A1%E5%9D%97%E5%92%8Csys%E6%A8%A1%E5%9D%97.md) | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/124625088)
 
 ### 〔7〕PyTorch --> PyTorch 相关
 1. [mmcv_Registry.md](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/PyTorch/mmcv_Registry): MMCV 的注册机制（:hammer_and_wrench:尚未完成）
