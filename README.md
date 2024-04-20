@@ -102,6 +102,11 @@
 2.  [PyTorch2ONNX-分类模型.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ONNX/PyTorch2ONNX-%E5%88%86%E7%B1%BB%E6%A8%A1%E5%9E%8B.md)：PyTorch2ONNX 实战（分类网络） | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/135915692)
 3. 📂 code：存放相关代码
 
+### 〔12〕Classification --> 分类（Backbone）相关
+
+1.  [MnasNet.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Classification/MnasNet.md)：介绍一下 MnasNet | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/124449479)
+
+
 # 其他说明
 
 1. 因为 Github 仓库有最大容量限制，所以部分文章的图片引用来自 [我的 CSDN 博客]((https://blog.csdn.net/weixin_44878336))。
