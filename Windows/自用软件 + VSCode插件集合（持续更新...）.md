@@ -7,7 +7,7 @@
 5. <kbd>终端</kbd>：[Git Bash](https://blog.csdn.net/weixin_44878336/article/details/132698736)
 6. <kbd>输入法</kbd>：[搜狗输入法](https://pinyin.sogou.com/mac/)
 7. <kbd>中英文浮窗显示</kbd>：[ImTip ( 通用输入法状态跟踪提示 )](https://github.com/aardio/ImTip)
-8. <kbd>GIF录制</kbd>：[GifCam](https://gifcam.en.softonic.com/) | :star:[Gif123](https://github.com/aardio/Gif123)
+8. <kbd>GIF录制</kbd>：[GifCam](https://gifcam.en.softonic.com/) | 🌟[Gif123](https://github.com/aardio/Gif123)
 9. <kbd>Markdown 文档编写（本地）</kbd>：[VSCode](https://code.visualstudio.com/) | [Typora](https://typoraio.cn/)
 10. <kbd>Markdown 文档编写（云端）</kbd>：[语雀](https://www.yuque.com/about)（邀请码 SGXMFL :smile:）
 11. <kbd>回到桌面（不影响副屏）</kbd>：[ShowDesktopOneMonitor](https://github.com/ruzrobert/ShowDesktopOneMonitor)
@@ -22,7 +22,7 @@
 20. <kbd>邮箱</kbd>：[网易邮箱大师](https://dashi.163.com/download.html)
 21. <kbd>本地搜索文件</kbd>：[Everything](https://www.voidtools.com/zh-cn/)
 22. <kbd>音乐播放下载器</kbd>：[lx-music-desktop](https://github.com/lyswhut/lx-music-desktop)
-23. <kbd>视频播放器</kbd>：:star:[VLC](https://www.videolan.org/) | [PotPlayer](http://www.potplayercn.com/download)
+23. <kbd>视频播放器</kbd>：🌟[VLC](https://www.videolan.org/) | [PotPlayer](http://www.potplayercn.com/download)
 24. <kbd>视频剪切</kbd>：[FFmpeg](https://github.com/BtbN/FFmpeg-Builds)
 25. <kbd>桌面助手</kbd>：[360桌面助手](http://www.360.cn/desktop/)
 26. <kbd>云盘</kbd>：[阿里云盘](https://www.aliyundrive.com/)
@@ -41,10 +41,25 @@
 39. <kbd>哔哩哔哩视频下载</kbd>：[BBDown](https://github.com/nilaoda/BBDown)
 40. <kbd>等宽字体推荐</kbd>：[Sarasa Mono SC](https://github.com/be5invis/Sarasa-Gothic)（在 VSCode 中，中文是英文宽度的两倍，实现完美排版）
 41. <kbd>快速预览文件内容</kbd>：[QuickLook](https://github.com/QL-Win/QuickLook)（在 Windows 系统中实现像 MAC 那样按空格预览文件）
+42. <kbd>文本编辑器</kbd>：[Notepad++](https://github.com/notepad-plus-plus/notepad-plus-plus)
+43. <kbd>按键显示软件</kbd>：[Keyviz](https://github.com/mulaRahul/keyviz)（可以显示当前按下的按键）
+44. <kbd>GitHub 客户端</kbd>：[GitHub Desktop](https://desktop.github.com/)
+45. <kbd>Git</kbd>：[Git](https://git-scm.com/downloads)
+46. <kbd>Anaconda</kbd>：[Anaconda](https://www.anaconda.com/download)
+47. <kbd>微信</kbd>：[微信](https://weixin.qq.com/)
+48. <kbd>QQ</kbd>：[QQ](https://im.qq.com/index/)
+49. <kbd>Steam 客户端</kbd>：[Steam](https://store.steampowered.com/about/)
+50. <kbd>网易云音乐客户端</kbd>：[网易云音乐](https://music.163.com/#/download)
+51. <kbd>酷狗音乐客户端</kbd>：[酷狗音乐](https://download.kugou.com/)
+52. <kbd>WeGame</kbd>：[WeGame](https://www.wegame.com.cn/home/)
+
+# 2. 常用网站
+
+1. [NVIDIA 显卡驱动下载](https://www.nvidia.cn/geforce/drivers/)
 
 
-# 2. VSCode 配置
-## 2.1 VSCode 插件
+# 3. VSCode 配置
+## 3.1 VSCode 插件
 
 1. **autoDocstring**：在写 Python 代码的时候，输入 `"""` 会有提示，可以格式化的对函数、class 进行注释。
 2. **CJK Word Handler**：在 VSCode 中，`Ctrl + ← / →` 时应该自动分词跳跃光标，但是 VSCode 默认只对英文有效，中文体验不好，这个插件可以对中文进行分词，从而提升编写代码的效率。
@@ -57,8 +72,10 @@
 9. **Remote - SSH**：用于连接服务器。
 10. **TabOut**：可以让 VSCode 实现像 PyCharm 那样，按下 `Tab` 键后自动跳过括号（`()``{}``[]` 均支持）。
 11. **vscode-pdf**：让 VSCode 可以直接查看 `. pdf` 文件。
+12. **Better Align**: 可以让变量更好的对齐。
+13. **Better Comment**: 让注释更好看一些。
 
-## 2.2 Paste Image 配置
+## 3.2 Paste Image 配置
 
 在 `settings.json` 文件中写入以下语句：
 
@@ -79,22 +96,23 @@
 </div>
 ```
 
-自动帮你进行图片的居中和缩放，如果不需要居中和缩放，可以修改为下面的：
+自动帮我们进行图片的居中和缩放，如果不需要居中和缩放，可以修改为下面的：
 
 ```json
 "pasteImage.path": "${currentFileDir}/imgs_markdown",
 "pasteImage.basePath": "${currentFileDir}",
 "pasteImage.forceUnixStyleSeparator": true,
 "pasteImage.prefix": "/",
-"pasteImage.insertPattern": "${imageSyntaxPrefix}./imgs_markdown/${imageFileName}${imageSyntaxSuffix}",
+"pasteImage.insertPattern": "<a></a>\n<div align=center>\n    <img src=./imgs_markdown/${imageFileName}\n    width=100%>\n    <center></center>\n</div></br>",
 ```
 
 `imgs` 不喜欢可以替换。
 
 这样再使用该插件往 Markdown 文件中插入图片就非常方便且易管理了。
 
-## 2.3 VSCode 像 PyCharm 那样格式化 Python 代码
+## 3.3 VSCode 像 PyCharm 那样格式化 Python 代码
 VSCode 中的 Python 格式化默认使用 autopep8 格式化代码，默认长度很短就会自动换行，用惯了 PyCharm 的朋友很可能不习惯，所以我们需要对其进行调整，使其与 PyCharm 对齐。
+
 
 在 `setting.json` 添加设置：
 
@@ -109,7 +127,7 @@ VSCode 中的 Python 格式化默认使用 autopep8 格式化代码，默认长�
 
 <a></a>
 <div align=center>
-    <img src=./imgs_markdown/2024-04-02-13-36-45.png
+    <img src=https://img-blog.csdnimg.cn/direct/0c91c7efd8e34f44adbda4e8f45655c5.png
     width=100%>
     <center></center>
 </div></br>
@@ -119,50 +137,34 @@ VSCode 中的 Python 格式化默认使用 autopep8 格式化代码，默认长�
 150
 ```
 
-## 2.4 解决 VSCode 文件夹折叠问题
+## 3.4 解决 VSCode 文件夹折叠问题
 
 打开 VSCode 设置，搜索 `Explorer:Compact Folders`，将勾选取消。
 
-## 2.5 VSCode 光标动画
+## 3.5 VSCode 自动聚焦资源管理器
 
-```bash
-设置 --> 文本编辑器 --> 光标 --> Cursor Blinking --> smooth
-```
+我们可以关闭 Visual Studio Code (VSCode) 中自动在左侧资源管理器中显示文件的功能。这通常称为“自动展开资源”或“自动打开文件”。
 
-## 2.6 修改 Markdown Preview Enhanced 的字体
+要关闭这个功能，我们可以按照以下步骤操作：
 
-```bash
-ctrl + shift + P 
-                 --> Markdown Preview Enhanced: Customize CSS (Global)  # 全局修改
-                 --> Markdown Preview Enhanced: Customize CSS (Workspace)  # 工作区修改
---> 修改 style.less 这个 css 文件
-```
++ 打开 VSCode。
++ 转到左下角的设置图标（齿轮状图标）并点击。
++ 选择 "设置" 选项，或者我们可以使用快捷键 Ctrl + ,（在 Windows/Linux 下）或 Cmd + ,（在 macOS 下）。
++ 在设置搜索框中输入 "explorer.autoReveal"。
++ 在搜索结果中，我们会看到 "Explorer: Auto Reveal" 选项。
++ 将该选项的复选框取消选中，这样就禁用了自动展开资源的功能。
 
-下面是我用的 `style.less` 文件内容：
-
-```css
-
-/* Please visit the URL below for more information: */
-/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
-
-.markdown-preview.markdown-preview {
-  // modify your style here
-  // eg: background-color: blue;
-}
-
-html body {
-  font-family: Consolas, Monaco, 'Courier New', monospace;
-  font-size: 16px;
-  font-weight: normal;
-  color: #000000;
-  background-color: #ffffff;
-}
-```
+<div align=center>
+<img src=https://img-blog.csdnimg.cn/6b1a832dd26e4e90b2c313d3ce0addb4.png
+	widh=100%>
+</div>
 
 
+💡 **Tips**: 如果我们想手动展开或折叠资源管理器中的文件，我们可以使用资源管理器视图左上角的小三角形按钮来实现。
 
-# 3. 软件配置
-## 3.1 draw.io 字体设置
+# 4. 软件配置
+
+## 4.1 draw.io 字体设置
 
 ```
 Consolas, Monaco, "Courier New", monospace, Consolas, "Courier New", monospace
@@ -173,7 +175,7 @@ Consolas, Monaco, "Courier New", monospace, Consolas, "Courier New", monospace
 width=40%>
 </div>
 
-## 3.2 JPEGView 取消打开自动全屏
+## 4.2 JPEGView 取消打开自动全屏
 
 1. 找到 JPEGView 的路径；
 2. 编辑 `JPEGView.ini` 文件；
@@ -189,11 +191,11 @@ width=40%>
     ShowFullScreen=false
    ```
 
-# 4. 软件使用
+# 5. 软件使用
 
-## 4.1 FFmpeg
+## 5.1 FFmpeg
 
-### 4.1.1 压缩视频
+### 5.1.1 压缩视频
 
 在视频文件夹下打开 `terminal`，开始压缩视频：
 
@@ -207,7 +209,7 @@ ffmpeg -i 需要压缩的视频路径和名字.视频格式 -fs 30MB  保存视�
 ffmpeg -i Video.avi -fs 30MB  save-name.mp4
 ```
 
-### 4.1.2 截取视频的片段
+### 5.1.2 截取视频的片段
 
 ```bash
 ffmpeg -ss 00:00:00 -to 00:05:23 -i input.mp4 -y -f mp4 -vcodec copy -acodec copy -q:v 1 output.mp4
@@ -225,15 +227,15 @@ ffmpeg -ss 00:00:00 -to 00:05:23 -i input.mp4 -y -f mp4 -vcodec copy -acodec cop
    1. `q` 是质量
    2. `v` 是视频，`v` 的取值范围是 `[1, 35]`，取值 `1` 的时候，对应着最佳的视频质量。
 
-## 4.2 BBDown
+## 5.2 BBDown
 
-### 4.2.1 使用示例
+### 5.2.1 使用示例
 
 ```bash
 BBDown.exe url -tv --video-only
 ```
 
-### 4.2.2 可选参数
+### 5.2.2 可选参数
 
 ```bash
 Description:
@@ -254,7 +256,7 @@ Options:
   -q, --dfn-priority <dfn-priority>              画质优先级,用逗号分隔 例: "8K 超高清, 1080P 高码率, HDR 真彩, 杜比视界"
   -info, --only-show-info                        仅解析而不进行下载
   --show-all                                     展示所有分P标题
-  --use-aria2c                                   调用aria2c进行下载(你需要自行准备好二进制可执行文件)
+  --use-aria2c                                   调用aria2c进行下载(我们需要自行准备好二进制可执行文件)
   -ia, --interactive                             交互式选择清晰度
   -hs, --hide-streams                            不要显示所有可用音视频流
   -mt, --multi-thread                            使用多线程下载(默认开启)
@@ -311,7 +313,7 @@ Options:
   --upos-host <upos-host>                        自定义upos服务器
   --force-replace-host                           强制替换下载服务器host(默认开启)
   --delay-per-page <delay-per-page>              设置下载合集分P之间的下载间隔时间(单位: 秒, 默认无间隔)
-  --host <host>                                  指定BiliPlus host(使用BiliPlus需要access_token, 不需要cookie, 解析服务器能够获取你账号的大部分权限!)
+  --host <host>                                  指定BiliPlus host(使用BiliPlus需要access_token, 不需要cookie, 解析服务器能够获取我们账号的大部分权限!)
   --ep-host <ep-host>                            指定BiliPlus EP host(用于代理api.bilibili.com/pgc/view/web/season, 大部分解析服务器不支持代理该接口)
   --area <area>                                  (hk|tw|th) 使用BiliPlus时必选, 指定BiliPlus area
   --config-file <config-file>                    读取指定的BBDown本地配置文件(默认为: BBDown.config)
