@@ -61,7 +61,7 @@
    10. [〔Part3〕YOLOv5：原理+源码分析.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ObjectDetection/YOLOv5/%E3%80%94Part3%E3%80%95YOLOv5%EF%BC%9A%E5%8E%9F%E7%90%86%2B%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90.md) | [📚对应博客](TODO)
 2. [目标检测模型性能衡量指标、MS COCO数据集的评价标准以及不同指标的选择推荐.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ObjectDetection/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E6%A8%A1%E5%9E%8B%E6%80%A7%E8%83%BD%E8%A1%A1%E9%87%8F%E6%8C%87%E6%A0%87%E3%80%81MS%20COCO%E6%95%B0%E6%8D%AE%E9%9B%86%E7%9A%84%E8%AF%84%E4%BB%B7%E6%A0%87%E5%87%86%E4%BB%A5%E5%8F%8A%E4%B8%8D%E5%90%8C%E6%8C%87%E6%A0%87%E7%9A%84%E9%80%89%E6%8B%A9%E6%8E%A8%E8%8D%90.md): MS COCO、目标检测数据集 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/124650328)
 3. [📂YOLOv8](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/ObjectDetection/YOLOv8): YOLOv8相关内容
-   1. [Learning Note.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ObjectDetection/YOLOv8/Learning%20Note.md): 相关笔记
+   1. [YOLOv8初学者手册.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ObjectDetection/YOLOv8/YOLOv8%E5%88%9D%E5%AD%A6%E8%80%85%E6%89%8B%E5%86%8C.md): 相关笔记
 
 ### 〔6〕Python --> Python 相关
 1. [📂Registry](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Python/Registry): Python注册机制相关内容
