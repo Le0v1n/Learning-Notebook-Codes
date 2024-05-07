@@ -71,30 +71,67 @@ except ImportError:
 
 class Detect(nn.Module):
     # YOLOv5 Detect head for detection models
-    stride = None  # strides computed during build
-    dynamic = False  # force grid reconstruction
-    export = False  # export mode
+    stride = None  # 在整个构建过程中计算出来的 strides 大小
+    dynamic = False  # 是否强制重构 grid
+    export = False  # 是否是导出模式
 
     def __init__(self, nc=80, anchors=(), ch=(), inplace=True):  # detection layer
+        """Detect 检测头这个类的初始化方法
+
+        Args:
+            nc (int, optional): 数据集类别数. Defaults to 80. 例子：80
+            anchors (tuple, optional): 先验框的尺寸. Defaults to (). 例子：[[10, 13, 16, 30, 33, 23], [30, 61, 62, 45, 59, 119], [116, 90, 156, 198, 373, 326]]
+            ch (tuple, optional): 预测特征图的通道数. Defaults to (). 例子：[128, 256, 512]
+            inplace (bool, optional): 是否使用原地操作. Defaults to True. 例子：True
+        """
         super().__init__()
-        self.nc = nc  # number of classes
-        self.no = nc + 5  # number of outputs per anchor
-        self.nl = len(anchors)  # number of detection layers
-        self.na = len(anchors[0]) // 2  # number of anchors
-        self.grid = [torch.empty(0) for _ in range(self.nl)]  # init grid
-        self.anchor_grid = [torch.empty(0) for _ in range(self.nl)]  # init anchor grid
-        self.register_buffer("anchors", torch.tensor(anchors).float().view(self.nl, -1, 2))  # shape(nl,na,2)
-        self.m = nn.ModuleList(nn.Conv2d(x, self.no * self.na, 1) for x in ch)  # output conv
+        self.nc = nc  # 数据集的类别数
+        self.no = nc + 5  # 每个 Anchor 输出的数量，例子：COCO数据集则是 80 + 5
+        self.nl = len(anchors)  # 预测特征图的数量，例子：3
+        self.na = len(anchors[0]) // 2  # 每个Anchor的数量，具体来说就是每个Anchor的尺寸的数量，默认每个Anchor有3种尺寸，例：(10, 13), (16, 30), (33, 23)，这是三种尺寸
+        self.grid = [torch.empty(0) for _ in range(self.nl)]  # 初始化网格（grid）。torch.empty(0)会创建一个没有任何元素且未初始化的Tensor，其值为tensor([])，shape为torch.Size([0])
+        self.anchor_grid = [torch.empty(0) for _ in range(self.nl)]  # 初始化Anchor的网格
+        # 将先验框的信息（Anchors）持久化到模型中（注册为一个名为anchors的缓冲区）。这样，anchors就会成为模块状态的一部分，会在模型保存和加载时一起保存和加载，但是它不会被视为模型的参数，因此不会在模型训练过程中被更新。
+        """💡  关于 self.register_buffer() 的说明：
+            模型中需要保存下来的参数包括两种：
+                ①反向传播需要被optimizer更新的，称之为parameter。
+                ②反向传播不需要被optimizer更新的，称之为buffer
+            对于②，我们在创建Tensor之后需要使用register_buffer()这个方法将其注册为buffer，不然默认是parameter。
+            注册的buffer我们可以通过，model.buffers()返回，注册完后参数也会自动保存到OrderDict中区。
+            注意：buffer的更新在forward中，optimizer.step()只更新nn.parameter类型的参加，不会更新buffer
+        """
+        self.register_buffer("anchors", torch.tensor(anchors).float().view(self.nl, -1, 2))  # shape(nl, na, 2): [预测特征图数量，Anchor数量，坐标(xy)]
+        self.m = nn.ModuleList(
+            nn.Conv2d(
+                in_channels=x, 
+                out_channels=self.no * self.na,   # 85*3=255
+                kernel_size=1
+            ) for x in ch  # 预测特征图通道数[128, 256, 512]
+        )  # output conv，1x1卷积
+        """
+            ModuleList(
+                (0): Conv2d(128, 255, kernel_size=(1, 1), stride=(1, 1))
+                (1): Conv2d(256, 255, kernel_size=(1, 1), stride=(1, 1))
+                (2): Conv2d(512, 255, kernel_size=(1, 1), stride=(1, 1))
+            )
+        """
         self.inplace = inplace  # use inplace ops (e.g. slice assignment)
 
     def forward(self, x):
-        z = []  # inference output
+        """x：三个预测特征图（值均为0）。
+            len(x) = 3
+            x[0].shape = torch.Size([1, 128, 32, 32])
+            x[1].shape = torch.Size([1, 256, 16, 16])
+            x[2].shape = torch.Size([1, 512,  8,  8])
+        """
+        z = []  # 存放前向推理的结果
         for i in range(self.nl):
-            x[i] = self.m[i](x[i])  # conv
+            x[i] = self.m[i](x[i])  # 经过一个卷积：[1, 128, 32, 32] -> [1, 255, 32, 32]
             bs, _, ny, nx = x[i].shape  # x(bs,255,20,20) to x(bs,3,20,20,85)
+            # [1, 255, 32, 32] -> [1, 3, 32, 32, 85]，其中255=每个Anchor输出的数量（80+5=85），3=每个Anchor的尺寸的数量
             x[i] = x[i].view(bs, self.na, self.no, ny, nx).permute(0, 1, 3, 4, 2).contiguous()
 
-            if not self.training:  # inference
+            if not self.training:  # 如果不是训练状态
                 if self.dynamic or self.grid[i].shape[2:4] != x[i].shape[2:4]:
                     self.grid[i], self.anchor_grid[i] = self._make_grid(nx, ny, i)
 
@@ -110,15 +147,91 @@ class Detect(nn.Module):
                     y = torch.cat((xy, wh, conf), 4)
                 z.append(y.view(bs, self.na * nx * ny, self.no))
 
-        return x if self.training else (torch.cat(z, 1),) if self.export else (torch.cat(z, 1), x)
+        # return x if self.training else (torch.cat(z, 1),) if self.export else (torch.cat(z, 1), x)
+        if self.training:
+            # 如果模块处于训练模式，直接返回x
+            """len(x) = 3
+                x[0].shape = torch.Size([1, 3, 32, 32, 85])
+                x[1].shape = torch.Size([1, 3, 16, 16, 85])
+                x[2].shape = torch.Size([1, 3, 8, 8, 85])
+            """
+            return x
+        else:
+            # 如果模块不处于训练模式，进一步检查self.export的值
+            if self.export:
+                # 如果处于导出模式，只返回拼接后的z
+                return torch.cat(z, 1)
+            else:
+                # 如果既不是训练模式也不是导出模式，返回拼接后的z和x
+                return torch.cat(z, 1), x
 
     def _make_grid(self, nx=20, ny=20, i=0, torch_1_10=check_version(torch.__version__, "1.10.0")):
+        """生成一个网格坐标和一个Anchor网格
+
+        Args:
+            nx (int, optional): 网格的x方向上的点数. Defaults to 20.
+            ny (int, optional): 网格的y方向上的点数. Defaults to 20.
+            i (int, optional): 用于选择特定的Anchor. Defaults to 0.
+            torch_1_10 (_type_, optional): 用于检查PyTorch的版本是否大于或等于1.10.0. Defaults to check_version(torch.__version__, "1.10.0").
+
+        Returns:
+            _type_: _description_
+        """
+        # 获取Anchor Tensor的设备和数据类型。这些信息将用于创建新的 Tensor，以确保它们在与Anchor Tensor相同的设备和数据类型上
         d = self.anchors[i].device
         t = self.anchors[i].dtype
+        
+        # 定义网格的形状，其中na表示每个Anchor的尺寸的数量，默认为3，表示有大中小3种大小
         shape = 1, self.na, ny, nx, 2  # grid shape
+        
+        # 创建了两个一维 Tensor，分别包含ny和nx个元素，这些元素是从0到ny-1和nx-1的整数。
         y, x = torch.arange(ny, device=d, dtype=t), torch.arange(nx, device=d, dtype=t)
+        
+        # 创建一个二维网格坐标。torch.meshgrid函数从给定的一维坐标 Tensor生成二维网格坐标。如果PyTorch版本大于或等于1.10.0，使用indexing="ij"来确保索引的顺序与NumPy兼容
         yv, xv = torch.meshgrid(y, x, indexing="ij") if torch_1_10 else torch.meshgrid(y, x)  # torch>=0.7 compatibility
+        
+        # x和y坐标堆叠成一个五维 Tensor，并将其形状扩展为之前定义的shape（1, self.na, ny, nx, 2）。
+        # 然后，它从每个坐标中减去0.5，这是因为在目标检测中，我们通常希望Anchor位于像素的中心而不是左上角。
+        """tensor.expand()方法说明：
+            在PyTorch中，tensor.expand方法用于扩展一个 Tensor（tensor），它会返回一个新的 Tensor，该 Tensor的特定维度被扩展了。
+            这个方法允许我们在不复制底层数据的情况下，创建一个在指定维度上具有更大尺寸的新 Tensor。
+            expand方法接受一个或多个参数，这些参数指定了 Tensor在每个维度上的扩展尺寸。
+            与torch.Tensor.view不同，expand不会改变 Tensor中元素的数量，也不会复制数据。
+            相反，它创建了一个新的“视图”（view），这个视图在内存中与原始 Tensor共享相同的数据。
+            这意味着对扩展后的 Tensor进行的任何修改都会反映到底层数据上，反之亦然。
+
+            expand方法的一个常见用途是在需要进行广播操作时，将 Tensor的尺寸扩展到与其他 Tensor兼容。
+            例如，如果我们有一个批量大小为1的 Tensor，并希望将其与批量大小为N的 Tensor进行运算，
+            我们可以使用expand方法将第一个 Tensor的批量大小扩展到N，这样就可以进行元素级别的运算了。
+            
+            例子：
+                >>> x = torch.tensor([[1, 2, 3]])
+                
+                >>> print(x)
+                tensor([[1, 2, 3]])
+                
+                >>> print(x.size())
+                torch.Size([1, 3])
+                
+                >>> y = x.expand(2, 3)
+                
+                >>> print(y.size())
+                torch.Size([2, 3])
+                
+                >>> print(y)
+                tensor([[1, 2, 3],
+                        [1, 2, 3]])
+                        
+                >>> y = x.expand(3, 3)
+                >>> print(y)
+                tensor([[1, 2, 3],
+                        [1, 2, 3],
+                        [1, 2, 3]])
+        """
         grid = torch.stack((xv, yv), 2).expand(shape) - 0.5  # add grid offset, i.e. y = 2.0 * x - 0.5
+        
+        # 创建了一个Anchor网格。self.anchors[i]是特定索引i的Anchor坐标，self.stride[i]是与这些Anchor相关联的步长。
+        # 这个步长用于根据特征图的分辨率调整Anchor的大小。然后，这个Anchor Tensor被重新塑形并扩展到与网格相同的形状。
         anchor_grid = (self.anchors[i] * self.stride[i]).view((1, self.na, 1, 1, 2)).expand(shape)
         return grid, anchor_grid
 
@@ -147,14 +260,14 @@ class BaseModel(nn.Module):
 
     def _forward_once(self, x, profile=False, visualize=False):
         y, dt = [], []  # outputs
-        for m in self.model:
-            if m.f != -1:  # if not from previous layer
+        for m in self.model:  # 遍历模型的所有模块
+            if m.f != -1:  # 如果该模块并不是来自之前的层
                 x = y[m.f] if isinstance(m.f, int) else [x if j == -1 else y[j] for j in m.f]  # from earlier layers
-            if profile:
+            if profile:  # 是否进行该模块的性能评估（models/yolo.py可用）
                 self._profile_one_layer(m, x, dt)
-            x = m(x)  # run
-            y.append(x if m.i in self.save else None)  # save output
-            if visualize:
+            x = m(x)  # 使用该模块进行推理
+            y.append(x if m.i in self.save else None)  # 如果模块的索引在 self.save 中，则保存该特征图，例子：self.save=[4, 6, 10, 14, 17, 20, 23]
+            if visualize:  # 是否进行可视化（detect.py可用）
                 feature_visualization(x, m.type, m.i, save_dir=visualize)
         return x
 
@@ -199,55 +312,100 @@ class BaseModel(nn.Module):
 class DetectionModel(BaseModel):
     # YOLOv5 detection model
     def __init__(self, cfg="yolov5s.yaml", ch=3, nc=None, anchors=None):  # model, input channels, number of classes
+        """DetectionModel的初始化方法
+
+        Args:
+            cfg (str, optional): 模型的配置文件路径. Defaults to "yolov5s.yaml".
+            ch (int, optional): 模型的输入特征图通道数（输入图片通道数）. Defaults to 3.
+            nc (_type_, optional): 数据集类别数. Defaults to None.
+            anchors (_type_, optional): 先验框. Defaults to None.
+        """
         super().__init__()
-        if isinstance(cfg, dict):
+        if isinstance(cfg, dict):  # 判断 cfg 是否为一个字典
             self.yaml = cfg  # model dict
-        else:  # is *.yaml
+        else:  # 否则认为它是一个 .yaml 文件
             import yaml  # for torch hub
 
+            # Path(cfg)创建了一个Path对象，其路径由变量cfg指定。然后，它调用这个Path对象的name属性，该属性返回路径的最后一部分，即文件名。
+            # 举个例子，如果cfg变量的值是"/path/to/config.yaml"，那么self.yaml_file将会被赋值为"config.yaml"，即去除了路径部分的文件名。
             self.yaml_file = Path(cfg).name
             with open(cfg, encoding="ascii", errors="ignore") as f:
-                self.yaml = yaml.safe_load(f)  # model dict
+                self.yaml = yaml.safe_load(f)  # 此时 self.yaml 变成了一个字典，它的keys()=dict_keys(['nc', 'depth_multiple', 'width_multiple', 'anchors', 'backbone', 'head'])
+                """self.yaml
+                {
+                    'nc': 80, 
+                    'depth_multiple': 0.33, 
+                    'width_multiple': 0.5, 
+                    'anchors': [[10, 13, 16, 30, 33, 23], [30, 61, 62, 45, 59, 119], [116, 90, 156, 198, 373, 326]]
+                    'backbone': [[-1, 1, 'Conv', [...]], [-1, 1, 'Conv', [...]], [-1, 3, 'C3', [...]], [-1, 1, 'Conv', [...]], [-1, 6, 'C3', [...]], [-1, 1, 'Conv', [...]], [-1, 9, 'C3', [...]], [-1, 1, 'Conv', [...]], [-1, 3, 'C3', [...]], [-1, 1, 'SPPF', [...]]]
+                    'head': [[-1, 1, 'Conv', [...]], [-1, 1, 'nn.Upsample', [...]], [[...], 1, 'Concat', [...]], [-1, 3, 'C3', [...]], [-1, 1, 'Conv', [...]], [-1, 1, 'nn.Upsample', [...]], [[...], 1, 'Concat', [...]], [-1, 3, 'C3', [...]], [-1, 1, 'Conv', [...]], [[...], 1, 'Concat', [...]], [-1, 3, 'C3', [...]], [-1, 1, 'Conv', [...]], [[...], 1, 'Concat', [...]], [-1, 3, 'C3', [...]], ...]
+                }
+                """
 
-        # Define model
-        ch = self.yaml["ch"] = self.yaml.get("ch", ch)  # input channels
-        if nc and nc != self.yaml["nc"]:
-            LOGGER.info(f"Overriding model.yaml nc={self.yaml['nc']} with nc={nc}")
+        # 定义模型
+        ch = self.yaml["ch"] = self.yaml.get("ch", ch)  # 输入通道数（一般都是3 -> RGB），这里用的是dict.get(key, default)方法
+        if nc and nc != self.yaml["nc"]:  # 如果使用这个类时传入了nc，且与配置文件中的nc有冲突：使用nc而非self.yaml["nc"]，并将self.yaml["nc"]重新赋值为nc
+            LOGGER.info(f"使用 {nc = } 覆盖 model.yaml 中的 {self.yaml['nc'] = }")
             self.yaml["nc"] = nc  # override yaml value
-        if anchors:
-            LOGGER.info(f"Overriding model.yaml anchors with anchors={anchors}")
+        if anchors:  # 如果使用这个类时传入了anchors，则使用传入的anchors而非self.yaml["anchors"]，并使用anchors覆盖self.yaml["anchors"]
+            LOGGER.info(f"使用 {anchors = } 覆盖 model.yaml 中的 anchors")
             self.yaml["anchors"] = round(anchors)  # override yaml value
+            
+        # 通过 parse_model() 函数来解析 model.yaml 文件并构建模型以及推理时需要保存特征图的Module索引（self.save）
         self.model, self.save = parse_model(deepcopy(self.yaml), ch=[ch])  # model, savelist
         self.names = [str(i) for i in range(self.yaml["nc"])]  # default names
         self.inplace = self.yaml.get("inplace", True)
 
-        # Build strides, anchors
-        m = self.model[-1]  # Detect()
-        if isinstance(m, (Detect, Segment)):
+        # 构建 strides, anchors
+        m = self.model[-1]  # 获取 Detect() 部分
+        """m 模块，即 Detect 的结构如下：
+            Detect(
+            (m): ModuleList(
+                (0): Conv2d(128, 255, kernel_size=(1, 1), stride=(1, 1))
+                (1): Conv2d(256, 255, kernel_size=(1, 1), stride=(1, 1))
+                (2): Conv2d(512, 255, kernel_size=(1, 1), stride=(1, 1))
+            )
+            )
+        """
+        if isinstance(m, (Detect, Segment)):  # 判断是否取出的 self.model[-1] 是 Detect 或者 Segment 模块
             s = 256  # 2x min stride
             m.inplace = self.inplace
-            forward = lambda x: self.forward(x)[0] if isinstance(m, Segment) else self.forward(x)
-            m.stride = torch.tensor([s / x.shape[-2] for x in forward(torch.zeros(1, ch, s, s))])  # forward
-            check_anchor_order(m)
+            forward = lambda x: self.forward(x)[0] if isinstance(m, Segment) else self.forward(x)  # 这是一个 lambda 函数
+            m.stride = torch.tensor([s / x.shape[-2] for x in forward(torch.zeros(1, ch, s, s))])  # forward: tensor([ 8., 16., 32.])
+
+            # 检查anchor顺序和stride顺序是否一致
+            check_anchor_order(m)  
+
+            # 计算anchor大小，例子：[10, 13] -> [1.25, 1.625]
             m.anchors /= m.stride.view(-1, 1, 1)
             self.stride = m.stride
-            self._initialize_biases()  # only run once
+            self._initialize_biases()  # 初始化偏置，only run once
 
         # Init weights, biases
-        initialize_weights(self)
+        initialize_weights(self)  # 初始化权重
         self.info()
         LOGGER.info("")
 
     def forward(self, x, augment=False, profile=False, visualize=False):
+        # 💡  注意：这里的 augment 不是 Data Augmentation，而是有没有开启 TTA（Test Time Augmentation）
+        #           具体参数为 --augment，此时 --imgsz 832（💡  开启TTA后图片尺寸也应该增大）
         if augment:
             return self._forward_augment(x)  # augmented inference, None
         return self._forward_once(x, profile, visualize)  # single-scale inference, train
 
     def _forward_augment(self, x):
-        img_size = x.shape[-2:]  # height, width
-        s = [1, 0.83, 0.67]  # scales
-        f = [None, 3, None]  # flips (2-ud, 3-lr)
-        y = []  # outputs
+        """使用 TTA 的推理
+
+        Args:
+            x (Tensor): 输入图片，shape为[B, 3, imgsz, imgsz]
+
+        Returns:
+            _type_: 使用TTA的模型推理结果
+        """
+        img_size = x.shape[-2:]  # height, width，例子：torch.Size([576, 864])
+        s = [1, 0.83, 0.67]  # scales，默认使用的TTA的三个图片的尺寸
+        f = [None, 3, None]  # flips (2-ud, 3-lr)，其中2表示上下的flip，3为左右的flip，None表示不进行flip
+        y = []  # outputs，接收TTA推理结果
         for si, fi in zip(s, f):
             xi = scale_img(x.flip(fi) if fi else x, si, gs=int(self.stride.max()))
             yi = self._forward_once(xi)[0]  # forward
@@ -325,7 +483,7 @@ class ClassificationModel(BaseModel):
         model.model[-1] = c  # replace
         self.model = model.model
         self.stride = model.stride
-        self.save = []
+        self.save = []  # 推理时需要保存特征图的Module索引（self.save）
         self.nc = nc
 
     def _from_yaml(self, cfg):
@@ -334,41 +492,54 @@ class ClassificationModel(BaseModel):
 
 
 def parse_model(d, ch):  # model_dict, input_channels(3)
+    """通过解析 model.yaml 文件从而构建模型
+
+    Args:
+        d (dict): 模型字典
+        ch (int): 输入图像的通道数，一般为3
+
+    Returns:
+        _type_: _description_
+    """
     # Parse a YOLOv5 model.yaml dictionary
+    #                  from  n    params  module                                  arguments
     LOGGER.info(f"\n{'':>3}{'from':>18}{'n':>3}{'params':>10}  {'module':<40}{'arguments':<30}")
     anchors, nc, gd, gw, act, ch_mul = (
         d["anchors"],
         d["nc"],
-        d["depth_multiple"],
-        d["width_multiple"],
-        d.get("activation"),
-        d.get("channel_multiple"),
+        d["depth_multiple"],  # 模型深度
+        d["width_multiple"],  # 模型宽度
+        d.get("activation"),  # 获取激活函数，没有则为 None
+        d.get("channel_multiple"),  # 获取 channel_multiple 系数，没有则为 None
     )
-    if act:
-        Conv.default_act = eval(act)  # redefine default activation, i.e. Conv.default_act = nn.SiLU()
-        LOGGER.info(f"{colorstr('activation:')} {act}")  # print
-    if not ch_mul:
-        ch_mul = 8
+    
+    if act:  # 如果 model.yaml 文件中定义了 "activation"
+        Conv.default_act = eval(act)  # 重新定义默认的激活函数, 例如 Conv.default_act = nn.SiLU()
+        LOGGER.info(f"{colorstr('根据 model.yaml 文件，重新定义默认的激活函数为:')} {act}")  # print
+    if not ch_mul:  # 如果 model.yaml 文件中没有定义 "channel_multiple"
+        ch_mul = 8  # 让 channel_multiple 默认为 8
+
+    # na: anchors尺寸的种类，一般为3
     na = (len(anchors[0]) // 2) if isinstance(anchors, list) else anchors  # number of anchors
-    no = na * (nc + 5)  # number of outputs = anchors * (classes + 5)
+
+    no = na * (nc + 5)  # 每个预测特征图的输出通道数，number of outputs = anchors * (classes + 5)，例子：255 = 3 * (80 + 5)
 
     layers, save, c2 = [], [], ch[-1]  # layers, savelist, ch out
     # 对 backbone 和 head 中的所有层进行遍历
     for i, (f, n, m, args) in enumerate(d["backbone"] + d["head"]):  
-        # f <-> from：表示输入的来源。-1 表示前一层的输出作为输入。
-        # n <-> number：表示重复使用该模块的次数。
-        # m <-> module：表示使用的特征提取模块类型。
-        # args：表示模块的参数：
+        # f <-> from：表示输入的来源。-1 表示前一层的输出作为输入，例子：-1
+        # n <-> number：表示重复使用该模块的次数，例子：1
+        # m <-> module：表示使用的特征提取模块类型，例子：Conv
+        # args：表示模块的参数，例子：[64, 6, 2, 2]
 
-        # 将字符串转换为对应的代码名称（不懂的看一下 eval 函数）
+        # 将字符串转换为对应的代码名称（不懂的看一下 eval 函数），例子：'Conv' -> <class 'models.common.Conv'>
         m = eval(m) if isinstance(m, str) else m  
 
-        # 遍历每一层的参数args
-        for j, a in enumerate(args):
-            # j: 参数的索引
-            # a: 具体的参数
+        # 遍历每一层的参数args，目的是防止参数中出现字符串（将字符串都转换为int）
+        for j, a in enumerate(args):  # j: 参数的索引   a: 具体的参数
+            # with contextlib.suppress(...): 是Python中的一个上下文管理器，用于抑制在代码块执行过程中发生的特定异常。
+            # 在这里，它用于抑制NameError异常。
             with contextlib.suppress(NameError):
-                # 将数字或字符长转换为代码
                 args[j] = eval(a) if isinstance(a, str) else a  # eval strings
 
         # 先将所有的 number 乘上 深度系数
@@ -376,24 +547,24 @@ def parse_model(d, ch):  # model_dict, input_channels(3)
 
         # 判断当前模块是否在这个字典中
         if m in {
-            Conv,  # 普通的卷积层
-            GhostConv,  # 华为在 GhostNet 中提出的Ghost卷积
-            Bottleneck,  # ResNet同款
-            GhostBottleneck,  # 将其中的3x3卷积替换为GhostConv
-            SPP,  # Spatial Pyramid Pooling
-            SPPF,  # SPP + Conv
-            DWConv,  # 深度卷积
-            MixConv2d,  # 一种多尺度卷积层，可以在不同尺度上进行卷积操作。它使用多个不同大小的卷积核对输入特征图进行卷积，并将结果进行融合
-            Focus,  # 一种特征聚焦层，用于减少计算量并增加感受野。它通过将输入特征图进行通道重排和降采样操作，以获取更稠密和更大感受野的特征图
-            CrossConv,  # 一种交叉卷积层，用于增加特征图的多样性。它使用不同大小的卷积核对输入特征图进行卷积，并将结果进行融合
-            BottleneckCSP,  # 一种基于残差结构的卷积块，由连续的Bottleneck模块和CSP（Cross Stage Partial）结构组成，用于构建深层网络，提高特征提取能力
-            C3,  # 一种卷积块，由三个连续的卷积层组成。它用于提取特征，并增加网络的非线性能力
-            C3TR,  # C3TR是C3的变体，它在C3的基础上添加了Transpose卷积操作。Transpose卷积用于将特征图的尺寸进行上采样
-            C3SPP,  # C3SPP是C3的变体，它在C3的基础上添加了SPP操作。这样可以在不同尺度上对特征图进行池化，并增加网络的感受野
-            C3Ghost,  # C3Ghost是一种基于C3模块的变体，它使用GhostConv代替传统的卷积操作
+            Conv,                # 普通的卷积层
+            GhostConv,           # 华为在 GhostNet 中提出的 Ghost 卷积
+            Bottleneck,          # ResNet 同款
+            GhostBottleneck,     # 将其中的 3x3 卷积替换为 GhostConv
+            SPP,                 # Spatial Pyramid Pooling
+            SPPF,                # SPP + Conv
+            DWConv,              # 深度卷积
+            MixConv2d,           # 一种多尺度卷积层，可以在不同尺度上进行卷积操作。它使用多个不同大小的卷积核对输入特征图进行卷积，并将结果进行融合
+            Focus,               # 一种特征聚焦层，用于减少计算量并增加感受野。它通过将输入特征图进行通道重排和降采样操作，以获取更稠密和更大感受野的特征图
+            CrossConv,           # 一种交叉卷积层，用于增加特征图的多样性。它使用不同大小的卷积核对输入特征图进行卷积，并将结果进行融合
+            BottleneckCSP,       # 一种基于残差结构的卷积块，由连续的 Bottleneck 模块和 CSP（Cross Stage Partial）结构组成，用于构建深层网络，提高特征提取能力
+            C3,                  # 一种卷积块，由三个连续的卷积层组成。它用于提取特征，并增加网络的非线性能力
+            C3TR,                # C3TR 是 C3 的变体，它在 C3 的基础上添加了 Transpose 卷积操作。Transpose 卷积用于将特征图的尺寸进行上采样
+            C3SPP,               # C3SPP 是 C3 的变体，它在 C3 的基础上添加了 SPP 操作。这样可以在不同尺度上对特征图进行池化，并增加网络的感受野
+            C3Ghost,             # C3Ghost 是一种基于 C3 模块的变体，它使用 GhostConv 代替传统的卷积操作
             nn.ConvTranspose2d,  # 转置卷积
-            DWConvTranspose2d,  # DWConvTranspose2d是深度可分离的转置卷积层，用于进行上采样操作。它使用逐点卷积进行特征图的通道之间的信息整合，以减少计算量
-            C3x,  # C3x是一种改进的C3模块，它在C3的基础上添加了额外的操作，如注意力机制或其他模块。这样可以进一步提高网络的性能
+            DWConvTranspose2d,   # DWConvTranspose2d 是深度可分离的转置卷积层，用于进行上采样操作。它使用逐点卷积进行特征图的通道之间的信息整合，以减少计算量
+            C3x,                 # C3x 是一种改进的 C3 模块，它在 C3 的基础上添加了额外的操作，如注意力机制或其他模块。这样可以进一步提高网络的性能
         }:
             c1, c2 = ch[f], args[0]  # c1: 卷积的输入通道数, c2: 卷积的输出通道数 | ch[f] 上一次的输出通道数（即本层的输入通道数），args[0]：配置文件中想要的输出通道数
             if c2 != no:  # if not output
@@ -405,25 +576,23 @@ def parse_model(d, ch):  # model_dict, input_channels(3)
             if m in {BottleneckCSP, C3, C3TR, C3Ghost, C3x}:
                 args.insert(2, n)  # number of repeats | 需要让Bottleneck重复n次
                 n = 1  # 重置n（其他层没有 Bottleneck 的模块不需要重复）
-        # 如果是BN层
-        elif m is nn.BatchNorm2d:
+        
+        elif m is nn.BatchNorm2d:  # 如果是BN层
             args = [ch[f]]  # 确定输出通道数
         
-        # 如果是 Concat 层
-        elif m is Concat:
+        elif m is Concat:  # 如果是 Concat 层
             c2 = sum(ch[x] for x in f)  # Concat是按着通道维度进行的，所以通道会增加
         
-        # 如果模块在检测任务或者分割任务中
-        # TODO: channel, gw, gd
-        elif m in {Detect, Segment}:
+        elif m in {Detect, Segment}:  # 如果模块是 Detect 模块或者是 Segment 模块
             args.append([ch[x] for x in f])
             if isinstance(args[1], int):  # number of anchors
                 args[1] = [list(range(args[1] * 2))] * len(f)
             if m is Segment:
                 args[3] = make_divisible(args[3] * gw, ch_mul)
-        elif m is Contract:
+                
+        elif m is Contract:  # 如果是 Contract 模块
             c2 = ch[f] * args[0] ** 2
-        elif m is Expand:
+        elif m is Expand:  # 如果是 Expand 模块
             c2 = ch[f] // args[0] ** 2
         else:
             c2 = ch[f]
@@ -431,20 +600,23 @@ def parse_model(d, ch):  # model_dict, input_channels(3)
         # 将所有的模块都解包出来，用nn.Sequential接收
         m_ = nn.Sequential(*(m(*args) for _ in range(n))) if n > 1 else m(*args)  # module
 
-        # 将模块名字中__main__.字符长删除
+        # 将模块名字中__main__.字符串删除
         t = str(m)[8:-2].replace("__main__.", "")  # module type
         
         # 统计模块中的参数数量
         np = sum(x.numel() for x in m_.parameters())  # number params
         
         # 修改nn.Sequential格式的模块的属性
-        m_.i, m_.f, m_.type, m_.np = i, f, t, np  # attach index, 'from' index, type, number params
-        LOGGER.info(f"{i:>3}{str(f):>18}{n_:>3}{np:10.0f}  {t:<40}{str(args):<30}")  # print
+        m_.i, m_.f, m_.type, m_.np = i, f, t, np  # i: index    f: from    t: type    np: number of parameters
+        #   0                -1  1      3520  models.common.Conv                      [3, 32, 6, 2, 2]
+        LOGGER.info(f"{i:>3}{str(f):>18}{n_:>3}{np:10.0f}  {t:<40}{str(args):<30}")
         save.extend(x % i for x in ([f] if isinstance(f, int) else f) if x != -1)  # append to savelist
         layers.append(m_)
-        if i == 0:
+        
+        if i == 0:  # 如果是第一层
             ch = []
         ch.append(c2)
+        
     return nn.Sequential(*layers), sorted(save)
 
 

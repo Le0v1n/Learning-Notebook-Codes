@@ -15,7 +15,24 @@ PREFIX = colorstr("AutoAnchor: ")
 
 
 def check_anchor_order(m):
-    # Check anchor order against stride order for YOLOv5 Detect() module m, and correct if necessary
+    # 检查YOLOv5 Detect() 模块 m 的 anchor 顺序是否与 stride 顺序一致，并在必要时进行修正。
+    """
+    tensor.prod(-1)：
+        在PyTorch中，tensor.prod()方法返回给定维度上张量的所有元素的乘积。当指定参数-1时，它表示在最后一个维度上计算乘积。
+
+        例如，假设有一个形状为(3, 4, 5)的张量tensor，那么tensor.prod(-1)将返回一个形状为(3, 4)的新张量，
+        其中每个元素是原张量在最后一个维度（即5的那个维度）上的元素的乘积。
+        
+    tensor.mean()：
+        tensor.mean()函数用于计算张量（tensor）的算术平均值。当参数为 -1 时，表示沿着张量的最后一个维度计算平均值。
+        
+
+    tensor.sign()：
+        tensor.sign()方法会返回一个新的张量，其中包含了原张量中每个元素的符号。具体来说：
+            如果元素是正数，返回 1
+            如果元素是零，返回 0
+            如果元素是负数，返回 -1
+    """
     a = m.anchors.prod(-1).mean(-1).view(-1)  # mean anchor area per output layer
     da = a[-1] - a[0]  # delta a
     ds = m.stride[-1] - m.stride[0]  # delta s
