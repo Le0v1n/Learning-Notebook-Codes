@@ -193,7 +193,7 @@
 
 <div align=center>
     <img src=./imgs_markdown/activation_fn.jpg
-    width=100%>
+    width=70%>
     <center></center>
 </div>
 
@@ -201,23 +201,23 @@
 
 <div align=center>
     <img src=./imgs_markdown/2024-02-22-19-46-17.png
-    width=100%>
+    width=60%>
     <center></center>
 </div>
 
-> 💡 SiLU（Sigmoid-weighted Linear Unit）激活函数和Swish激活函数实际上是相同的。Swish激活函数是由Google的研究人员在2017年提出的，其定义为 $ f(x) = x \cdot \sigma(x) $，其中 $ \sigma(x) $ 是Sigmoid函数。Swish函数因其简单性和在深度学习模型中的有效性而受到关注。
+> 💡 SiLU（Sigmoid-weighted Linear Unit）激活函数和 Swish 激活函数实际上是相同的。Swish 激活函数是由 Google 的研究人员在 2017 年提出的，其定义为 $ f(x) = x \cdot \sigma(x) $，其中 $ \sigma(x) $ 是 Sigmoid 函数。Swish 函数因其简单性和在深度学习模型中的有效性而受到关注。
 > 
-> 后来，为了简化名称并避免潜在的商标问题，Swish激活函数有时被称为SiLU。因此，当SiLU和Swish被提及时，它们实际上是指同一个激活函数。
+> 后来，为了简化名称并避免潜在的商标问题，Swish 激活函数有时被称为 SiLU。因此，当 SiLU 和 Swish 被提及时，它们实际上是指同一个激活函数。
 
 <div align=center>
     <img src=./imgs_markdown/2024-02-22-19-47-51.png
-    width=75%>
+    width=40%>
     <center></center>
 </div>
 
 <div align=center>
     <img src=./imgs_markdown/2024-02-22-19-48-13.png
-    width=100%>
+    width=60%>
     <center></center>
 </div>
 
@@ -525,7 +525,7 @@ class CrossConv(nn.Module):
 
 <div align=center>
     <img src=./imgs_markdown/plots-CrossConv.jpg
-    width=65%>
+    width=40%>
     <center></center>
 </div>
 
@@ -561,7 +561,7 @@ class C3TR(C3):
 
 <div align=center>
     <img src=./imgs_markdown/plots-SPP+SPPF.jpg
-    width=100%>
+    width=80%>
     <center>YOLOv5-SPP v.s. YOLOv5-SPPF</center>
 </div>
 
@@ -649,33 +649,106 @@ DetResult-Nxc1x20x20 --> |第二级分类| Classification-Nxc2
 
 # 9. Detect组件
 
+## 9.1 VSCode 调试的配置文件
+
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "调试当前文件",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": "${command:pickArgs}"
+        },
+        
+        {
+            "name": "调试train.py文件",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "train.py",
+            "console": "integratedTerminal",
+            "python": "/home/leovin/anaconda3/envs/wsl/bin/python",
+            "args": [
+                "--data", "data/coco128.yaml",
+                "--cfg", "models/yolov5s.yaml",
+                "--weights", "weights/yolov5s.pt",
+                "--batch-size", "16",
+                "--epochs", "200"
+            ]
+        }
+    ]
+}
+```
+
+## 9.2 Detect 类
+
 ```python
 class Detect(nn.Module):
     # YOLOv5 Detect head for detection models
-    stride = None  # strides computed during build
-    dynamic = False  # force grid reconstruction
-    export = False  # export mode
+    stride = None  # 在整个构建过程中计算出来的 strides 大小
+    dynamic = False  # 是否强制重构 grid
+    export = False  # 是否是导出模式
 
     def __init__(self, nc=80, anchors=(), ch=(), inplace=True):  # detection layer
+        """Detect 检测头这个类的初始化方法
+
+        Args:
+            nc (int, optional): 数据集类别数. Defaults to 80. 例子：80
+            anchors (tuple, optional): 先验框的尺寸. Defaults to (). 例子：[[10, 13, 16, 30, 33, 23], [30, 61, 62, 45, 59, 119], [116, 90, 156, 198, 373, 326]]
+            ch (tuple, optional): 预测特征图的通道数. Defaults to (). 例子：[128, 256, 512]
+            inplace (bool, optional): 是否使用原地操作. Defaults to True. 例子：True
+        """
         super().__init__()
-        self.nc = nc  # number of classes
-        self.no = nc + 5  # number of outputs per anchor
-        self.nl = len(anchors)  # number of detection layers
-        self.na = len(anchors[0]) // 2  # number of anchors
-        self.grid = [torch.empty(0) for _ in range(self.nl)]  # init grid
-        self.anchor_grid = [torch.empty(0) for _ in range(self.nl)]  # init anchor grid
-        self.register_buffer("anchors", torch.tensor(anchors).float().view(self.nl, -1, 2))  # shape(nl,na,2)
-        self.m = nn.ModuleList(nn.Conv2d(x, self.no * self.na, 1) for x in ch)  # output conv
+        self.nc = nc  # 数据集的类别数
+        self.no = nc + 5  # 每个 Anchor 输出的数量，例子：COCO数据集则是 80 + 5
+        self.nl = len(anchors)  # 预测特征图的数量，例子：3
+        self.na = len(anchors[0]) // 2  # 每个Anchor的数量，具体来说就是每个Anchor的尺寸的数量，默认每个Anchor有3种尺寸，例：(10, 13), (16, 30), (33, 23)，这是三种尺寸
+        self.grid = [torch.empty(0) for _ in range(self.nl)]  # 初始化网格（grid）。torch.empty(0)会创建一个没有任何元素且未初始化的Tensor，其值为tensor([])，shape为torch.Size([0])
+        self.anchor_grid = [torch.empty(0) for _ in range(self.nl)]  # 初始化Anchor的网格
+        # 将先验框的信息（Anchors）持久化到模型中（注册为一个名为anchors的缓冲区）。这样，anchors就会成为模块状态的一部分，会在模型保存和加载时一起保存和加载，但是它不会被视为模型的参数，因此不会在模型训练过程中被更新。
+        """💡  关于 self.register_buffer() 的说明：
+            模型中需要保存下来的参数包括两种：
+                ①反向传播需要被optimizer更新的，称之为parameter。
+                ②反向传播不需要被optimizer更新的，称之为buffer
+            对于②，我们在创建Tensor之后需要使用register_buffer()这个方法将其注册为buffer，不然默认是parameter。
+            注册的buffer我们可以通过，model.buffers()返回，注册完后参数也会自动保存到OrderDict中区。
+            注意：buffer的更新在forward中，optimizer.step()只更新nn.parameter类型的参加，不会更新buffer
+        """
+        self.register_buffer("anchors", torch.tensor(anchors).float().view(self.nl, -1, 2))  # shape(nl, na, 2): [预测特征图数量，Anchor数量，坐标(xy)]
+        self.m = nn.ModuleList(
+            nn.Conv2d(
+                in_channels=x, 
+                out_channels=self.no * self.na,   # 85*3=255
+                kernel_size=1
+            ) for x in ch  # 预测特征图通道数[128, 256, 512]
+        )  # output conv，1x1卷积
+        """
+            ModuleList(
+                (0): Conv2d(128, 255, kernel_size=(1, 1), stride=(1, 1))
+                (1): Conv2d(256, 255, kernel_size=(1, 1), stride=(1, 1))
+                (2): Conv2d(512, 255, kernel_size=(1, 1), stride=(1, 1))
+            )
+        """
         self.inplace = inplace  # use inplace ops (e.g. slice assignment)
 
     def forward(self, x):
-        z = []  # inference output
+        """x：三个预测特征图（值均为0）。
+            len(x) = 3
+            x[0].shape = torch.Size([1, 128, 32, 32])
+            x[1].shape = torch.Size([1, 256, 16, 16])
+            x[2].shape = torch.Size([1, 512,  8,  8])
+        """
+        z = []  # 存放前向推理的结果
         for i in range(self.nl):
-            x[i] = self.m[i](x[i])  # conv
+            x[i] = self.m[i](x[i])  # 经过一个卷积：[1, 128, 32, 32] -> [1, 255, 32, 32]
             bs, _, ny, nx = x[i].shape  # x(bs,255,20,20) to x(bs,3,20,20,85)
+            # [1, 255, 32, 32] -> [1, 3, 32, 32, 85]，其中255=每个Anchor输出的数量（80+5=85），3=每个Anchor的尺寸的数量
             x[i] = x[i].view(bs, self.na, self.no, ny, nx).permute(0, 1, 3, 4, 2).contiguous()
 
-            if not self.training:  # inference
+            if not self.training:  # 如果不是训练状态
                 if self.dynamic or self.grid[i].shape[2:4] != x[i].shape[2:4]:
                     self.grid[i], self.anchor_grid[i] = self._make_grid(nx, ny, i)
 
@@ -691,18 +764,97 @@ class Detect(nn.Module):
                     y = torch.cat((xy, wh, conf), 4)
                 z.append(y.view(bs, self.na * nx * ny, self.no))
 
-        return x if self.training else (torch.cat(z, 1),) if self.export else (torch.cat(z, 1), x)
+        # return x if self.training else (torch.cat(z, 1),) if self.export else (torch.cat(z, 1), x)
+        if self.training:
+            # 如果模块处于训练模式，直接返回x
+            """len(x) = 3
+                x[0].shape = torch.Size([1, 3, 32, 32, 85])
+                x[1].shape = torch.Size([1, 3, 16, 16, 85])
+                x[2].shape = torch.Size([1, 3, 8, 8, 85])
+            """
+            return x
+        else:
+            # 如果模块不处于训练模式，进一步检查self.export的值
+            if self.export:
+                # 如果处于导出模式，只返回拼接后的z
+                return torch.cat(z, 1)
+            else:
+                # 如果既不是训练模式也不是导出模式，返回拼接后的z和x
+                return torch.cat(z, 1), x
+
 
     def _make_grid(self, nx=20, ny=20, i=0, torch_1_10=check_version(torch.__version__, "1.10.0")):
+        """生成一个网格坐标和一个Anchor网格
+
+        Args:
+            nx (int, optional): 网格的x方向上的点数. Defaults to 20.
+            ny (int, optional): 网格的y方向上的点数. Defaults to 20.
+            i (int, optional): 用于选择特定的Anchor. Defaults to 0.
+            torch_1_10 (_type_, optional): 用于检查PyTorch的版本是否大于或等于1.10.0. Defaults to check_version(torch.__version__, "1.10.0").
+
+        Returns:
+            _type_: _description_
+        """
+        # 获取Anchor Tensor的设备和数据类型。这些信息将用于创建新的 Tensor，以确保它们在与Anchor Tensor相同的设备和数据类型上
         d = self.anchors[i].device
         t = self.anchors[i].dtype
+        
+        # 定义网格的形状，其中na表示每个Anchor的尺寸的数量，默认为3，表示有大中小3种大小
         shape = 1, self.na, ny, nx, 2  # grid shape
+        
+        # 创建了两个一维 Tensor，分别包含ny和nx个元素，这些元素是从0到ny-1和nx-1的整数。
         y, x = torch.arange(ny, device=d, dtype=t), torch.arange(nx, device=d, dtype=t)
+        
+        # 创建一个二维网格坐标。torch.meshgrid函数从给定的一维坐标 Tensor生成二维网格坐标。如果PyTorch版本大于或等于1.10.0，使用indexing="ij"来确保索引的顺序与NumPy兼容
         yv, xv = torch.meshgrid(y, x, indexing="ij") if torch_1_10 else torch.meshgrid(y, x)  # torch>=0.7 compatibility
+        
+        # x和y坐标堆叠成一个五维 Tensor，并将其形状扩展为之前定义的shape（1, self.na, ny, nx, 2）。
+        # 然后，它从每个坐标中减去0.5，这是因为在目标检测中，我们通常希望Anchor位于像素的中心而不是左上角。
+        """tensor.expand()方法说明：
+            在PyTorch中，tensor.expand方法用于扩展一个 Tensor（tensor），它会返回一个新的 Tensor，该 Tensor的特定维度被扩展了。
+            这个方法允许我们在不复制底层数据的情况下，创建一个在指定维度上具有更大尺寸的新 Tensor。
+            expand方法接受一个或多个参数，这些参数指定了 Tensor在每个维度上的扩展尺寸。
+            与torch.Tensor.view不同，expand不会改变 Tensor中元素的数量，也不会复制数据。
+            相反，它创建了一个新的“视图”（view），这个视图在内存中与原始 Tensor共享相同的数据。
+            这意味着对扩展后的 Tensor进行的任何修改都会反映到底层数据上，反之亦然。
+
+            expand方法的一个常见用途是在需要进行广播操作时，将 Tensor的尺寸扩展到与其他 Tensor兼容。
+            例如，如果我们有一个批量大小为1的 Tensor，并希望将其与批量大小为N的 Tensor进行运算，
+            我们可以使用expand方法将第一个 Tensor的批量大小扩展到N，这样就可以进行元素级别的运算了。
+            
+            例子：
+                >>> x = torch.tensor([[1, 2, 3]])
+                
+                >>> print(x)
+                tensor([[1, 2, 3]])
+                
+                >>> print(x.size())
+                torch.Size([1, 3])
+                
+                >>> y = x.expand(2, 3)
+                
+                >>> print(y.size())
+                torch.Size([2, 3])
+                
+                >>> print(y)
+                tensor([[1, 2, 3],
+                        [1, 2, 3]])
+                        
+                >>> y = x.expand(3, 3)
+                >>> print(y)
+                tensor([[1, 2, 3],
+                        [1, 2, 3],
+                        [1, 2, 3]])
+        """
         grid = torch.stack((xv, yv), 2).expand(shape) - 0.5  # add grid offset, i.e. y = 2.0 * x - 0.5
+        
+        # 创建了一个Anchor网格。self.anchors[i]是特定索引i的Anchor坐标，self.stride[i]是与这些Anchor相关联的步长。
+        # 这个步长用于根据特征图的分辨率调整Anchor的大小。然后，这个Anchor Tensor被重新塑形并扩展到与网格相同的形状。
         anchor_grid = (self.anchors[i] * self.stride[i]).view((1, self.na, 1, 1, 2)).expand(shape)
         return grid, anchor_grid
 ```
+
+# 10. DetectionModel 类
 
 
 
