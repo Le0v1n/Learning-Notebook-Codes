@@ -107,13 +107,12 @@
 1.  [MnasNet.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Classification/MnasNet.md)：介绍一下 MnasNet | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/124449479)
 
 
-# 其他说明
+# 3. 其他说明
 
 1. 因为 Github 仓库有最大容量限制，所以部分文章的图片引用来自 [我的 CSDN 博客]((https://blog.csdn.net/weixin_44878336))。
 2. 如果文章有问题（语法、链接错误、文字、版权等），请[联系我](#contactme)。
 
-
-# 联系我 <a id='contactme'></a>
+# 4. 联系我 <a id='contactme'></a>
 
 1. :e-mail: [发邮件](mailto:zjkljd@163.com)
 2. :speech_balloon: [在 CSDN 上私信我](https://blog.csdn.net/weixin_44878336)
