@@ -74,6 +74,8 @@ details,5=
 
 </details>
 dg,5=💡
+dm,5=·
+dm,4=○
 dollar,5=💲
 dv,5=√
 dv,4=✔️
@@ -122,6 +124,7 @@ kuxn,4=😅
 lqmhxk,5=✡️
 music,5=🎵
 nerd,5=🤓
+new,5=🆕
 ok,5=👌
 ok,4=🆗
 pen,5=✒️
@@ -132,6 +135,7 @@ python,5=
 
 ```
 
+qkhxyr,5=-i https://pypi.tuna.tsinghua.edu.cn/simple
 sh,5=↑
 shit,5=💩
 soon,5=🔜
