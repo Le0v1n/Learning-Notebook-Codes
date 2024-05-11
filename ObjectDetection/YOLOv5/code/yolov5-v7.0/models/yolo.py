@@ -259,7 +259,7 @@ class BaseModel(nn.Module):
         return self._forward_once(x, profile, visualize)  # single-scale inference, train
 
     def _forward_once(self, x, profile=False, visualize=False):
-        y, dt = [], []  # outputs
+        y, dt = [], []  # outputs, delta_time
         for m in self.model:  # 遍历模型的所有模块
             if m.f != -1:  # 如果该模块并不是来自之前的层
                 x = y[m.f] if isinstance(m.f, int) else [x if j == -1 else y[j] for j in m.f]  # from earlier layers
@@ -272,17 +272,35 @@ class BaseModel(nn.Module):
         return x
 
     def _profile_one_layer(self, m, x, dt):
-        c = m == self.model[-1]  # is final layer, copy input as inplace fix
+        """用于分析模型中某一层的计算复杂度和运行时间
+
+        Args:
+            m (_type_): 模型的某一层
+            x (_type_): 模型的某一层的输入特征图
+            dt (_type_): delta time, 时间差
+        """
+        # 判断被测试的模块是否为模型的最后一层，如果是则复制输入张量以防止在原地操作时修改原始输入
+        c = m == self.model[-1]
+        
+        # 使用thop工具计算层的浮点运算次数（FLOPs），单位为十亿（GFLOPs）（💡  如果thop不可用，则设置为0）
         o = thop.profile(m, inputs=(x.copy() if c else x,), verbose=False)[0] / 1e9 * 2 if thop else 0  # FLOPs
-        t = time_sync()
+        t = time_sync()  # 等待所有GPU都计算完毕
+
+        # 重复运行层10次以计算平均运行时间
         for _ in range(10):
-            m(x.copy() if c else x)
-        dt.append((time_sync() - t) * 100)
+            m(x.copy() if c else x)  # 如果是最后一层，则使用复制的输入，否则使用原始输入
+        dt.append((time_sync() - t) * 100)  # 计算运行时间并添加到dt列表中，单位为毫秒
+
+        # 如果是模型的第一层，打印表头
         if m == self.model[0]:
             LOGGER.info(f"{'time (ms)':>10s} {'GFLOPs':>10s} {'params':>10s}  module")
+        # 打印层的运行时间、浮点运算次数和参数数量
         LOGGER.info(f"{dt[-1]:10.2f} {o:10.2f} {m.np:10.0f}  {m.type}")
+
+        # 如果是最后一层，打印总运行时间和总参数数量
         if c:
             LOGGER.info(f"{sum(dt):10.2f} {'-':>10s} {'-':>10s}  Total")
+
 
     def fuse(self):  # fuse model Conv2d() + BatchNorm2d() layers
         LOGGER.info("Fusing layers... ")
@@ -386,12 +404,14 @@ class DetectionModel(BaseModel):
         self.info()
         LOGGER.info("")
 
+
     def forward(self, x, augment=False, profile=False, visualize=False):
         # 💡  注意：这里的 augment 不是 Data Augmentation，而是有没有开启 TTA（Test Time Augmentation）
         #           具体参数为 --augment，此时 --imgsz 832（💡  开启TTA后图片尺寸也应该增大）
         if augment:
             return self._forward_augment(x)  # augmented inference, None
         return self._forward_once(x, profile, visualize)  # single-scale inference, train
+
 
     def _forward_augment(self, x):
         """使用 TTA 的推理
@@ -403,56 +423,112 @@ class DetectionModel(BaseModel):
             _type_: 使用TTA的模型推理结果
         """
         img_size = x.shape[-2:]  # height, width，例子：torch.Size([576, 864])
-        s = [1, 0.83, 0.67]  # scales，默认使用的TTA的三个图片的尺寸
+        s = [1, 0.83, 0.67]  # scales，TTA默认使用的三个图片的尺寸
         f = [None, 3, None]  # flips (2-ud, 3-lr)，其中2表示上下的flip，3为左右的flip，None表示不进行flip
         y = []  # outputs，接收TTA推理结果
-        for si, fi in zip(s, f):
-            xi = scale_img(x.flip(fi) if fi else x, si, gs=int(self.stride.max()))
-            yi = self._forward_once(xi)[0]  # forward
+        for si, fi in zip(s, f):  # si: scale_i, fi: flip_i
+            xi = scale_img(
+                # tensor.flip(dim)：沿着指定的维度将张量中的元素顺序颠倒。对于我们的图片（B, C, H, W）而言，img.flip(2)是高度翻转，即上下翻转；img.flip(3)是水平翻转。
+                img=x.flip(fi) if fi else x,
+                ratio=si, 
+                gs=int(self.stride.max())  # gs: grid size
+            )
+            
+            # 使用模型对新的xi进行推理
+            yi = self._forward_once(xi)[0]  # forward    例子：torch.Size([16, 21735, 85])
             # cv2.imwrite(f'img_{si}.jpg', 255 * xi[0].cpu().numpy().transpose((1, 2, 0))[:, :, ::-1])  # save
-            yi = self._descale_pred(yi, fi, si, img_size)
+            
+            # 对结果进行反scale处理
+            yi = self._descale_pred(yi, fi, si, img_size)  # 例子：torch.Size([16, 21735, 85])
             y.append(yi)
         y = self._clip_augmented(y)  # clip augmented tails
         return torch.cat(y, 1), None  # augmented inference, train
 
+
     def _descale_pred(self, p, flips, scale, img_size):
-        # de-scale predictions following augmented inference (inverse operation)
-        if self.inplace:
-            p[..., :4] /= scale  # de-scale
-            if flips == 2:
-                p[..., 1] = img_size[0] - p[..., 1]  # de-flip ud
-            elif flips == 3:
-                p[..., 0] = img_size[1] - p[..., 0]  # de-flip lr
-        else:
-            x, y, wh = p[..., 0:1] / scale, p[..., 1:2] / scale, p[..., 2:4] / scale  # de-scale
-            if flips == 2:
+        """在增强推理后对预测进行逆缩放（逆操作）
+
+        Args:
+            p (_type_): 预测结果张量，包含边界框的坐标和宽度、高度    例子：torch.Size([16, 21735, 85])
+            flips (_type_): 指示图像是否进行了水平或垂直翻转的整数，2表示垂直翻转，3表示水平翻转    例子：2
+            scale (_type_): 图像放缩的比例因子    例子：0.83
+            img_size (_type_): 原始图像的大小，形式为(高度, 宽度)    例子：torch.Size([576, 864])
+
+        Returns:
+            _type_: 返回经过逆操作的预测结果张量
+        """
+        if self.inplace:  # 如果inplace为True，直接在原张量上进行操作以节省内存
+            p[..., :4] /= scale  # 将边界框的坐标和宽度、高度除以放缩比例，以逆放缩操作
+            if flips == 2:  # 如果图像进行了垂直翻转，则对y坐标进行逆翻转操作
+                p[..., 1] = img_size[0] - p[..., 1]  # 使用图像的高度减去y坐标
+            elif flips == 3:  # 如果图像进行了水平翻转，则对x坐标进行逆翻转操作
+                p[..., 0] = img_size[1] - p[..., 0]  # 使用图像的宽度减去x坐标
+        else:  # 如果inplace为False，创建新的张量以存储逆操作的结果
+            x, y, wh = p[..., 0:1] / scale, p[..., 1:2] / scale, p[..., 2:4] / scale  # 逆放缩操作
+            if flips == 2:  # 如果图像进行了垂直翻转，则对y坐标进行逆翻转操作
                 y = img_size[0] - y  # de-flip ud
-            elif flips == 3:
+            elif flips == 3:  # 如果图像进行了水平翻转，则对x坐标进行逆翻转操作
                 x = img_size[1] - x  # de-flip lr
+            # 将逆放缩和逆翻转后的结果拼接回预测张量中
             p = torch.cat((x, y, wh, p[..., 4:]), -1)
         return p
 
     def _clip_augmented(self, y):
-        # Clip YOLOv5 augmented inference tails
-        nl = self.model[-1].nl  # number of detection layers (P3-P5)
+        """在YOLOv5模型的增强推理过程中裁剪掉多余的预测尾部
+
+        Args:
+            y (list): 增强推理的输出，一个包含多个检测层预测的张量列表
+
+        Returns:
+            list: 裁剪掉多余尾部的输出list
+        """
+        # 获取检测层的数量，通常对应于不同的特征图层级（如P3, P4, P5）    例子：3
+        nl = self.model[-1].nl
+        
+        # 计算每个检测层网格点的总数，每个层级的网格点数是4的x次幂，总和即为所有层级的网格点数
         g = sum(4**x for x in range(nl))  # grid points
+
+        # 设置一个排除层计数器，用于后续计算要排除的预测尾部的数量
         e = 1  # exclude layer count
+        
+        # 计算要排除的预测尾部的索引，这里计算的是第一个检测层（最大特征图层级）的索引
         i = (y[0].shape[1] // g) * sum(4**x for x in range(e))  # indices
+        
+        # 从第一个检测层的预测中排除掉尾部，保留较大的预测目标
         y[0] = y[0][:, :-i]  # large
+        
+        # 计算要排除的预测尾部的索引，这里计算的是最后一个检测层（最小特征图层级）的索引
         i = (y[-1].shape[1] // g) * sum(4 ** (nl - 1 - x) for x in range(e))  # indices
+        
+        # 从最后一个检测层的预测中排除掉头部，保留较小的预测目标
         y[-1] = y[-1][:, i:]  # small
+        
+        # 返回裁剪后的预测张量列表
         return y
 
-    def _initialize_biases(self, cf=None):  # initialize biases into Detect(), cf is class frequency
-        # https://arxiv.org/abs/1708.02002 section 3.3
-        # cf = torch.bincount(torch.tensor(np.concatenate(dataset.labels, 0)[:, 0]).long(), minlength=nc) + 1.
+    def _initialize_biases(self, cf=None):  # ，其中cf is 
+        """初始化Detect()模块的偏置
+            self: 实例化对象
+            cf: class frequency，类别频率，它表示每个类别的数量
+        
+        此函数出处为：[RetinaNet](https://arxiv.org/abs/1708.02002) section 3.3
+        cf计算方式：`cf = torch.bincount(torch.tensor(np.concatenate(dataset.labels, 0)[:, 0]).long(), minlength=nc) + 1.`
+        """
+        # 遍历Detect()模块中的每个检测层（m.m）及其步长（m.stride）
         m = self.model[-1]  # Detect() module
         for mi, s in zip(m.m, m.stride):  # from
+            # 将卷积层的偏置（bias）从(255)转换为(3,85)的形状
             b = mi.bias.view(m.na, -1)  # conv.bias(255) to (3,85)
-            b.data[:, 4] += math.log(8 / (640 / s) ** 2)  # obj (8 objects per 640 image)
-            b.data[:, 5 : 5 + m.nc] += (
-                math.log(0.6 / (m.nc - 0.99999)) if cf is None else torch.log(cf / cf.sum())
-            )  # cls
+
+            # 初始化目标偏置（obj），8个对象在640x640的图像中
+            # （这里的8是根据RetinaNet的论文中提到的，每个尺度上平均有8个对象）
+            # （这里的0.6是根据RetinaNet的论文中提到的，在所有类别中，大约有60%的类别的对象数量是最大的）
+            b.data[:, 4] += math.log(8 / (640 / s) ** 2)
+            
+            # 初始化分类偏置（cls），如果cf为None，则使用均匀分布的类频率；如果cf不为None，则使用实际的类频率
+            b.data[:, 5 : 5 + m.nc] += (math.log(0.6 / (m.nc - 0.99999)) if cf is None else torch.log(cf / cf.sum()))  # cls
+
+            # 将调整后的偏置设置回卷积层（requires_grad=True表示这个参数可以计算梯度，即在训练过程中可以更新这个参数）
             mi.bias = torch.nn.Parameter(b.view(-1), requires_grad=True)
 
 
@@ -507,9 +583,9 @@ def parse_model(d, ch):  # model_dict, input_channels(3)
     anchors, nc, gd, gw, act, ch_mul = (
         d["anchors"],
         d["nc"],
-        d["depth_multiple"],  # 模型深度
-        d["width_multiple"],  # 模型宽度
-        d.get("activation"),  # 获取激活函数，没有则为 None
+        d["depth_multiple"],        # 模型深度: gd = global depth
+        d["width_multiple"],        # 模型宽度: gw = global width
+        d.get("activation"),        # 获取激活函数，没有则为 None
         d.get("channel_multiple"),  # 获取 channel_multiple 系数，没有则为 None
     )
     

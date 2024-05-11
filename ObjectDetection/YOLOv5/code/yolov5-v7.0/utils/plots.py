@@ -70,33 +70,43 @@ colors = Colors()  # create instance for 'from utils.plots import colors'
 
 
 def feature_visualization(x, module_type, stage, n=32, save_dir=Path("runs/detect/exp")):
+    """可视化模型中的特征图，并将结果保存为图片和numpy数组。
+
+    Args:
+        x (_type_): 要可视化的特征图
+        module_type (_type_): 模块类型
+        stage (_type_): 模块在模型中的阶段
+        n (int, optional): 要绘制的特征图的最大数量. Defaults to 32.
+        save_dir (_type_, optional): 保存结果的目录. Defaults to Path("runs/detect/exp").
     """
-    x:              Features to be visualized
-    module_type:    Module type
-    stage:          Module stage within model
-    n:              Maximum number of feature maps to plot
-    save_dir:       Directory to save results
-    """
-    if ("Detect" not in module_type) and (
-        "Segment" not in module_type
-    ):  # 'Detect' for Object Detect task,'Segment' for Segment task
+    # "Detect"和"Segment"模块无法被可视化
+    if ("Detect" not in module_type) and ("Segment" not in module_type):  # 'Detect' for Object Detect task,'Segment' for Segment task
         batch, channels, height, width = x.shape  # batch, channels, height, width
+
+        # 如果特征图的高度和宽度都大于1，则进行可视化
         if height > 1 and width > 1:
             f = save_dir / f"stage{stage}_{module_type.split('.')[-1]}_features.png"  # filename
 
+            # 选择batch中的第一个样本，并按通道分割特征图
             blocks = torch.chunk(x[0].cpu(), channels, dim=0)  # select batch index 0, block by channels
-            n = min(n, channels)  # number of plots
+            n = min(n, channels)  # 确定要绘制的特征图数量，不超过通道数
+            
+            # 创建一个图像画布，每行8个子图，总共n/8行
             fig, ax = plt.subplots(math.ceil(n / 8), 8, tight_layout=True)  # 8 rows x n/8 cols
-            ax = ax.ravel()
-            plt.subplots_adjust(wspace=0.05, hspace=0.05)
-            for i in range(n):
-                ax[i].imshow(blocks[i].squeeze())  # cmap='gray'
-                ax[i].axis("off")
+            ax = ax.ravel()  # 将子图数组展平为一维
+            plt.subplots_adjust(wspace=0.05, hspace=0.05)  # 调整子图之间的空间
 
+            # 开始绘制
+            for i in range(n):
+                # 将每个特征图展平并绘制
+                ax[i].imshow(blocks[i].squeeze())  # cmap='gray'
+                ax[i].axis("off")  # 关闭坐标轴
+
+            # 打印保存信息
             LOGGER.info(f"Saving {f}... ({n}/{channels})")
-            plt.savefig(f, dpi=300, bbox_inches="tight")
+            plt.savefig(f, dpi=300, bbox_inches="tight")  # 保存图片
             plt.close()
-            np.save(str(f.with_suffix(".npy")), x[0].cpu().numpy())  # npy save
+            np.save(str(f.with_suffix(".npy")), x[0].cpu().numpy())  # 保存特征图为numpy数组
 
 
 def hist2d(x, y, n=100):

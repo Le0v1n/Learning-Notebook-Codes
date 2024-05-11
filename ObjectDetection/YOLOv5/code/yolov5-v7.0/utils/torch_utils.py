@@ -143,6 +143,12 @@ def select_device(device="", batch_size=0, newline=True):
 
 
 def time_sync():
+    """torch.cuda.synchronize() 是PyTorch中用于GPU操作的一个函数，它的作用是等待当前设备上的所有CUDA操作都完成后才继续执行后续的代码。
+    这个函数是同步操作，它会阻塞程序的执行直到所有先前的CUDA操作都执行完毕。
+    在测量GPU操作的性能时，这个函数非常有用。因为在GPU上执行的操作是异步的，如果你在发起一个操作之后立即测量时间，
+    你可能会得到一个不准确的时间，因为操作可能还没有完成。使用 torch.cuda.synchronize() 可以确保在测量时间之前，
+    所有的CUDA操作都已经完成，从而得到一个准确的性能评估。
+    """
     # PyTorch-accurate time
     if torch.cuda.is_available():
         torch.cuda.synchronize()
@@ -250,31 +256,41 @@ def prune(model, amount=0.3):
 
 
 def fuse_conv_and_bn(conv, bn):
+    """将卷积层（Conv2d）和批量归一化层（BatchNorm2d）融合成一个单一的卷积层。
+    这样做可以提高模型的性能，因为融合后的层可以减少一些不必要的计算
+    
+    💡  OBS：该技巧只适用于模型推理，不适用于模型训练！
+
+    Args:
+        conv (_type_): 原来的卷积模块
+        bn (_type_): 原来的BN模块
+
+    Returns:
+        _type_: 融合后的卷积模块
+    """
     # Fuse Conv2d() and BatchNorm2d() layers https://tehnokv.com/posts/fusing-batchnorm-and-conv/
     fusedconv = (
         nn.Conv2d(
-            conv.in_channels,
-            conv.out_channels,
-            kernel_size=conv.kernel_size,
-            stride=conv.stride,
-            padding=conv.padding,
-            dilation=conv.dilation,
-            groups=conv.groups,
-            bias=True,
-        )
-        .requires_grad_(False)
-        .to(conv.weight.device)
+            conv.in_channels,              # 输入通道数
+            conv.out_channels,             # 输出通道数
+            kernel_size=conv.kernel_size,  # 卷积核大小
+            stride=conv.stride,            # 步长
+            padding=conv.padding,          # 填充
+            dilation=conv.dilation,        # 膨胀卷积的膨胀率 
+            groups=conv.groups,            # 分组卷积的组数
+            bias=True,                     # 是否需要偏置
+        ).requires_grad_(False).to(conv.weight.device)  # 不需要计算梯度，并将其移动到与原始卷积层相同的设备上
     )
 
-    # Prepare filters
-    w_conv = conv.weight.clone().view(conv.out_channels, -1)
-    w_bn = torch.diag(bn.weight.div(torch.sqrt(bn.eps + bn.running_var)))
-    fusedconv.weight.copy_(torch.mm(w_bn, w_conv).view(fusedconv.weight.shape))
+    # 准备卷积层的权重
+    w_conv = conv.weight.clone().view(conv.out_channels, -1)  # 将卷积核权重展平为二维矩阵
+    w_bn = torch.diag(bn.weight.div(torch.sqrt(bn.eps + bn.running_var)))  # 计算BN的权重缩放因子
+    fusedconv.weight.copy_(torch.mm(w_bn, w_conv).view(fusedconv.weight.shape))  # 融合权重
 
-    # Prepare spatial bias
-    b_conv = torch.zeros(conv.weight.size(0), device=conv.weight.device) if conv.bias is None else conv.bias
-    b_bn = bn.bias - bn.weight.mul(bn.running_mean).div(torch.sqrt(bn.running_var + bn.eps))
-    fusedconv.bias.copy_(torch.mm(w_bn, b_conv.reshape(-1, 1)).reshape(-1) + b_bn)
+    # 准备空间偏置项
+    b_conv = torch.zeros(conv.weight.size(0), device=conv.weight.device) if conv.bias is None else conv.bias  # 如果原始卷积层没有偏置项，则创建全零偏置项
+    b_bn = bn.bias - bn.weight.mul(bn.running_mean).div(torch.sqrt(bn.running_var + bn.eps))  # 计算BN的偏置项
+    fusedconv.bias.copy_(torch.mm(w_bn, b_conv.reshape(-1, 1)).reshape(-1) + b_bn)  # 融合偏置项
 
     return fusedconv
 
@@ -307,15 +323,37 @@ def model_info(model, verbose=False, imgsz=640):
 
 
 def scale_img(img, ratio=1.0, same_shape=False, gs=32):  # img(16,3,256,416)
-    # Scales img(bs,3,y,x) by ratio constrained to gs-multiple
+    """将图片img(bs,3,y,x)按照比例进行缩放，约束为gs的倍数。
+
+    Args:
+        img (_type_): 输入图像张量，具有形状 (batch_size, channels, height, width)
+        ratio (float, optional): 图像放缩的比例因子. Defaults to 1.0.
+        same_shape (bool, optional): 决定是否保持原始图像的宽高比例. Defaults to False.
+        gs (int, optional): 网格大小，用于确保放缩后的图像尺寸是gs的倍数. Defaults to 32.
+
+    Returns:
+        _type_: 缩放后的图片
+    """
+    
+    # 如果比例因子为1，直接返回原图，无需放缩
     if ratio == 1.0:
         return img
+    
+    # 获取图像的高度和宽度
     h, w = img.shape[2:]
-    s = (int(h * ratio), int(w * ratio))  # new size
+    
+    # 计算放缩后的新尺寸
+    s = (int(h * ratio), int(w * ratio))
+    
+    # 使用双线性插值放缩图像
     img = F.interpolate(img, size=s, mode="bilinear", align_corners=False)  # resize
+    
+    # 如果不需要保持原始宽高比例
     if not same_shape:  # pad/crop img
+        # 计算新的高度和宽度，确保它们是gs的倍数
         h, w = (math.ceil(x * ratio / gs) * gs for x in (h, w))
-    return F.pad(img, [0, w - s[1], 0, h - s[0]], value=0.447)  # value = imagenet mean
+        
+    return F.pad(img, [0, w - s[1], 0, h - s[0]], value=0.447)  # value=ImageNet的平均像素值
 
 
 def copy_attr(a, b, include=(), exclude=()):
