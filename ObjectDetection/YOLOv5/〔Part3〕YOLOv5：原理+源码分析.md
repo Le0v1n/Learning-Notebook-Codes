@@ -856,6 +856,446 @@ class Detect(nn.Module):
 
 # 10. DetectionModel 类
 
+## 10.1 DetectionModel 类
+
+```python
+class DetectionModel(BaseModel):
+    # YOLOv5 detection model
+    def __init__(self, cfg="yolov5s.yaml", ch=3, nc=None, anchors=None):  # model, input channels, number of classes
+        """DetectionModel的初始化方法
+
+        Args:
+            cfg (str, optional): 模型的配置文件路径. Defaults to "yolov5s.yaml".
+            ch (int, optional): 模型的输入特征图通道数（输入图片通道数）. Defaults to 3.
+            nc (_type_, optional): 数据集类别数. Defaults to None.
+            anchors (_type_, optional): 先验框. Defaults to None.
+        """
+        super().__init__()
+        if isinstance(cfg, dict):  # 判断 cfg 是否为一个字典
+            self.yaml = cfg  # model dict
+        else:  # 否则认为它是一个 .yaml 文件
+            import yaml  # for torch hub
+
+            # Path(cfg)创建了一个Path对象，其路径由变量cfg指定。然后，它调用这个Path对象的name属性，该属性返回路径的最后一部分，即文件名。
+            # 举个例子，如果cfg变量的值是"/path/to/config.yaml"，那么self.yaml_file将会被赋值为"config.yaml"，即去除了路径部分的文件名。
+            self.yaml_file = Path(cfg).name
+            with open(cfg, encoding="ascii", errors="ignore") as f:
+                self.yaml = yaml.safe_load(f)  # 此时 self.yaml 变成了一个字典，它的keys()=dict_keys(['nc', 'depth_multiple', 'width_multiple', 'anchors', 'backbone', 'head'])
+                """self.yaml
+                {
+                    'nc': 80, 
+                    'depth_multiple': 0.33, 
+                    'width_multiple': 0.5, 
+                    'anchors': [[10, 13, 16, 30, 33, 23], [30, 61, 62, 45, 59, 119], [116, 90, 156, 198, 373, 326]]
+                    'backbone': [[-1, 1, 'Conv', [...]], [-1, 1, 'Conv', [...]], [-1, 3, 'C3', [...]], [-1, 1, 'Conv', [...]], [-1, 6, 'C3', [...]], [-1, 1, 'Conv', [...]], [-1, 9, 'C3', [...]], [-1, 1, 'Conv', [...]], [-1, 3, 'C3', [...]], [-1, 1, 'SPPF', [...]]]
+                    'head': [[-1, 1, 'Conv', [...]], [-1, 1, 'nn.Upsample', [...]], [[...], 1, 'Concat', [...]], [-1, 3, 'C3', [...]], [-1, 1, 'Conv', [...]], [-1, 1, 'nn.Upsample', [...]], [[...], 1, 'Concat', [...]], [-1, 3, 'C3', [...]], [-1, 1, 'Conv', [...]], [[...], 1, 'Concat', [...]], [-1, 3, 'C3', [...]], [-1, 1, 'Conv', [...]], [[...], 1, 'Concat', [...]], [-1, 3, 'C3', [...]], ...]
+                }
+                """
+
+        # 定义模型
+        ch = self.yaml["ch"] = self.yaml.get("ch", ch)  # 输入通道数（一般都是3 -> RGB），这里用的是dict.get(key, default)方法
+        if nc and nc != self.yaml["nc"]:  # 如果使用这个类时传入了nc，且与配置文件中的nc有冲突：使用nc而非self.yaml["nc"]，并将self.yaml["nc"]重新赋值为nc
+            LOGGER.info(f"使用 {nc = } 覆盖 model.yaml 中的 {self.yaml['nc'] = }")
+            self.yaml["nc"] = nc  # override yaml value
+        if anchors:  # 如果使用这个类时传入了anchors，则使用传入的anchors而非self.yaml["anchors"]，并使用anchors覆盖self.yaml["anchors"]
+            LOGGER.info(f"使用 {anchors = } 覆盖 model.yaml 中的 anchors")
+            self.yaml["anchors"] = round(anchors)  # override yaml value
+            
+        # 通过 parse_model() 函数来解析 model.yaml 文件并构建模型以及推理时需要保存特征图的Module索引（self.save）
+        self.model, self.save = parse_model(deepcopy(self.yaml), ch=[ch])  # model, savelist
+        self.names = [str(i) for i in range(self.yaml["nc"])]  # default names
+        self.inplace = self.yaml.get("inplace", True)
+
+        # 构建 strides, anchors
+        m = self.model[-1]  # 获取 Detect() 部分
+        """m 模块，即 Detect 的结构如下：
+            Detect(
+            (m): ModuleList(
+                (0): Conv2d(128, 255, kernel_size=(1, 1), stride=(1, 1))
+                (1): Conv2d(256, 255, kernel_size=(1, 1), stride=(1, 1))
+                (2): Conv2d(512, 255, kernel_size=(1, 1), stride=(1, 1))
+            )
+            )
+        """
+        if isinstance(m, (Detect, Segment)):  # 判断是否取出的 self.model[-1] 是 Detect 或者 Segment 模块
+            s = 256  # 2x min stride
+            m.inplace = self.inplace
+            forward = lambda x: self.forward(x)[0] if isinstance(m, Segment) else self.forward(x)  # 这是一个 lambda 函数
+            m.stride = torch.tensor([s / x.shape[-2] for x in forward(torch.zeros(1, ch, s, s))])  # forward: tensor([ 8., 16., 32.])
+
+            # 检查anchor顺序和stride顺序是否一致
+            check_anchor_order(m)  
+
+            # 计算anchor大小，例子：[10, 13] -> [1.25, 1.625]
+            m.anchors /= m.stride.view(-1, 1, 1)
+            self.stride = m.stride
+            self._initialize_biases()  # 初始化偏置，only run once
+
+        # Init weights, biases
+        initialize_weights(self)  # 初始化权重
+        self.info()
+        LOGGER.info("")
+
+
+    def forward(self, x, augment=False, profile=False, visualize=False):
+        # 💡  注意：这里的 augment 不是 Data Augmentation，而是有没有开启 TTA（Test Time Augmentation）
+        #           具体参数为 --augment，此时 --imgsz 832（💡  开启TTA后图片尺寸也应该增大）
+        if augment:
+            return self._forward_augment(x)  # augmented inference, None
+        return self._forward_once(x, profile, visualize)  # single-scale inference, train
+
+
+    def _forward_augment(self, x):
+        """使用 TTA 的推理
+
+        Args:
+            x (Tensor): 输入图片，shape为[B, 3, imgsz, imgsz]
+
+        Returns:
+            _type_: 使用TTA的模型推理结果
+        """
+        img_size = x.shape[-2:]  # height, width，例子：torch.Size([576, 864])
+        s = [1, 0.83, 0.67]  # scales，TTA默认使用的三个图片的尺寸
+        f = [None, 3, None]  # flips (2-ud, 3-lr)，其中2表示上下的flip，3为左右的flip，None表示不进行flip
+        y = []  # outputs，接收TTA推理结果
+        for si, fi in zip(s, f):  # si: scale_i, fi: flip_i
+            xi = scale_img(
+                # tensor.flip(dim)：沿着指定的维度将张量中的元素顺序颠倒。对于我们的图片（B, C, H, W）而言，img.flip(2)是高度翻转，即上下翻转；img.flip(3)是水平翻转。
+                img=x.flip(fi) if fi else x,
+                ratio=si, 
+                gs=int(self.stride.max())  # gs: grid size
+            )
+            
+            # 使用模型对新的xi进行推理
+            yi = self._forward_once(xi)[0]  # forward    例子：torch.Size([16, 21735, 85])
+            # cv2.imwrite(f'img_{si}.jpg', 255 * xi[0].cpu().numpy().transpose((1, 2, 0))[:, :, ::-1])  # save
+            
+            # 对结果进行反scale处理
+            yi = self._descale_pred(yi, fi, si, img_size)  # 例子：torch.Size([16, 21735, 85])
+            y.append(yi)
+        y = self._clip_augmented(y)  # clip augmented tails
+        return torch.cat(y, 1), None  # augmented inference, train
+
+
+    def _descale_pred(self, p, flips, scale, img_size):
+        """在增强推理后对预测进行逆缩放（逆操作）
+
+        Args:
+            p (_type_): 预测结果张量，包含边界框的坐标和宽度、高度    例子：torch.Size([16, 21735, 85])
+            flips (_type_): 指示图像是否进行了水平或垂直翻转的整数，2表示垂直翻转，3表示水平翻转    例子：2
+            scale (_type_): 图像放缩的比例因子    例子：0.83
+            img_size (_type_): 原始图像的大小，形式为(高度, 宽度)    例子：torch.Size([576, 864])
+
+        Returns:
+            _type_: 返回经过逆操作的预测结果张量
+        """
+        if self.inplace:  # 如果inplace为True，直接在原张量上进行操作以节省内存
+            p[..., :4] /= scale  # 将边界框的坐标和宽度、高度除以放缩比例，以逆放缩操作
+            if flips == 2:  # 如果图像进行了垂直翻转，则对y坐标进行逆翻转操作
+                p[..., 1] = img_size[0] - p[..., 1]  # 使用图像的高度减去y坐标
+            elif flips == 3:  # 如果图像进行了水平翻转，则对x坐标进行逆翻转操作
+                p[..., 0] = img_size[1] - p[..., 0]  # 使用图像的宽度减去x坐标
+        else:  # 如果inplace为False，创建新的张量以存储逆操作的结果
+            x, y, wh = p[..., 0:1] / scale, p[..., 1:2] / scale, p[..., 2:4] / scale  # 逆放缩操作
+            if flips == 2:  # 如果图像进行了垂直翻转，则对y坐标进行逆翻转操作
+                y = img_size[0] - y  # de-flip ud
+            elif flips == 3:  # 如果图像进行了水平翻转，则对x坐标进行逆翻转操作
+                x = img_size[1] - x  # de-flip lr
+            # 将逆放缩和逆翻转后的结果拼接回预测张量中
+            p = torch.cat((x, y, wh, p[..., 4:]), -1)
+        return p
+
+    def _clip_augmented(self, y):
+        """在YOLOv5模型的增强推理过程中裁剪掉多余的预测尾部
+
+        Args:
+            y (list): 增强推理的输出，一个包含多个检测层预测的张量列表
+
+        Returns:
+            list: 裁剪掉多余尾部的输出list
+        """
+        # 获取检测层的数量，通常对应于不同的特征图层级（如P3, P4, P5）    例子：3
+        nl = self.model[-1].nl
+        
+        # 计算每个检测层网格点的总数，每个层级的网格点数是4的x次幂，总和即为所有层级的网格点数
+        g = sum(4**x for x in range(nl))  # grid points
+
+        # 设置一个排除层计数器，用于后续计算要排除的预测尾部的数量
+        e = 1  # exclude layer count
+        
+        # 计算要排除的预测尾部的索引，这里计算的是第一个检测层（最大特征图层级）的索引
+        i = (y[0].shape[1] // g) * sum(4**x for x in range(e))  # indices
+        
+        # 从第一个检测层的预测中排除掉尾部，保留较大的预测目标
+        y[0] = y[0][:, :-i]  # large
+        
+        # 计算要排除的预测尾部的索引，这里计算的是最后一个检测层（最小特征图层级）的索引
+        i = (y[-1].shape[1] // g) * sum(4 ** (nl - 1 - x) for x in range(e))  # indices
+        
+        # 从最后一个检测层的预测中排除掉头部，保留较小的预测目标
+        y[-1] = y[-1][:, i:]  # small
+        
+        # 返回裁剪后的预测张量列表
+        return y
+
+    def _initialize_biases(self, cf=None):  # ，其中cf is 
+        """初始化Detect()模块的偏置
+            self: 实例化对象
+            cf: class frequency，类别频率，它表示每个类别的数量
+        
+        此函数出处为：[RetinaNet](https://arxiv.org/abs/1708.02002) section 3.3
+        cf计算方式：`cf = torch.bincount(torch.tensor(np.concatenate(dataset.labels, 0)[:, 0]).long(), minlength=nc) + 1.`
+        """
+        # 遍历Detect()模块中的每个检测层（m.m）及其步长（m.stride）
+        m = self.model[-1]  # Detect() module
+        for mi, s in zip(m.m, m.stride):  # from
+            # 将卷积层的偏置（bias）从(255)转换为(3,85)的形状
+            b = mi.bias.view(m.na, -1)  # conv.bias(255) to (3,85)
+
+            # 初始化目标偏置（obj），8个对象在640x640的图像中
+            # （这里的8是根据RetinaNet的论文中提到的，每个尺度上平均有8个对象）
+            # （这里的0.6是根据RetinaNet的论文中提到的，在所有类别中，大约有60%的类别的对象数量是最大的）
+            b.data[:, 4] += math.log(8 / (640 / s) ** 2)
+            
+            # 初始化分类偏置（cls），如果cf为None，则使用均匀分布的类频率；如果cf不为None，则使用实际的类频率
+            b.data[:, 5 : 5 + m.nc] += (math.log(0.6 / (m.nc - 0.99999)) if cf is None else torch.log(cf / cf.sum()))  # cls
+
+            # 将调整后的偏置设置回卷积层（requires_grad=True表示这个参数可以计算梯度，即在训练过程中可以更新这个参数）
+            mi.bias = torch.nn.Parameter(b.view(-1), requires_grad=True)
+```
+
+## 10.2 parse_model()
+
+```python
+def parse_model(d, ch):  # model_dict, input_channels(3)
+    """通过解析 model.yaml 文件从而构建模型
+
+    Args:
+        d (dict): 模型字典
+        ch (int): 输入图像的通道数，一般为3
+
+    Returns:
+        _type_: _description_
+    """
+    # Parse a YOLOv5 model.yaml dictionary
+    #                  from  n    params  module                                  arguments
+    LOGGER.info(f"\n{'':>3}{'from':>18}{'n':>3}{'params':>10}  {'module':<40}{'arguments':<30}")
+    anchors, nc, gd, gw, act, ch_mul = (
+        d["anchors"],
+        d["nc"],
+        d["depth_multiple"],        # 模型深度: gd = global depth
+        d["width_multiple"],        # 模型宽度: gw = global width
+        d.get("activation"),        # 获取激活函数，没有则为 None
+        d.get("channel_multiple"),  # 获取 channel_multiple 系数，没有则为 None
+    )
+    
+    if act:  # 如果 model.yaml 文件中定义了 "activation"
+        Conv.default_act = eval(act)  # 重新定义默认的激活函数, 例如 Conv.default_act = nn.SiLU()
+        LOGGER.info(f"{colorstr('根据 model.yaml 文件，重新定义默认的激活函数为:')} {act}")  # print
+    if not ch_mul:  # 如果 model.yaml 文件中没有定义 "channel_multiple"
+        ch_mul = 8  # 让 channel_multiple 默认为 8
+
+    # na: anchors尺寸的种类，一般为3
+    na = (len(anchors[0]) // 2) if isinstance(anchors, list) else anchors  # number of anchors
+
+    no = na * (nc + 5)  # 每个预测特征图的输出通道数，number of outputs = anchors * (classes + 5)，例子：255 = 3 * (80 + 5)
+
+    layers, save, c2 = [], [], ch[-1]  # layers, savelist, ch out
+    # 对 backbone 和 head 中的所有层进行遍历
+    for i, (f, n, m, args) in enumerate(d["backbone"] + d["head"]):  
+        # f <-> from：表示输入的来源。-1 表示前一层的输出作为输入，例子：-1
+        # n <-> number：表示重复使用该模块的次数，例子：1
+        # m <-> module：表示使用的特征提取模块类型，例子：Conv
+        # args：表示模块的参数，例子：[64, 6, 2, 2]
+
+        # 将字符串转换为对应的代码名称（不懂的看一下 eval 函数），例子：'Conv' -> <class 'models.common.Conv'>
+        m = eval(m) if isinstance(m, str) else m  
+
+        # 遍历每一层的参数args，目的是防止参数中出现字符串（将字符串都转换为int）
+        for j, a in enumerate(args):  # j: 参数的索引   a: 具体的参数
+            # with contextlib.suppress(...): 是Python中的一个上下文管理器，用于抑制在代码块执行过程中发生的特定异常。
+            # 在这里，它用于抑制NameError异常。
+            with contextlib.suppress(NameError):
+                args[j] = eval(a) if isinstance(a, str) else a  # eval strings
+
+        # 先将所有的 number 乘上 深度系数
+        n = n_ = max(round(n * gd), 1) if n > 1 else n  # depth gain
+
+        # 判断当前模块是否在这个字典中
+        if m in {
+            Conv,                # 普通的卷积层
+            GhostConv,           # 华为在 GhostNet 中提出的 Ghost 卷积
+            Bottleneck,          # ResNet 同款
+            GhostBottleneck,     # 将其中的 3x3 卷积替换为 GhostConv
+            SPP,                 # Spatial Pyramid Pooling
+            SPPF,                # SPP + Conv
+            DWConv,              # 深度卷积
+            MixConv2d,           # 一种多尺度卷积层，可以在不同尺度上进行卷积操作。它使用多个不同大小的卷积核对输入特征图进行卷积，并将结果进行融合
+            Focus,               # 一种特征聚焦层，用于减少计算量并增加感受野。它通过将输入特征图进行通道重排和降采样操作，以获取更稠密和更大感受野的特征图
+            CrossConv,           # 一种交叉卷积层，用于增加特征图的多样性。它使用不同大小的卷积核对输入特征图进行卷积，并将结果进行融合
+            BottleneckCSP,       # 一种基于残差结构的卷积块，由连续的 Bottleneck 模块和 CSP（Cross Stage Partial）结构组成，用于构建深层网络，提高特征提取能力
+            C3,                  # 一种卷积块，由三个连续的卷积层组成。它用于提取特征，并增加网络的非线性能力
+            C3TR,                # C3TR 是 C3 的变体，它在 C3 的基础上添加了 Transpose 卷积操作。Transpose 卷积用于将特征图的尺寸进行上采样
+            C3SPP,               # C3SPP 是 C3 的变体，它在 C3 的基础上添加了 SPP 操作。这样可以在不同尺度上对特征图进行池化，并增加网络的感受野
+            C3Ghost,             # C3Ghost 是一种基于 C3 模块的变体，它使用 GhostConv 代替传统的卷积操作
+            nn.ConvTranspose2d,  # 转置卷积
+            DWConvTranspose2d,   # DWConvTranspose2d 是深度可分离的转置卷积层，用于进行上采样操作。它使用逐点卷积进行特征图的通道之间的信息整合，以减少计算量
+            C3x,                 # C3x 是一种改进的 C3 模块，它在 C3 的基础上添加了额外的操作，如注意力机制或其他模块。这样可以进一步提高网络的性能
+        }:
+            c1, c2 = ch[f], args[0]  # c1: 卷积的输入通道数, c2: 卷积的输出通道数 | ch[f] 上一次的输出通道数（即本层的输入通道数），args[0]：配置文件中想要的输出通道数
+            if c2 != no:  # if not output
+                c2 = make_divisible(c2 * gw, ch_mul)  # 让输出通道数*width_multiple
+
+            args = [c1, c2, *args[1:]]  # 此时的c2已经是修改后的c2乘上width_multiple的c2了 | *args[1:]将其他非输出通道数的参数解包
+
+            # 如果当前层是 BottleneckCSP, C3, C3TR, C3Ghost, C3x 中的一种（这些结构都有 Bottleneck 结构）
+            if m in {BottleneckCSP, C3, C3TR, C3Ghost, C3x}:
+                args.insert(2, n)  # number of repeats | 需要让Bottleneck重复n次
+                n = 1  # 重置n（其他层没有 Bottleneck 的模块不需要重复）
+        
+        elif m is nn.BatchNorm2d:  # 如果是BN层
+            args = [ch[f]]  # 确定输出通道数
+        
+        elif m is Concat:  # 如果是 Concat 层
+            c2 = sum(ch[x] for x in f)  # Concat是按着通道维度进行的，所以通道会增加
+        
+        elif m in {Detect, Segment}:  # 如果模块是 Detect 模块或者是 Segment 模块
+            args.append([ch[x] for x in f])
+            if isinstance(args[1], int):  # number of anchors
+                args[1] = [list(range(args[1] * 2))] * len(f)
+            if m is Segment:
+                args[3] = make_divisible(args[3] * gw, ch_mul)
+                
+        elif m is Contract:  # 如果是 Contract 模块
+            c2 = ch[f] * args[0] ** 2
+        elif m is Expand:  # 如果是 Expand 模块
+            c2 = ch[f] // args[0] ** 2
+        else:
+            c2 = ch[f]
+
+        # 将所有的模块都解包出来，用nn.Sequential接收
+        m_ = nn.Sequential(*(m(*args) for _ in range(n))) if n > 1 else m(*args)  # module
+
+        # 将模块名字中__main__.字符串删除
+        t = str(m)[8:-2].replace("__main__.", "")  # module type
+        
+        # 统计模块中的参数数量
+        np = sum(x.numel() for x in m_.parameters())  # number params
+        
+        # 修改nn.Sequential格式的模块的属性
+        m_.i, m_.f, m_.type, m_.np = i, f, t, np  # i: index    f: from    t: type    np: number of parameters
+        #   0                -1  1      3520  models.common.Conv                      [3, 32, 6, 2, 2]
+        LOGGER.info(f"{i:>3}{str(f):>18}{n_:>3}{np:10.0f}  {t:<40}{str(args):<30}")
+        save.extend(x % i for x in ([f] if isinstance(f, int) else f) if x != -1)  # append to savelist
+        layers.append(m_)
+        
+        if i == 0:  # 如果是第一层
+            ch = []
+        ch.append(c2)
+        
+    return nn.Sequential(*layers), sorted(save)
+```
+
+## 10.3 initialize_weights()
+
+```python
+def initialize_weights(model):
+    for m in model.modules():
+        t = type(m)
+        if t is nn.Conv2d:
+            pass  # nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+        elif t is nn.BatchNorm2d:
+            m.eps = 1e-3
+            m.momentum = 0.03
+        elif t in [nn.Hardswish, nn.LeakyReLU, nn.ReLU, nn.ReLU6, nn.SiLU]:
+            m.inplace = True
+```
+
+## 10.4 feature_visualization()
+
+```python
+def feature_visualization(x, module_type, stage, n=32, save_dir=Path("runs/detect/exp")):
+    """可视化模型中的特征图，并将结果保存为图片和numpy数组。
+
+    Args:
+        x (_type_): 要可视化的特征图
+        module_type (_type_): 模块类型
+        stage (_type_): 模块在模型中的阶段
+        n (int, optional): 要绘制的特征图的最大数量. Defaults to 32.
+        save_dir (_type_, optional): 保存结果的目录. Defaults to Path("runs/detect/exp").
+    """
+    # "Detect"和"Segment"模块无法被可视化
+    if ("Detect" not in module_type) and ("Segment" not in module_type):  # 'Detect' for Object Detect task,'Segment' for Segment task
+        batch, channels, height, width = x.shape  # batch, channels, height, width
+
+        # 如果特征图的高度和宽度都大于1，则进行可视化
+        if height > 1 and width > 1:
+            f = save_dir / f"stage{stage}_{module_type.split('.')[-1]}_features.png"  # filename
+
+            # 选择batch中的第一个样本，并按通道分割特征图
+            blocks = torch.chunk(x[0].cpu(), channels, dim=0)  # select batch index 0, block by channels
+            n = min(n, channels)  # 确定要绘制的特征图数量，不超过通道数
+            
+            # 创建一个图像画布，每行8个子图，总共n/8行
+            fig, ax = plt.subplots(math.ceil(n / 8), 8, tight_layout=True)  # 8 rows x n/8 cols
+            ax = ax.ravel()  # 将子图数组展平为一维
+            plt.subplots_adjust(wspace=0.05, hspace=0.05)  # 调整子图之间的空间
+
+            # 开始绘制
+            for i in range(n):
+                # 将每个特征图展平并绘制
+                ax[i].imshow(blocks[i].squeeze())  # cmap='gray'
+                ax[i].axis("off")  # 关闭坐标轴
+
+            # 打印保存信息
+            LOGGER.info(f"Saving {f}... ({n}/{channels})")
+            plt.savefig(f, dpi=300, bbox_inches="tight")  # 保存图片
+            plt.close()
+            np.save(str(f.with_suffix(".npy")), x[0].cpu().numpy())  # 保存特征图为numpy数组
+```
+
+## 10.5 fuse_conv_and_bn()
+
+```python
+def fuse_conv_and_bn(conv, bn):
+    """将卷积层（Conv2d）和批量归一化层（BatchNorm2d）融合成一个单一的卷积层。
+    这样做可以提高模型的性能，因为融合后的层可以减少一些不必要的计算
+    
+    💡  OBS：该技巧只适用于模型推理，不适用于模型训练！
+
+    Args:
+        conv (_type_): 原来的卷积模块
+        bn (_type_): 原来的BN模块
+
+    Returns:
+        _type_: 融合后的卷积模块
+    """
+    # Fuse Conv2d() and BatchNorm2d() layers https://tehnokv.com/posts/fusing-batchnorm-and-conv/
+    fusedconv = (
+        nn.Conv2d(
+            conv.in_channels,              # 输入通道数
+            conv.out_channels,             # 输出通道数
+            kernel_size=conv.kernel_size,  # 卷积核大小
+            stride=conv.stride,            # 步长
+            padding=conv.padding,          # 填充
+            dilation=conv.dilation,        # 膨胀卷积的膨胀率 
+            groups=conv.groups,            # 分组卷积的组数
+            bias=True,                     # 是否需要偏置
+        ).requires_grad_(False).to(conv.weight.device)  # 不需要计算梯度，并将其移动到与原始卷积层相同的设备上
+    )
+
+    # 准备卷积层的权重
+    w_conv = conv.weight.clone().view(conv.out_channels, -1)  # 将卷积核权重展平为二维矩阵
+    w_bn = torch.diag(bn.weight.div(torch.sqrt(bn.eps + bn.running_var)))  # 计算BN的权重缩放因子
+    fusedconv.weight.copy_(torch.mm(w_bn, w_conv).view(fusedconv.weight.shape))  # 融合权重
+
+    # 准备空间偏置项
+    b_conv = torch.zeros(conv.weight.size(0), device=conv.weight.device) if conv.bias is None else conv.bias  # 如果原始卷积层没有偏置项，则创建全零偏置项
+    b_bn = bn.bias - bn.weight.mul(bn.running_mean).div(torch.sqrt(bn.running_var + bn.eps))  # 计算BN的偏置项
+    fusedconv.bias.copy_(torch.mm(w_bn, b_conv.reshape(-1, 1)).reshape(-1) + b_bn)  # 融合偏置项
+
+    return fusedconv
+```
 
 
 
