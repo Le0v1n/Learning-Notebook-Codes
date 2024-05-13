@@ -1297,6 +1297,115 @@ def fuse_conv_and_bn(conv, bn):
     return fusedconv
 ```
 
+# 11. 矩形推理
+
+为了让图片可以进行堆叠（即成为几个Batch），或者说我们需要让图片的尺寸变为网络需要的尺寸，我们一般会对其进行Resize。我们举个例子，网络需要的图片尺寸为416x416，那我们可以对图片进行Resize，但直接简单粗暴地进行Resize也会出现一个问题：长宽比不是1:1的图片可能会发生扭曲。为了解决图片变形的问题，YOLOv5采用了两种方法来实现，分别是：
+
+1. Square Inference：正方形推理
+2. Rectangular Inference：矩形（长方形）推理
+
+
+<a></a>
+<div align=center>
+    <img src=./imgs_markdown/2024-05-13-20-33-34.png
+    width=100%>
+    <center></center>
+</div></br>
+
+<a></a>
+<div align=center>
+    <img src=./imgs_markdown/2024-05-13-20-37-42.png
+    width=100%>
+    <center></center>
+</div></br>
+
+```python
+def letterbox(im, new_shape=(640, 640), color=(114, 114, 114), auto=True, scaleFill=False, scaleup=True, stride=32):
+    """调整和填充图片，使其符合新的形状，同时保持宽高比例。
+
+    该函数将输入图片缩放到指定的高度和宽度，并保持图片的原始宽高比例。
+    如果目标形状和原图宽高比例不一致，则在图片周围填充指定的颜色。
+    此函数通常用于预处理图片，以便输入到神经网络模型中。
+
+    Args:
+        im (cv2): 输入的图片，格式为HWC（高度、宽度、通道）。
+        new_shape (tuple, optional): 目标形状，格式为(高度, 宽度)。Defaults to (640, 640).
+        color (tuple, optional): 填充颜色，格式为(蓝, 绿, 红)。Defaults to (114, 114, 114)，即灰色。
+        auto (bool, optional): 是否自动调整填充，以适应步长。Defaults to True.
+        scaleFill (bool, optional): 是否拉伸图片以填满目标形状。Defaults to False.
+        scaleup (bool, optional): 是否放大图片。如果为False，则只缩小，不放大。Defaults to True.
+        stride (int, optional): 步长，用于自动调整填充。Defaults to 32.
+
+    Returns:
+        tuple: 返回一个元组，包含以下三个元素：
+            - im: 调整和填充后的图片。
+            - ratio: 宽高缩放比率。
+            - (dw, dh): 宽度和高度的填充量。
+    """
+    # 调整和填充图片，同时满足步长倍数的约束
+    shape = im.shape[:2]  # 当前图片的形状 [高度, 宽度]
+    
+    # 如果new_shape是整数，则将其变为宽高相同的元组
+    if isinstance(new_shape, int):
+        new_shape = (new_shape, new_shape)
+
+    # 尺度比率 (新尺寸 / 旧尺寸)
+    r = min(new_shape[0] / shape[0], new_shape[1] / shape[1])  # 宽度或高度中最小的比例
+    # 哪条边差距最大就resize哪条边，也可以理解为哪条边差距最大，就不Padding它，因为Padding它代码更高
+    
+    if not scaleup:  # scaleup=False时，图片只缩小，不放大 (为了更好的验证mAP)，默认scaleup=True
+        r = min(r, 1.0)  # 限制在[0,1]之间
+
+    # 计算填充
+    ratio = r, r  # 宽高比率
+    
+    # 计算缩放后的新的宽高（无填充）-> 长边直接缩放到新尺寸
+    new_shape_unpadding = int(round(shape[1] * r)), int(round(shape[0] * r))  
+    
+    # 计算宽度和高度分别需要填充的像素个数（其中d表示delta，即差距）-> 长边为0
+    dw, dh = new_shape[1] - new_shape_unpadding[0], new_shape[0] - new_shape_unpadding[1]  
+    
+    # 如果auto=True，则为rectangle（宽度或高度一个边进行填充，填充到stride的最小倍数即可 -> 得到的是一个矩形）
+    # 如果auto=False，则为squared（宽度或高度一个边进行填充，填充到目标尺寸 -> 得到的是一个正方形）
+    if auto:
+        # 宽高填充，保证新的尺寸是步长的整数倍
+        dw, dh = np.mod(dw, stride), np.mod(dh, stride)  # np.mod 用于计算除法的余数，等价于 %
+    elif scaleFill:  # 拉伸
+        dw, dh = 0.0, 0.0
+        new_shape_unpadding = (new_shape[1], new_shape[0])  # 宽度x高度
+        ratio = new_shape[1] / shape[1], new_shape[0] / shape[0]  # 宽高比率
+    
+    # 将填充均分到两边
+    dw /= 2  
+    dh /= 2
+
+    # 如果当前尺寸不等于缩放后的尺寸，则进行缩放
+    if shape[::-1] != new_shape_unpadding:  # shape原本为[高度, 宽度]，则shape[::-1]表示[宽度, 高度]
+        im = cv2.resize(im, new_shape_unpadding, interpolation=cv2.INTER_LINEAR)  # 长边和短边同时缩放/放大，且长边直接为目标尺寸
+
+    # 计算宽度和高度方向需要填充的像素个数
+    top, bottom = int(round(dh - 0.1)), int(round(dh + 0.1))  # 高度
+    left, right = int(round(dw - 0.1)), int(round(dw + 0.1))  # 宽度
+    
+    # print(f"{r = }")
+    # print(f"原图宽x高: {shape[1]}x{shape[0]}")
+    # print(f"缩放后的新的宽x高: {new_shape_unpadding[0]}x{new_shape_unpadding[1]}")
+    # print(f"宽度需要填充的像素个数: {dw}")
+    # print(f"高度需要填充的像素个数: {dh}")       
+
+    # 添加边框，使用常数颜色填充
+    im = cv2.copyMakeBorder(
+        src=im, 
+        top=top, 
+        bottom=bottom, 
+        left=left, 
+        right=right, 
+        borderType=cv2.BORDER_CONSTANT,  # 填充方式：常数填充
+        value=color)
+
+    # 返回调整后的图片，宽高比率，以及宽高填充
+    return im, ratio, (dw, dh)
+```
 
 
 # 参考
