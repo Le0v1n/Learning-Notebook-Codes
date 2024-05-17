@@ -139,10 +139,12 @@ def letterbox(im, new_shape=(640, 640), color=(114, 114, 114), auto=True, scaleF
 
     # 尺度比率 (新尺寸 / 旧尺寸)
     r = min(new_shape[0] / shape[0], new_shape[1] / shape[1])  # 宽度或高度中最小的比例
-    # 哪条边差距最大就resize哪条边，也可以理解为哪条边差距最大，就不Padding它，因为Padding它代码更高
+    # 哪条边差距最大就resize哪条边，也可以理解为哪条边差距最大，就不Padding它，因为Padding它代价更高
     
-    if not scaleup:  # scaleup=False时，图片只缩小，不放大 (为了更好的验证mAP)，默认scaleup=True
-        r = min(r, 1.0)  # 限制在[0,1]之间
+    # 缩放(resize)到输入大小img_size的时候，如果没有设置上采样的话，则只进行下采样，
+    # 因为上采样会让图片模糊，可能会影响模型训练效果。
+    if not scaleup:  # scaleup=False时，图片只缩小，不放大，默认scaleup=True
+        r = min(r, 1.0)  # 限制在[0,1]之间，防止图片出现上采样情况
 
     # 计算填充
     ratio = r, r  # 宽高比率
@@ -153,11 +155,16 @@ def letterbox(im, new_shape=(640, 640), color=(114, 114, 114), auto=True, scaleF
     # 计算宽度和高度分别需要填充的像素个数（其中d表示delta，即差距）-> 长边为0
     dw, dh = new_shape[1] - new_shape_unpadding[0], new_shape[0] - new_shape_unpadding[1]  
     
-    # 如果auto=True，则为rectangle（宽度或高度一个边进行填充，填充到stride的最小倍数即可 -> 得到的是一个矩形）
-    # 如果auto=False，则为squared（宽度或高度一个边进行填充，填充到目标尺寸 -> 得到的是一个正方形）
+    """
+        如果auto=True， 则为rectangle（宽度或高度一个边进行填充，填充到stride的最小倍数即可 -> 得到的是一个矩形）
+        如果auto=False，则为squared  （宽度或高度一个边进行填充，填充到目标尺寸             -> 得到的是一个正方形）
+        
+        简单来说，auto=True: 获取一个最小的填充，即矩形填充。
+    """
     if auto:
         # 宽高填充，保证新的尺寸是步长的整数倍
         dw, dh = np.mod(dw, stride), np.mod(dh, stride)  # np.mod 用于计算除法的余数，等价于 %
+    # 如果scaleFill=True，则不进行填充，直接resize到目标尺寸，任由图片进行拉伸和压缩（等价于直接resize）
     elif scaleFill:  # 拉伸
         dw, dh = 0.0, 0.0
         new_shape_unpadding = (new_shape[1], new_shape[0])  # 宽度x高度
@@ -335,10 +342,35 @@ def cutout(im, labels, p=0.5):
 
 
 def mixup(im, labels, im2, labels2):
-    # Applies MixUp augmentation https://arxiv.org/pdf/1710.09412.pdf
-    r = np.random.beta(32.0, 32.0)  # mixup ratio, alpha=beta=32.0
+    """MixUp数据增强的实现。
+
+    MixUp是一种在训练过程中通过线性插值合并两个随机选择的图像和它们对应的标签来增加数据多样性的方法。
+    这种方法可以提高模型的泛化能力，并减少过拟合的风险。
+
+    论文链接:
+        https://arxiv.org/pdf/1710.09412.pdf
+
+    Args:
+        im (numpy.ndarray): 第一张输入图像，形状为 (height, width, channels)。
+        labels (numpy.ndarray): 第一张输入图像对应的标签，形状为 (num_classes,)。
+        im2 (numpy.ndarray): 第二张输入图像，形状与 `im` 相同。
+        labels2 (numpy.ndarray): 第二张输入图像对应的标签，形状与 `labels` 相同。
+
+    Returns:
+        tuple: 包含两个元素的元组，第一个元素是混合后的图像，第二个元素是混合后的标签。
+    """
+    # 使用beta分布生成一个混合系数r，这里alpha和beta参数都设为32.0，控制了分布的形状
+    r = np.random.beta(32.0, 32.0)  # mixup比例，alpha=beta=32.0
+    print(f"{r = }")
+
+    # 使用beta分布生成一个混合系数r，这里alpha和beta参数都设为32.0，控制了分布的形状。    
     im = (im * r + im2 * (1 - r)).astype(np.uint8)
+    
+    # 将两个标签数组沿第0轴（垂直方向）连接起来，生成新的标签数组。
+    # 新的标签数组包含了原始两个标签的混合，每个类别的概率与混合系数r相关。
     labels = np.concatenate((labels, labels2), 0)
+    
+    # 返回混合后的图像和标签数组，这些将用于训练过程，以增加模型的泛化能力。
     return im, labels
 
 

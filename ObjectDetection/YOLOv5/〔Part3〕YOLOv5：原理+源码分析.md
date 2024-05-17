@@ -1304,20 +1304,30 @@ def fuse_conv_and_bn(conv, bn):
 1. Square Inference：正方形推理
 2. Rectangular Inference：矩形（长方形）推理
 
+我们分别来看一下具体的效果。
+
+## 11.1 Square Inference，正方形推理
+
 
 <a></a>
 <div align=center>
     <img src=./imgs_markdown/2024-05-13-20-33-34.png
     width=100%>
-    <center></center>
+    <center>Square Inference，正方形推理示意图</center>
 </div></br>
+
+## 11.2 Rectangular Inference，矩形推理
 
 <a></a>
 <div align=center>
     <img src=./imgs_markdown/2024-05-13-20-37-42.png
     width=100%>
-    <center></center>
+    <center>Rectangular Inference，矩形推理示意图</center>
 </div></br>
+
+Square Inference 和 Rectangular Inference 的代码实现都是基于 `letterbox` 函数：
+
+## 11.3 代码实现
 
 ```python
 def letterbox(im, new_shape=(640, 640), color=(114, 114, 114), auto=True, scaleFill=False, scaleup=True, stride=32):
@@ -1351,10 +1361,12 @@ def letterbox(im, new_shape=(640, 640), color=(114, 114, 114), auto=True, scaleF
 
     # 尺度比率 (新尺寸 / 旧尺寸)
     r = min(new_shape[0] / shape[0], new_shape[1] / shape[1])  # 宽度或高度中最小的比例
-    # 哪条边差距最大就resize哪条边，也可以理解为哪条边差距最大，就不Padding它，因为Padding它代码更高
+    # 哪条边差距最大就resize哪条边，也可以理解为哪条边差距最大，就不Padding它，因为Padding它代价更高
     
-    if not scaleup:  # scaleup=False时，图片只缩小，不放大 (为了更好的验证mAP)，默认scaleup=True
-        r = min(r, 1.0)  # 限制在[0,1]之间
+    # 缩放(resize)到输入大小img_size的时候，如果没有设置上采样的话，则只进行下采样，
+    # 因为上采样会让图片模糊，可能会影响模型训练效果。
+    if not scaleup:  # scaleup=False时，图片只缩小，不放大，默认scaleup=True
+        r = min(r, 1.0)  # 限制在[0,1]之间，防止图片出现上采样情况
 
     # 计算填充
     ratio = r, r  # 宽高比率
@@ -1365,11 +1377,16 @@ def letterbox(im, new_shape=(640, 640), color=(114, 114, 114), auto=True, scaleF
     # 计算宽度和高度分别需要填充的像素个数（其中d表示delta，即差距）-> 长边为0
     dw, dh = new_shape[1] - new_shape_unpadding[0], new_shape[0] - new_shape_unpadding[1]  
     
-    # 如果auto=True，则为rectangle（宽度或高度一个边进行填充，填充到stride的最小倍数即可 -> 得到的是一个矩形）
-    # 如果auto=False，则为squared（宽度或高度一个边进行填充，填充到目标尺寸 -> 得到的是一个正方形）
+    """
+        如果auto=True， 则为rectangle（宽度或高度一个边进行填充，填充到stride的最小倍数即可 -> 得到的是一个矩形）
+        如果auto=False，则为squared  （宽度或高度一个边进行填充，填充到目标尺寸             -> 得到的是一个正方形）
+        
+        简单来说，auto=True: 获取一个最小的填充，即矩形填充。
+    """
     if auto:
         # 宽高填充，保证新的尺寸是步长的整数倍
         dw, dh = np.mod(dw, stride), np.mod(dh, stride)  # np.mod 用于计算除法的余数，等价于 %
+    # 如果scaleFill=True，则不进行填充，直接resize到目标尺寸，任由图片进行拉伸和压缩（等价于直接resize）
     elif scaleFill:  # 拉伸
         dw, dh = 0.0, 0.0
         new_shape_unpadding = (new_shape[1], new_shape[0])  # 宽度x高度
@@ -1406,6 +1423,46 @@ def letterbox(im, new_shape=(640, 640), color=(114, 114, 114), auto=True, scaleF
     # 返回调整后的图片，宽高比率，以及宽高填充
     return im, ratio, (dw, dh)
 ```
+
+## 11.4 问题
+
+问题链接：[Object sizing and Image size #700](https://github.com/ultralytics/yolov5/issues/700)
+
+<a></a>
+<div align=center>
+    <img src=./imgs_markdown/2024-05-17-10-32-47.png
+    width=100%>
+    <center></center>
+</div></br>
+
+<kbd><b>Question</b></kbd>：我有一些 256x320 大小的图片，如果我想在训练时将模型输入大小设置为 256*320，只需要使用 `--img-size 320` 和 `--rect` 参数吗？
+
+<kbd><b>Answer</b></kbd>：是的。如果你只使用 `--img 320` `--rect`，那么矩形将会是 320x256。使用 `--img 600`，它将自动使用最接近的正确步长倍数（最近接 600 且可以被 32 整除的尺寸）。
+
+# 12. 数据增强（Data Augmentation）
+
+当训练数据样本数量少时，容易出现模型过拟合现象，为了缓解这种情况，我们可以人为增加一些数据。常见的数据增强方式有：
+
+|    方法    |   翻译   | 简述                                                                                     |
+| :--------: | :------: | :--------------------------------------------------------------------------------------- |
+|    Crop    |   裁剪   | 从原始图像中随机裁剪出不同大小的图像区域，以增加样本多样性                               |
+|  Rotation  |   旋转   | 将图像随机旋转一定角度，以模拟不同的拍摄角度                                             |
+|    Flip    |   翻转   | 包括水平翻转和垂直翻转，可以模拟图像在不同方向上的变化                                   |
+|    Hue     |   色调   | 调整图像的色调，使其颜色偏向不同的色调范围                                               |
+| Saturation |  饱和度  | 调整图像的饱和度，增加或减少图像颜色的鲜艳程度                                           |
+|  Exposure  |  曝光度  | 模拟不同的光照条件，调整图像的亮度                                                       |
+|   Aspect   |  宽高比  | 调整图像的宽高比，模拟不同的拍摄视角                                                     |
+|   MixUp    |   混合   | 将两张图像按一定比例混合，生成新的图像和标签                                             |
+|   CutMix   | 裁剪混合 | 将一张图像的一部分裁剪并粘贴到另一张图像上，同时调整标签                                 |
+|   Mosaic   |  马赛克  | 将四张图像组合成一张，其中一张图像占主要部分，其他三张图像分别填充边缘，用于目标检测任务 |
+|    Blur    |   模糊   | 对图像应用模糊滤镜，模拟图像在拍摄或传输过程中的失真情况                                 |
+
+<a></a>
+<div align=center>
+    <img src=./imgs_markdown/2024-05-17-11-02-49.png
+    width=100%>
+    <center>常见的数据增强方式展示</center>
+</div></br>
 
 
 # 参考
