@@ -351,26 +351,40 @@ def mixup(im, labels, im2, labels2):
         https://arxiv.org/pdf/1710.09412.pdf
 
     Args:
-        im (numpy.ndarray): 第一张输入图像，形状为 (height, width, channels)。
-        labels (numpy.ndarray): 第一张输入图像对应的标签，形状为 (num_classes,)。
+        im (numpy.ndarray): 第一张输入图像，形状为 (height, width, channels)，例子：
+        labels (numpy.ndarray): 第一张输入图像对应的标签，形状为 (Number of Object, 5)，其中5为
         im2 (numpy.ndarray): 第二张输入图像，形状与 `im` 相同。
         labels2 (numpy.ndarray): 第二张输入图像对应的标签，形状与 `labels` 相同。
 
     Returns:
         tuple: 包含两个元素的元组，第一个元素是混合后的图像，第二个元素是混合后的标签。
+        
+        
+    Example：
+        im.shape = (640, 640, 3)
+        labels.shape = (cls, cx, cy, w, h)
+        labels = array([[          2,       23.46,      149.84,      56.603,      166.17],
+                        [          2,      110.12,       160.6,      147.08,      180.08],
+                        [          2,           0,      150.58,      20.573,      165.75],
+                        [          2,      131.22,      140.63,      153.98,      148.01],
+                        [          2,      152.74,      168.93,      183.13,      186.35],
+                        [          2,           0,      144.09,      18.519,      152.54],
+                        [         20,      450.44,       282.3,      552.94,      346.79],
+                        [         20,      366.06,      298.44,       447.1,      345.52],
+                        [         20,      304.99,       308.8,      352.43,      344.38],
+                        [         20,      185.41,      298.92,       260.5,      344.44],
+                        [          9,      528.41,      625.18,      530.87,      627.81]], dtype=float32)
     """
     # 使用beta分布生成一个混合系数r，这里alpha和beta参数都设为32.0，控制了分布的形状
     r = np.random.beta(32.0, 32.0)  # mixup比例，alpha=beta=32.0
-    print(f"{r = }")
 
-    # 使用beta分布生成一个混合系数r，这里alpha和beta参数都设为32.0，控制了分布的形状。    
-    im = (im * r + im2 * (1 - r)).astype(np.uint8)
+    # 将两张图像按照混合系数r进行线性组合，生成新的合成图像。结果转换为uint8以匹配图像的常规数据类型。
+    im = (im * r + im2 * (1 - r)).astype(np.uint8)  # 混合的结果直接覆盖im了
     
-    # 将两个标签数组沿第0轴（垂直方向）连接起来，生成新的标签数组。
-    # 新的标签数组包含了原始两个标签的混合，每个类别的概率与混合系数r相关。
+    # 将两个标签数组沿第0轴（垂直方向）连接起来，生成新的标签数组
     labels = np.concatenate((labels, labels2), 0)
     
-    # 返回混合后的图像和标签数组，这些将用于训练过程，以增加模型的泛化能力。
+    # 返回混合后的图像和标签数组
     return im, labels
 
 

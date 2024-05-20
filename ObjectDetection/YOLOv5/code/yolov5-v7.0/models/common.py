@@ -723,11 +723,11 @@ class AutoShape(nn.Module):
                 f = f"image{i}"  # filename
                 if isinstance(im, (str, Path)):  # filename or uri
                     im, f = Image.open(requests.get(im, stream=True).raw if str(im).startswith("http") else im), im
-                    im = np.asarray(exif_transpose(im))
+                    im = np.asarray(exif_transpose(im))  # 处理图片中的EXIF信息，防止图片被莫名其妙的旋转
                 elif isinstance(im, Image.Image):  # PIL Image
                     im, f = np.asarray(exif_transpose(im)), getattr(im, "filename", f) or f
                 files.append(Path(f).with_suffix(".jpg").name)
-                if im.shape[0] < 5:  # image in CHW
+                if im.shape[0] < 5:  # image in CHW  这里的图片shape为：(1080, 810, 3)，这样写代码确实也没有什么问题，但为什么是<5呢？
                     im = im.transpose((1, 2, 0))  # reverse dataloader .transpose(2, 0, 1)
                 im = im[..., :3] if im.ndim == 3 else cv2.cvtColor(im, cv2.COLOR_GRAY2BGR)  # enforce 3ch input
                 s = im.shape[:2]  # HWC

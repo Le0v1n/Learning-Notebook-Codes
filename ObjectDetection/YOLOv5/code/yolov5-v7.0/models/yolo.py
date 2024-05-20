@@ -365,6 +365,7 @@ class DetectionModel(BaseModel):
         if nc and nc != self.yaml["nc"]:  # 如果使用这个类时传入了nc，且与配置文件中的nc有冲突：使用nc而非self.yaml["nc"]，并将self.yaml["nc"]重新赋值为nc
             LOGGER.info(f"使用 {nc = } 覆盖 model.yaml 中的 {self.yaml['nc'] = }")
             self.yaml["nc"] = nc  # override yaml value
+        # 💡  如果anchors为None，也不会进行赋值！
         if anchors:  # 如果使用这个类时传入了anchors，则使用传入的anchors而非self.yaml["anchors"]，并使用anchors覆盖self.yaml["anchors"]
             LOGGER.info(f"使用 {anchors = } 覆盖 model.yaml 中的 anchors")
             self.yaml["anchors"] = round(anchors)  # override yaml value

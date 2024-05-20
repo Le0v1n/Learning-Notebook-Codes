@@ -512,7 +512,7 @@ def check_dataset(data, autodownload=True):
     # Resolve paths
     path = Path(extract_dir or data.get("path") or "")  # optional 'path' default to '.'
     if not path.is_absolute():
-        path = (ROOT / path).resolve()
+        path = (ROOT / path).resolve()  # resolve方法的作用：将路径转换为绝对路径，并在过程中解析所有符号链接，同时对其进行标准化（例如在Windows下将斜杠转换为反斜杠）。
         data["path"] = path  # download scripts
     for k in "train", "val", "test":
         if data.get(k):  # prepend path
@@ -528,7 +528,7 @@ def check_dataset(data, autodownload=True):
     train, val, test, s = (data.get(x) for x in ("train", "val", "test", "download"))
     if val:
         val = [Path(x).resolve() for x in (val if isinstance(val, list) else [val])]  # val path
-        if not all(x.exists() for x in val):
+        if not all(x.exists() for x in val):  # 如果有不存在的val路径
             LOGGER.info("\nDataset not found ⚠️, missing paths %s" % [str(x) for x in val if not x.exists()])
             if not s or not autodownload:
                 raise Exception("Dataset not found ❌")

@@ -87,10 +87,24 @@ def reshape_classifier_output(model, n=1000):
 
 @contextmanager
 def torch_distributed_zero_first(local_rank: int):
-    # Decorator to make all processes in distributed training wait for each local_master to do something
+    """使用 @contextmanager 装饰器定义一个上下文管理器
+    这个上下文管理器接受一个参数 local_rank，它表示当前进程的本地进程号
+
+    如果当前进程的 local_rank 不是 -1 或 0，则执行 dist.barrier()
+    这意味着除了 local_rank 为 -1 或 0 的进程外，其他进程都会在这里等待
+    直到所有进程都到达这个 barrier，它们才会继续执行
+
+    Args:
+        local_rank (int): 当前进程的索引
+    """
     if local_rank not in [-1, 0]:
         dist.barrier(device_ids=[local_rank])
+        
+    # yield 关键字用于将控制权返回给调用者。在这里，调用者可以执行一些操作，而其他进程则在上面设置的 barrier 处等待
     yield
+    
+    # 当调用者完成操作后，如果当前进程的 local_rank 是 0，则再次执行 dist.barrier()。
+    # 这确保了 local_rank 为 0 的进程完成其任务后，其他进程才能继续执行
     if local_rank == 0:
         dist.barrier(device_ids=[0])
 
@@ -107,27 +121,37 @@ def device_count():
 
 def select_device(device="", batch_size=0, newline=True):
     # device = None or 'cpu' or 0 or '0' or '0,1,2,3'
-    s = f"YOLOv5 🚀 {git_describe() or file_date()} Python-{platform.python_version()} torch-{torch.__version__} "
+    
+    # 获取输出描述，例子：'YOLOv5 🚀 2024-1-29 Python-3.8.18 torch-2.1.0+cpu '
+    s = f"YOLOv5 🚀 {git_describe() or file_date()} Python-{platform.python_version()} torch-{torch.__version__} "  
+
+    # 将原本的 cuda:0 转换为 0（去掉原本的cuda:）
     device = str(device).strip().lower().replace("cuda:", "").replace("none", "")  # to string, 'cuda:0' to '0'
+
+    # 判断指定的设备是否CPU或MPS
     cpu = device == "cpu"
     mps = device == "mps"  # Apple Metal Performance Shaders (MPS)
+    
+    # 如果指定的设备是的CPU或MPS，则不使用CUDA
     if cpu or mps:
         os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # force torch.cuda.is_available() = False
+    # 如果指定的设备不是CPU或MPS（CUDA）
     elif device:  # non-cpu device requested
+        # 设置环境变量中可用的CUDA设备索引
         os.environ["CUDA_VISIBLE_DEVICES"] = device  # set environment variable - must be before assert is_available()
         assert torch.cuda.is_available() and torch.cuda.device_count() >= len(
             device.replace(",", "")
         ), f"Invalid CUDA '--device {device}' requested, use '--device cpu' or pass valid CUDA device(s)"
-
+    # 设备优先级：CUDA > MPS > CPU
     if not cpu and not mps and torch.cuda.is_available():  # prefer GPU if available
         devices = device.split(",") if device else "0"  # range(torch.cuda.device_count())  # i.e. 0,1,6,7
         n = len(devices)  # device count
-        if n > 1 and batch_size > 0:  # check batch_size is divisible by device_count
+        if n > 1 and batch_size > 0:  # 检查CUDA设备数是否可以被batch_size整除
             assert batch_size % n == 0, f"batch-size {batch_size} not multiple of GPU count {n}"
         space = " " * (len(s) + 1)
         for i, d in enumerate(devices):
             p = torch.cuda.get_device_properties(i)
-            s += f"{'' if i == 0 else space}CUDA:{d} ({p.name}, {p.total_memory / (1 << 20):.0f}MiB)\n"  # bytes to MB
+            s += f"{'' if i == 0 else space}CUDA:{d} ({p.name}, {p.total_memory / (1 << 20):.0f}MiB)\n"  # bytes to MB（1 << 20 在这个上下文中用作一个快速的常数，用于将字节数转换为兆字节）
         arg = "cuda:0"
     elif mps and getattr(torch, "has_mps", False) and torch.backends.mps.is_available():  # prefer MPS if available
         s += "MPS\n"
@@ -358,7 +382,7 @@ def scale_img(img, ratio=1.0, same_shape=False, gs=32):  # img(16,3,256,416)
 
 def copy_attr(a, b, include=(), exclude=()):
     # Copy attributes from b to a, options to only include [...] and to exclude [...]
-    for k, v in b.__dict__.items():
+    for k, v in b.__dict__.items():  # b.__dict_.keys(): dict_keys(['training', '_parameters', '_buffers', '_non_persistent_buffers_set', '_backward_hooks', '_is_full_backward_hook', '_forward_hooks', '_forward_pre_hooks', '_state_dict_hooks', '_load_state_dict_pre_hooks', '_load_state_dict_post_hooks', '_modules', 'yaml_file', 'yaml', 'save', 'names', 'inplace', 'stride'])
         if (len(include) and k not in include) or k.startswith("_") or k in exclude:
             continue
         else:
