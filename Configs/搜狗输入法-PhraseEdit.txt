@@ -58,6 +58,8 @@ bdyj,5=🙄
 bofh,5=▶️
 bold,5=<b></b>
 book,5=📖
+camera,5=📷
+camera,4=📸
 center,5=
 <div align=center>
 
@@ -74,6 +76,7 @@ details,5=
 
 </details>
 dg,5=💡
+dir,5=📂
 dm,5=·
 dm,4=○
 dollar,5=💲
@@ -86,6 +89,10 @@ ffgexm,5===========  ==========
 ffgexm,4=----------  ----------
 ffgexm,3=>>>>>>  >>>>>>
 file,5=📑
+file,4=🖺
+film,5=🎞️
+film,4=🎥
+film,3=🎬
 fjbdyj,5=🙄
 folder,5=📂
 font,5=<font color='red'><b></b></font>
@@ -101,6 +108,8 @@ img,5=
     <center></center>
 </div></br>
 
+img,4=🖼️
+img,3=🖻
 info,5=ℹ️
 insertimg,5=
 <div align=center>
@@ -114,6 +123,7 @@ java,5=
 jbvi,5=🚫
 jkgc,5=⚠️
 jkgc,4=☣️
+jkgc,3=☢️
 juvs,5=
 <div align=center>
 </div>
@@ -128,7 +138,11 @@ new,5=🆕
 ok,5=👌
 ok,4=🆗
 pen,5=✒️
+pen,4=🖊️
 phone,5=📱
+pic,5=🖼️
+pic,4=🖻
+pip,5=pip install xxx -i https://pypi.tuna.tsinghua.edu.cn/simple
 play,5=▶️
 python,5=
 ```python
@@ -141,6 +155,7 @@ shit,5=💩
 soon,5=🔜
 stop,5=⏹️
 tkvi,5=⏹️
+tsinghua,5=https://pypi.tuna.tsinghua.edu.cn/simple
 tupm,5=
 <a></a>
 <div align=center>
