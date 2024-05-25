@@ -1233,11 +1233,11 @@ def verify_image_label(args):
         - prefix: 前缀信息。     例子：'\x1b[34m\x1b[1mtrain: \x1b[0m'  --> 简单理解，就是 "train"（剩下的字符都是改变颜色用的）
         
     计数器参数说明：
-        nm：没找到的数量。
-        nf：找到的数量。
-        ne：空的数量。
-        nc：破损的图片的数量。
-        msg：信息。
+        nm：丢失标签的图片数量。
+        nf：找到标签的图片数量。
+        ne：标签是空的图片数量。
+        nc：图片是破损的数量。
+        msg：警告信息（图片破损、重复样本）
         segments：分割的数量。
     """
     im_file, lb_file, prefix = args
@@ -1272,9 +1272,12 @@ def verify_image_label(args):
         # ------------------------------ 验证标签 ------------------------------
         # 查看标签文件是否是一个文件（如果不存在或者是一个目录，都返回False）
         if os.path.isfile(lb_file):
-            nf = 1  # label found
+            nf = 1  # label found（发现标签的图片数量+1）
             with open(lb_file) as f:
+                # 读取标签中所有的行，并存放为一个list
                 lb = [x.split() for x in f.read().strip().splitlines() if len(x)]
+                
+                # 目标检测是5列，如果大于5列那么这个标签就是语义分割的标签
                 if any(len(x) > 6 for x in lb):  # is segment
                     classes = np.array([x[0] for x in lb], dtype=np.float32)
                     segments = [np.array(x[1:], dtype=np.float32).reshape(-1, 2) for x in lb]  # (cls, xy1...)
@@ -1294,9 +1297,9 @@ def verify_image_label(args):
             else:
                 ne = 1  # label empty
                 lb = np.zeros((0, 5), dtype=np.float32)
-        # 如果标签文件不存在或者是一个目录（）
+        # 如果标签文件不存在或者是一个目录 --> 创建一个全为0的对象标签（负样本）
         else:
-            nm = 1  # label missing
+            nm = 1  # label missing（没有标签的图片数量+1）
             lb = np.zeros((0, 5), dtype=np.float32)
         return im_file, lb, shape, segments, nm, nf, ne, nc, msg
     except Exception as e:
