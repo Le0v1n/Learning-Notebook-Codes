@@ -73,20 +73,50 @@ for orientation in ExifTags.TAGS.keys():
 
 
 def get_hash(paths):
-    # Returns a single hash value of a list of paths (files or dirs)
+    """生成一个SHA256哈希值，用于表示一个文件📑或目录📂路径列表，通过组合它们的文件大小和路径。
+
+    Args:
+        paths (list): 包含文件或目录路径的列表。
+
+    Returns:
+        str: 生成的SHA256哈希值。
+    """
+    # 计算路径列表中所有存在的文件或目录的大小之和。例子：6966983
     size = sum(os.path.getsize(p) for p in paths if os.path.exists(p))  # sizes
+
+    # 第一次计算：使用SHA256算法计算大小之和的哈希值（str.encode()方法是将字符串转换为字节）
     h = hashlib.sha256(str(size).encode())  # hash sizes
+    
+    # 第二次计算：使用SHA256算法计算路径列表的哈希值
     h.update("".join(paths).encode())  # hash paths
+    
+    # 返回生成的SHA256哈希值。例子：'e4e52a64a68bab367a5f8d26b6f2f4e1b7d89f041615f7160bd16d4d90ac221c'
+    # .hexdigest()方法返回一个十六进制格式的字符串，表示哈希值的所有十六进制数字（0-9之间的任意整数，或者是字母A-F中的任意一个字母）
     return h.hexdigest()  # return hash
 
 
 def exif_size(img):
-    # Returns exif-corrected PIL size
+    """返回经过EXIF校正的PIL尺寸。
+
+    Args:
+        img (PIL.Image): PIL图像对象。
+
+    Returns:
+        tuple: 包含宽度（width）和高度（height）的元组。
+    """
+    # 获取原始尺寸
     s = img.size  # (width, height)
+    
+    # 尝试获取EXIF信息（如果EXIF信息不可用或不存在，则不进行旋转）
     with contextlib.suppress(Exception):
+        # 提取旋转信息
         rotation = dict(img._getexif().items())[orientation]
-        if rotation in [6, 8]:  # rotation 270 or 90
-            s = (s[1], s[0])
+        
+        # 检查是否需要旋转
+        if rotation in [6, 8]:  # 旋转270度或90度
+            s = (s[1], s[0])  # 交换宽度和高度
+            
+    # 返回校正后的尺寸
     return s
 
 
@@ -151,25 +181,40 @@ class SmartDistributedSampler(distributed.DistributedSampler):
         return iter(idx)
 
 
-def create_dataloader(
-    path,
-    imgsz,
-    batch_size,
-    stride,
-    single_cls=False,
-    hyp=None,
-    augment=False,
-    cache=False,
-    pad=0.0,
-    rect=False,
-    rank=-1,
-    workers=8,
-    image_weights=False,
-    quad=False,
-    prefix="",
-    shuffle=False,
-    seed=0,
-):
+def create_dataloader(path, imgsz, batch_size, stride, single_cls=False, hyp=None, augment=False, cache=False, 
+                      pad=0.0, rect=False, rank=-1, workers=8, image_weights=False, quad=False, prefix="", 
+                      shuffle=False, seed=0):
+    """创建数据加载器，包括训练集、验证集、测试集。
+
+    Args:
+        path (str): 数据集的路径。例子：'/data/yolov5/datasets/coco128/images/train2017'
+        imgsz (int): 图像的尺寸。例子：640
+        batch_size (int): 单卡的batchsize。例子：40
+        stride (int): 步长（grid size，网格大小）。例子：32
+        single_cls (bool, optional): 是否只有单个类别。Defaults to False.
+        hyp (dict, optional): 超参数的字典。Defaults to None.
+            例子：{'lr0': 0.01, 'lrf': 0.01, 'momentum': 0.937, 'weight_decay': 0.000625, 'warmup_epochs': 3.0, 
+                   'warmup_momentum': 0.8, 'warmup_bias_lr': 0.1, 'box': 0.05, 'cls': 0.5, 'cls_pw': 1.0, 
+                   'obj': 1.0, 'obj_pw': 1.0, 'iou_t': 0.2, 'anchor_t': 4.0, ...}
+        augment (bool, optional): 是否应用数据增强。Defaults to False.
+        cache (bool, optional): 是否使用cache进行缓存，如果为None则不使用，Defaults to False. 可选：
+            "ram"：缓存到内存
+            "disk"：缓存到硬盘
+            "val"：训练集不使用，验证集使用。
+        pad (float, optional): 图像填充比例。Defaults to 0.0. 例子：0.0
+        rect (bool, optional): 是否使用矩形训练。Defaults to False. 例子：False
+        rank (int, optional): 主线程（在DDP中为0，其他情况下为-1）。Defaults to -1. 例子：-1
+        workers (int, optional): 数据加载器的工作线程数。Defaults to 8. 例子：8
+        image_weights (bool, optional): 是否根据不同类别样本数从而对图片进行加权，平衡类别样本数。Defaults to False. 例子：False
+        quad (bool, optional): 是否使用四倍数据加载器。Defaults to False. 例子：False
+        prefix (str, optional): 数据集的前缀。Defaults to "". 例子："train: "
+        shuffle (bool, optional): 是否打乱数据集。Defaults to False. 例子：True
+        seed (int, optional): 随机种子。Defaults to 0. 例子：0
+
+    Returns:
+        tuple: 包含数据加载器和数据集的元组。
+    """
+    # 💡 --rect和shuffle参数不兼容，因为--rect只是长边为640，短边不一定相同，这就没法组成batch了
     if rect and shuffle:
         LOGGER.warning("WARNING ⚠️ --rect is incompatible with DataLoader shuffle, setting shuffle=False")
         shuffle = False
@@ -488,12 +533,32 @@ class LoadStreams:
 
 
 def img2label_paths(img_paths):
-    # Define label paths as a function of image paths
+    """根据相应的图像文件路径生成标签文件路径，通过将`/images/`替换为`/labels/`并将扩展名替换为`.txt`。
+
+    Args:
+        img_paths (list): 包含图像文件路径的列表。
+
+    Returns:
+        list: 包含对应的标签文件路径的列表。
+    """
+    # 先定义两个子字符串："/images/"和"/labels/"
     sa, sb = f"{os.sep}images{os.sep}", f"{os.sep}labels{os.sep}"  # /images/, /labels/ substrings
+
+    # str.rsplit("/images/", maxsplit)会在字符串 str 中从右向左搜索第一个出现的 /images/，然后将字符串拆分成两部分，
+    # 分隔符 /images/ 作为拆分的标志。拆分后的结果以列表的形式返回，其中第一个元素是分隔符右侧的部分，第二个元素是分隔符左侧的部分（如果有的话）
+    # 💡 简单来说，就是把"/train/"替换为"/labels/"，并将后缀换为".txt"
     return [sb.join(x.rsplit(sa, 1)).rsplit(".", 1)[0] + ".txt" for x in img_paths]
 
 
 class LoadImagesAndLabels(Dataset):
+    """创建一个YOLOv5的train_loader或val_loader，这个loader会读取图片和标签（仅适用于训练集和验证集）
+
+    Args:
+        Dataset (_type_): 继承自torch.utils.data的Dataset类
+
+    Returns:
+        object: 实例化对象
+    """
     # YOLOv5 train_loader/val_loader, loads images and labels for training and validation
     cache_version = 0.6  # dataset labels *.cache version
     rand_interp_methods = [cv2.INTER_NEAREST, cv2.INTER_LINEAR, cv2.INTER_CUBIC, cv2.INTER_AREA, cv2.INTER_LANCZOS4]
@@ -525,33 +590,55 @@ class LoadImagesAndLabels(Dataset):
         self.mosaic_border = [-img_size // 2, -img_size // 2]
         self.stride = stride
         self.path = path
+        
+        # 创建一个Albumentations的实例化对象
         self.albumentations = Albumentations(size=img_size) if augment else None
 
         try:
             f = []  # image files
+            # 如果dataset.yaml文件中train字段有多个元素，则依次遍历
             for p in path if isinstance(path, list) else [path]:
-                p = Path(p)  # os-agnostic
+                # 使用Path库则不依赖于特定操作系统（不必纠结Windows还是Linux还是MAC）
+                p = Path(p)  # 例子：PosixPath('/data/yolov5/datasets/coco128/images/train2017')
+
+                # ---------- 如果给定的训练集路径是一个📂文件夹 ----------
                 if p.is_dir():  # dir
+                    # glob.glob() 函数会递归地搜索子目录并将文件添加给f变量
+                    # 例子：f = ['/data/yolov5/datasets/coco128/images/train2017/000000000400.jpg', 
+                    # '/data/yolov5/datasets/coco128/images/train2017/000000000629.jpg', ...]
                     f += glob.glob(str(p / "**" / "*.*"), recursive=True)
                     # f = list(p.rglob('*.*'))  # pathlib
+
+                # ---------- 如果给定的训练集路径是一个📑文件（具体来说应该是一个txt文件） ----------
                 elif p.is_file():  # file
                     with open(p) as t:
+                        # 使用 read() 方法读取文件的所有内容作为一个字符串。
+                        # 接着，使用 strip() 方法去除字符串两端的空白字符（如空格、换行符等）
                         t = t.read().strip().splitlines()
+                        
+                        # 获取它的父级文件夹并加上分隔符（/或\）
                         parent = str(p.parent) + os.sep
+                        
+                        # 在 str.replace() 方法中，__count 是一个可选参数，用于指定替换的最大次数。它表示在替换过程中最多进行的替换次数。
                         f += [x.replace("./", parent, 1) if x.startswith("./") else x for x in t]  # to global path
                         # f += [p.parent / x.lstrip(os.sep) for x in t]  # to global path (pathlib)
                 else:
                     raise FileNotFoundError(f"{prefix}{p} does not exist")
+            # 筛选 f 这个list中所有的文件，只保留图片，之后还会对其按照文件名称进行排序
             self.im_files = sorted(x.replace("/", os.sep) for x in f if x.split(".")[-1].lower() in IMG_FORMATS)
             # self.img_files = sorted([x for x in f if x.suffix[1:].lower() in IMG_FORMATS])  # pathlib
+
+            # 确保有图片存在，否则报错！
             assert self.im_files, f"{prefix}No images found"
         except Exception as e:
             raise Exception(f"{prefix}Error loading data from {path}: {e}\n{HELP_URL}") from e
 
-        # Check cache
+        # 根据图片的路径找对应的标签路径
         self.label_files = img2label_paths(self.im_files)  # labels
+
+        # 检查缓存（cache）：确定缓存的路径。例子：/data/yolov5/datasets/coco128/labels/train2017.cache
         cache_path = (p if p.is_file() else Path(self.label_files[0]).parent).with_suffix(".cache")
-        try:
+        try:  # 尝试去读取cache文件，一旦报错则跳到Exception语句
             cache, exists = np.load(cache_path, allow_pickle=True).item(), True  # load dict
             assert cache["version"] == self.cache_version  # matches current version
             assert cache["hash"] == get_hash(self.label_files + self.im_files)  # identical hash
@@ -676,29 +763,77 @@ class LoadImagesAndLabels(Dataset):
         return cache
 
     def cache_labels(self, path=Path("./labels.cache"), prefix=""):
-        # Cache dataset labels, check images and read shapes
+        """缓存数据集标签，验证图像，读取形状，并跟踪数据集完整性。
+
+        Args:
+            path (Path, optional): 缓存文件路径。Defaults to Path("./labels.cache").
+            prefix (str, optional): 描述前缀。Defaults to "".
+
+        Returns:
+            dict: 包含缓存信息的字典。
+        """
+        # 创建一个空字典来存储结果
         x = {}  # dict
+        
+        # 初始化计数器
         nm, nf, ne, nc, msgs = 0, 0, 0, 0, []  # number missing, found, empty, corrupt, messages
+        
+        # 描述信息。例子：Scanning /data/yolov5/datasets/coco128/labels/train2017...
         desc = f"{prefix}Scanning {path.parent / path.stem}..."
+
+        # 使用多线程池进行操作
         with Pool(NUM_THREADS) as pool:
+            # 开启进度条。例子：train: Scanning /data/yolov5/datasets/coco128/labels/train2017...:   0%|          | 0/128 [00:00<?, ?it/s]
             pbar = tqdm(
                 pool.imap(verify_image_label, zip(self.im_files, self.label_files, repeat(prefix))),
                 desc=desc,
                 total=len(self.im_files),
                 bar_format=TQDM_BAR_FORMAT,
             )
+            
+            # 遍历所有图像文件和标签文件
             for im_file, lb, shape, segments, nm_f, nf_f, ne_f, nc_f, msg in pbar:
+                """变量说明
+                    im_file: 图片路径。例子：'/data/yolov5/datasets/coco128/images/train2017/000000000009.jpg'
+                    lb：图片对应的标签。例子：shape：(8, 5)
+                        array([[         45,     0.47949,     0.68877,     0.95561,      0.5955],
+                               [         45,     0.73652,     0.24719,     0.49887,     0.47642],
+                               [         50,     0.63706,     0.73294,     0.49413,     0.51058],
+                               [         45,     0.33944,      0.4189,     0.67888,      0.7815],
+                               [         49,     0.64684,     0.13255,     0.11805,    0.096937],
+                               [         49,     0.77315,      0.1298,    0.090734,    0.097229],
+                               [         49,      0.6683,     0.22691,     0.13128,      0.1469],
+                               [         49,     0.64286,    0.079219,     0.14806,     0.14806]], dtype=float32)
+                    shape：图片的尺寸。例子：(640, 480)
+                    segments：分割相关的信息。例子：[]
+                    nm_f：发现的缺失的数量。例子：0
+                    nf_f：发现的发现的数量。例子：1
+                    ne_f：发现的空的数量。例子：0
+                    nc_f：发现的破损的数量。例子：0
+                    msg：信息。例子：''
+                """
+                # 更新计数器
                 nm += nm_f
                 nf += nf_f
                 ne += ne_f
                 nc += nc_f
-                if im_file:
+                
+                # 如果图片存在，则保存到结果中（dict的形式）
+                if im_file:  
                     x[im_file] = [lb, shape, segments]
+                    
+                # 如果有其他信息则添加到总信息中（list的形式）
                 if msg:
                     msgs.append(msg)
+                    
+                # 更新进度条描述信息。
+                # 例子：train: Scanning /data/yolov5/datasets/coco128/labels/train2017... 126 images, 2 backgrounds, 0 corrupt: 100%|██████████| 128/128
                 pbar.desc = f"{desc} {nf} images, {nm + ne} backgrounds, {nc} corrupt"
 
+        # 关闭进度条
         pbar.close()
+        
+        # 
         if msgs:
             LOGGER.info("\n".join(msgs))
         if nf == 0:
@@ -1073,24 +1208,69 @@ def autosplit(path=DATASETS_DIR / "coco128/images", weights=(0.9, 0.1, 0.0), ann
 
 
 def verify_image_label(args):
-    # Verify one image-label pair
+    """验证单个image-label pair（图像-标签对），确保图像格式、大小正确，标签值是合法的。
+
+    Args:
+        args (tuple): 包含图像文件路径、标签文件路径和前缀的元组。
+
+    Returns:
+        tuple: 包含验证结果的元组，包括
+            - 图像文件路径
+            - 标签文件路径
+            - 图像尺寸
+            - 分割段落
+            - 缺失标签计数
+            - 找到标签计数
+            - 空标签计数
+            - 损坏标签计数
+            - 消息。
+    """
+    # 提取参数。
+    """
+    args参数说明：
+        - im_file：图片绝对路径。例子：'/data/yolov5/datasets/coco128/images/train2017/000000000009.jpg'
+        - lb_file：标签绝对路径。例子：'/data/yolov5/datasets/coco128/labels/train2017/000000000009.txt'
+        - prefix: 前缀信息。     例子：'\x1b[34m\x1b[1mtrain: \x1b[0m'  --> 简单理解，就是 "train"（剩下的字符都是改变颜色用的）
+        
+    计数器参数说明：
+        nm：没找到的数量。
+        nf：找到的数量。
+        ne：空的数量。
+        nc：破损的图片的数量。
+        msg：信息。
+        segments：分割的数量。
+    """
     im_file, lb_file, prefix = args
     nm, nf, ne, nc, msg, segments = 0, 0, 0, 0, "", []  # number (missing, found, empty, corrupt), message, segments
     try:
-        # verify images
+        # ------------------------------ 验证图片 ------------------------------
         im = Image.open(im_file)
-        im.verify()  # PIL verify
-        shape = exif_size(im)  # image size
+        im.verify()  # PIL verify --> 验证图像文件的完整性。如果有问题则报错，会被except捕获
+        shape = exif_size(im)  # 返回经过EXIF校正的PIL尺寸。例子：(640, 480)
+        
+        # 检查图片尺寸（高度和宽度最小为10）
         assert (shape[0] > 9) & (shape[1] > 9), f"image size {shape} <10 pixels"
+        
+        # 检查图片的格式是否是支持的图片格式
         assert im.format.lower() in IMG_FORMATS, f"invalid image format {im.format}"
+        
+        # 💡 Ultralytics只对JPEG图片进行了破损判断，其他格式的图片没有
+        # 如果图片的格式是JPEG
         if im.format.lower() in ("jpg", "jpeg"):
-            with open(im_file, "rb") as f:
-                f.seek(-2, 2)
+            with open(im_file, "rb") as f:  # 使用read-binary的方式打开JEPG图片
+                f.seek(-2, 2)  # 将文件指针从文件末尾向后移动 2 个字节
+                
+                # 判断这张JPEG图片是否是破损的
                 if f.read() != b"\xff\xd9":  # corrupt JPEG
+                    # 保存破损的图片
                     ImageOps.exif_transpose(Image.open(im_file)).save(im_file, "JPEG", subsampling=0, quality=100)
-                    msg = f"{prefix}WARNING ⚠️ {im_file}: corrupt JPEG restored and saved"
 
-        # verify labels
+                    # 记录信息
+                    msg = f"{prefix}WARNING ⚠️ {im_file}: corrupt JPEG restored and saved"
+        # ----------------------------------------------------------------------
+
+        # ------------------------------ 验证标签 ------------------------------
+        # 查看标签文件是否是一个文件（如果不存在或者是一个目录，都返回False）
         if os.path.isfile(lb_file):
             nf = 1  # label found
             with open(lb_file) as f:
@@ -1114,6 +1294,7 @@ def verify_image_label(args):
             else:
                 ne = 1  # label empty
                 lb = np.zeros((0, 5), dtype=np.float32)
+        # 如果标签文件不存在或者是一个目录（）
         else:
             nm = 1  # label missing
             lb = np.zeros((0, 5), dtype=np.float32)

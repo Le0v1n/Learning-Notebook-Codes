@@ -18,30 +18,95 @@ IMAGENET_STD = 0.229, 0.224, 0.225  # RGB standard deviation
 
 
 class Albumentations:
-    # YOLOv5 Albumentations class (optional, only used if package is installed)
+    """YOLOv5 Albumentations类（可选，仅在安装了包时使用）
+    用于可选的数据增强，在YOLOv5中指定输入大小。
+    
+    Albumentations是一个Python库，专门用于图像和视频的数据增强。它提供了一个简单而强大的API，允许用户组合多个增强操作，从而生成新的训练数据。
+
+    特点：
+        - 功能丰富：Albumentations提供了大量的增强操作，包括裁剪、旋转、缩放、颜色变换、模糊等。
+        - 易于使用：通过使用Compose类，用户可以轻松地将多个增强操作组合成一个复合操作，从而生成新的数据。
+        - 可扩展性：Albumentations允许用户自定义增强操作，并可以很容易地将新的增强操作集成到库中。
+        - 高效性：Albumentations使用PyTorch的transforms模块，因此可以充分利用PyTorch的性能。
+    """
     def __init__(self, size=640):
+        """初始化Albumentations类。
+
+        Args:
+            size (int, optional): 输入图像的尺寸。Defaults to 640。
+        """
+        # 初始化transform属性，用于应用数据增强操作
         self.transform = None
+        
+        # 定义前缀，用于日志输出
         prefix = colorstr("albumentations: ")
+        
+        # 尝试导入albumentations包
         try:
             import albumentations as A
 
+            # 检查albumentations包的版本，要求最小版本为1.0.3
             check_version(A.__version__, "1.0.3", hard=True)  # version requirement
 
+            # 定义一系列数据增强操作
             T = [
+                # 随机缩放和裁剪图像，保持原始图像大小
                 A.RandomResizedCrop(height=size, width=size, scale=(0.8, 1.0), ratio=(0.9, 1.11), p=0.0),
+
+                # 对图片施加kernel大小随机的高斯模糊
                 A.Blur(p=0.01),
+
+                # 使用随机孔径线性尺寸的中值滤波器对输入图像进行模糊处理。
                 A.MedianBlur(p=0.01),
+
+                # 将输入的RGB图像转换为灰度图像。如果输入图像已经是灰度图像，则会发出警告，但原始图像不会发生变化。
+                # ☢️ 该转换会检查图像是否为RGB格式；如果不是，则会引发TypeError错误。
                 A.ToGray(p=0.01),
+                
+                # 对输入图像应用对比度受限的自适应直方图均衡化。
                 A.CLAHE(p=0.01),
+                
+                # 随机改变输入图像的亮度和对比度。
                 A.RandomBrightnessContrast(p=0.0),
+                
+                # 以数据增强的形式，对图像应用随机的伽马校正。该类通过应用随机选择的伽马值（在指定范围内）对图像进行伽马校正，调整图像的亮度。
+                # 伽马校正可以模拟不同的光照条件，从而提高模型的泛化能力。
                 A.RandomGamma(p=0.0),
+                
+                # 通过对图像进行JPEG、WebP压缩，降低图像质量。
                 A.ImageCompression(quality_lower=75, p=0.0),
             ]  # transforms
+            
+            """在albumentations库中，Compose类用于将多个增强操作组合成一个复合操作。在组合操作时，bbox_params参数用于指定如何处理图像中
+            的边界框（bboxes）。边界框通常用于目标检测任务，其中每个边界框都对应一个检测到的对象。
+            
+            💡 这里的bboxes其实就是Ground Truth的框。
+
+            bbox_params是一个字典，其中包含以下关键参数：
+                - format: 指定边界框的格式。常见的格式包括pascal_voc、yolo、coco等。
+                          对于YOLO格式，边界框通常由中心点坐标和尺寸（宽度和高度）组成。
+                - label_fields: 指定哪些字段包含边界框的类别标签。对于YOLO格式，通常类别标签位于边界框的第一个元素。
+                - min_area: 指定边界框的最小面积，用于过滤掉太小或太大的边界框。
+                - min_visibility: 指定边界框的最小可见度，用于过滤掉被遮挡太多的边界框。
+                - sort_by_size: 指定是否根据边界框的大小对它们进行排序。
+                - filter_lost_elements: 指定是否过滤掉在增强过程中丢失的边界框。
+                - remove_empty: 指定是否在增强操作后移除没有边界框的图像。
+                - expand_bboxes: 指定是否在增强操作后扩展边界框。
+                - bbox_params: 指定用于处理边界框的其他参数。
+            
+            通过使用bbox_params，可以确保边界框在增强操作后仍然保持有效，并且可以正确地与增强后的图像对齐。
+            这对于目标检测任务至关重要，因为边界框的准确性直接影响到模型的性能。
+            """
+            # 创建一个Albumentations的Compose对象，将所有的增强操作组合起来
             self.transform = A.Compose(T, bbox_params=A.BboxParams(format="yolo", label_fields=["class_labels"]))
 
+            # 打印已应用的增强操作
+            # 例子：albumentations: Blur(p=0.01, blur_limit=(3, 7)), MedianBlur(p=0.01, blur_limit=(3, 7)), ToGray(p=0.01), CLAHE(p=0.01, clip_limit=(1, 4.0), tile_grid_size=(8, 8))
             LOGGER.info(prefix + ", ".join(f"{x}".replace("always_apply=False, ", "") for x in T if x.p))
+        # 包未安装，跳过
         except ImportError:  # package not installed, skip
             pass
+        # 如果出现了其他异常信息，则打印
         except Exception as e:
             LOGGER.info(f"{prefix}{e}")
 

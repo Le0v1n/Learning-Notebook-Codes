@@ -184,23 +184,49 @@ CONFIG_DIR = user_config_dir()  # Ultralytics settings dir
 
 
 class Profile(contextlib.ContextDecorator):
-    # YOLOv5 Profile class. Usage: @Profile() decorator or 'with Profile():' context manager
+    """YOLOv5性能分析类。可用作装饰器(@Profile())或上下文管理器('with Profile():')"""
     def __init__(self, t=0.0, device: torch.device = None):
-        self.t = t
-        self.device = device
-        self.cuda = bool(device and str(device).startswith("cuda"))
+        """初始化方法
+
+        Args:
+            t (float, optional): 初始化的累积时间，默认为0.0。
+            device (torch.device, optional): 用于时间同步的torch设备，默认为None。
+        """
+        self.t = t  # 累积时间
+        self.device = device  # 设备信息
+        self.cuda = bool(device and str(device).startswith("cuda"))  # 是否使用CUDA设备
 
     def __enter__(self):
+        """进入上下文管理器时调用，开始计时"""
+        # 记录开始时间
         self.start = self.time()
+        
+        # 返回当前实例
         return self
 
     def __exit__(self, type, value, traceback):
-        self.dt = self.time() - self.start  # delta-time
-        self.t += self.dt  # accumulate dt
+        """退出上下文管理器时调用，结束计时并累积时间差。
+        
+        Args:
+            type (_type_): 异常类型，如果没有异常则为None。
+            value (_type_): 异常实例，如果没有异常则为None。
+            traceback (_type_): 异常的堆栈跟踪信息，如果没有异常则为None。
+        """
+        self.dt = self.time() - self.start  # 计算时间差（delta-time）
+        self.t += self.dt  # 累积时间差
 
     def time(self):
+        """获取当前时间，如果使用CUDA设备，则同步CUDA时间。
+
+        Returns:
+            time: 返回当前时间。
+        """
         if self.cuda:
-            torch.cuda.synchronize(self.device)
+            # torch.cuda.synchronize(self.device) 它的作用是等待CUDA设备上的所有先前的操作完成，然后才会继续执行后续的代码。
+            # 当代码执行到torch.cuda.synchronize(self.device)时，它会阻塞程序的运行，直到GPU上的所有操作都完成
+            torch.cuda.synchronize(self.device)  # 同步CUDA时间
+
+        # 返回系统时间
         return time.time()
 
 
@@ -404,12 +430,26 @@ def check_version(current="0.0.0", minimum="0.0.0", name="version ", pinned=Fals
 
 
 def check_img_size(imgsz, s=32, floor=0):
-    # Verify image size is a multiple of stride s in each dimension
+    """调整图像尺寸以确保其能够被步长s整除，支持整数或列表/元组输入，并返回调整后的尺寸。
+
+    Args:
+        imgsz (int or list/tuple): 图像尺寸。若为整数，表示单边长度；若为列表或元组，表示[H, W]。
+        s (int, optional): 步长，用于确保图像尺寸可被整除。默认为32。
+        floor (int, optional): 调整后图像尺寸的最小值。默认为0。
+
+    Returns:
+        int or list/tuple: 调整后的图像尺寸。
+    """
+    # 如果imgsz是整数
     if isinstance(imgsz, int):  # integer i.e. img_size=640
+        # 调整大小，确保是s的倍数，并且不小于floor
         new_size = max(make_divisible(imgsz, int(s)), floor)
+    # 如果imgsz是列表或元组
     else:  # list i.e. img_size=[640, 480]
-        imgsz = list(imgsz)  # convert to list if tuple
-        new_size = [max(make_divisible(x, int(s)), floor) for x in imgsz]
+        imgsz = list(imgsz)  # 如果是元组，则转换为列表
+        new_size = [max(make_divisible(x, int(s)), floor) for x in imgsz]  # 对每个维度进行调整
+        
+    # 如果调整后的尺寸与原始尺寸不同
     if new_size != imgsz:
         LOGGER.warning(f"WARNING ⚠️ --img-size {imgsz} must be multiple of max stride {s}, updating to {new_size}")
     return new_size
@@ -668,7 +708,23 @@ def clean_str(s):
 
 
 def one_cycle(y1=0.0, y2=1.0, steps=100):
-    # lambda function for sinusoidal ramp from y1 to y2 https://arxiv.org/pdf/1812.01187.pdf
+    """
+    生成一个lambda函数，用于在'y1'到'y2'之间以正弦曲线的方式过渡，总步数为'steps'。
+    该函数的默认值是y1=0.0，y2=1.0，那么就是在steps步中以sin的方式从y1达到y2
+    💡 我们在使用的时候，学习率都是从大到小，所以一般都是y1>y2，而非默认的y1<y2，所以表现为：
+       在steps步中以cos的方式从y2达到y1（就这么一个过程，不会先升后降，也不会先降后升，别多想🤣）
+
+    Args:
+        y1 (float): 正弦曲线的起始值。默认为0.0。
+        y2 (float): 正弦曲线的峰值值。默认为1.0。
+        steps (int): 正弦曲线的周期步数。默认为100。
+
+    Returns:
+        function: 一个lambda函数，接受一个从0到'steps'的整数参数'x'，返回对应的正弦值。
+
+    Papers:
+        - https://arxiv.org/pdf/1812.01187.pdf
+    """
     return lambda x: ((1 - math.cos(x * math.pi / steps)) / 2) * (y2 - y1) + y1
 
 
@@ -896,18 +952,39 @@ def resample_segments(segments, n=1000):
 
 
 def scale_boxes(img1_shape, boxes, img0_shape, ratio_pad=None):
-    # Rescale boxes (xyxy) from img1_shape to img0_shape
-    if ratio_pad is None:  # calculate from img0_shape
+    """将img1_shape形状的图像中的边界框(bounding boxes)缩放到img0_shape形状，可选地使用提供的ratio_pad。
+
+    Args:
+        img1_shape (tuple): 当前图像的形状（高度, 宽度）。
+        boxes (array): 要缩放的边界框，格式为[预测框索引, xyxy]。
+        img0_shape (tuple): 目标形状（高度, 宽度）。
+        ratio_pad (tuple, optional): 用于缩放的增益和填充值。如果未提供，将从img0_shape计算。 Defaults to None.
+
+    Returns:
+        boxes (array): 缩放后的边界框，格式为(xyxy)。
+    """
+    # 如果没有提供ratio_pad，根据img0_shape计算增益和填充
+    if ratio_pad is None:
+        # 计算增益（缩放因子），取高度和宽度比例的最小值
         gain = min(img1_shape[0] / img0_shape[0], img1_shape[1] / img0_shape[1])  # gain  = old / new
+        # 计算所需的填充，以使缩放后的图像居中
         pad = (img1_shape[1] - img0_shape[1] * gain) / 2, (img1_shape[0] - img0_shape[0] * gain) / 2  # wh padding
+    # 如果提供了ratio_pad，直接使用
     else:
         gain = ratio_pad[0][0]
         pad = ratio_pad[1]
 
+    # 对边界框应用填充
     boxes[..., [0, 2]] -= pad[0]  # x padding
     boxes[..., [1, 3]] -= pad[1]  # y padding
+
+    # 通过除以增益来缩放边界框
     boxes[..., :4] /= gain
+
+    # 裁剪边界框，以确保它们位于新图像的边界内
     clip_boxes(boxes, img0_shape)
+
+    # 返回缩放后的边界框
     return boxes
 
 
@@ -931,13 +1008,21 @@ def scale_segments(img1_shape, segments, img0_shape, ratio_pad=None, normalize=F
 
 
 def clip_boxes(boxes, shape):
+    """将边界框坐标（xyxy格式）裁剪到指定的（高度，宽度）内。
+
+    Args:
+        boxes (tensor): 形状为[n, 4]，包含待裁剪的边界框坐标。
+        shape (tuple): 目标的的形状（高度，宽度）。
+    """
     # Clip boxes (xyxy) to image shape (height, width)
     if isinstance(boxes, torch.Tensor):  # faster individually
+        # 分别对每个边界框的x1, y1, x2, y2坐标进行裁剪，使用clamp_()方法确保坐标值在0和图像宽度/高度之间
         boxes[..., 0].clamp_(0, shape[1])  # x1
         boxes[..., 1].clamp_(0, shape[0])  # y1
         boxes[..., 2].clamp_(0, shape[1])  # x2
         boxes[..., 3].clamp_(0, shape[0])  # y2
     else:  # np.array (faster grouped)
+        # 使用clip()方法对x1, x2, y1, y2坐标进行批量裁剪，确保所有坐标值都在0和图像宽度/高度之间
         boxes[..., [0, 2]] = boxes[..., [0, 2]].clip(0, shape[1])  # x1, x2
         boxes[..., [1, 3]] = boxes[..., [1, 3]].clip(0, shape[0])  # y1, y2
 
@@ -963,8 +1048,29 @@ def non_max_suppression(
     max_det=300,
     nm=0,  # number of masks
 ):
-    """
-    Non-Maximum Suppression (NMS) on inference results to reject overlapping detections.
+    """使用NMS作用于推理结果，防止出现重叠的检测框。
+    
+    Args:
+        prediction (tensor): 模型推理结果。
+            shape：[Batch, 检测框的总数量, 6]，例子：torch.Size([1, 18900, 6])，其中6分别是：(cx, cy, w, h, 置信度, 具体的类别)
+            检测框总数计算方式：这里图片经过letterbox后size为(640, 480)，那么YOLOv5s的下采样率为32，即最后的预测特征图shape为20*15, 40*30, 80*60，
+                又因为每个预测特征图上每个像素点会预测三个框，所以模型预测结果应该有：(20*15+40*30+80*60)*3=18900个框。
+        conf_thres (float, optional): 置信度阈值。这里需要声明的是，在YOLOv5中有三种置信度：
+            ①obj_conf：模型预测结果中的目标置信度，表示对应的预测框是否包含目标的概率。
+            ②cls_conf：模型预测结果中的类别置信度，表示对应的预测框分别是什么类别的概率（每一个类别都有一个概率）。
+            ③conf：综合置信度，conf = obj_conf * cls_conf
+            💡 conf_thres是所有置信度的阈值，不单单是obj_conf或conf
+            默认值为0.25.
+        iou_thres (float, optional): IoU阈值，预测框与GT的最小IoU. Defaults to 0.45.
+        classes (_type_, optional): 指定过滤的类别索引. 默认为None，表示所有类别的框都会进行NMS
+        agnostic (bool, optional): 当使用--agnostic参数时，模型在预测时会将所有对象视为同一类，只关注它们的存在而不区分具体类别。
+            这个参数在特定的应用场景中很有用，比如当我们只对检测对象的数量感兴趣，而不在乎它们具体是什么时。
+            举个例子：如果我们正在监控一个区域，只想知道有多少物体进入了该区域，而不关心这些物体是行人、车辆还是其他东西，我们可以使用
+            --agnostic参数来简化检测任务。这可以提高检测速度，因为模型不需要区分不同的类别。. Defaults to False.
+        multi_label (bool, optional): 一个框是否存在多个标签. Defaults to False.
+        labels (tuple, optional): 对应的标签. Defaults to ().
+        max_det (int, optional): 模型的原生检测结果中最大有多少个目标. Defaults to 300.
+        nm (int, optional): masks的数量，具体作用不清楚. Defaults to 0.
 
     Returns:
          list of detections, on (n,6) tensor per image [xyxy, conf, cls]
@@ -1001,7 +1107,7 @@ def non_max_suppression(
         # x[((x[..., 2:4] < min_wh) | (x[..., 2:4] > max_wh)).any(1), 4] = 0  # width-height
         x = x[xc[xi]]  # confidence
 
-        # Cat apriori labels if autolabelling
+        # Cat apriori（先验的） labels if autolabelling
         if labels and len(labels[xi]):
             lb = labels[xi]
             v = torch.zeros((len(lb), nc + nm + 5), device=x.device)
@@ -1027,9 +1133,12 @@ def non_max_suppression(
             x = torch.cat((box[i], x[i, 5 + j, None], j[:, None].float(), mask[i]), 1)
         else:  # best class only
             conf, j = x[:, 5:mi].max(1, keepdim=True)
+            # 构建新的预测框，此时预测框的shape为：[个数，6]，其中6表示：[x1, y1, x2, y2, conf, 类别索引]
+            # 使用conf_thres进行二次过滤，此时并非obj_conf，而是conf
             x = torch.cat((box, conf, j.float(), mask), 1)[conf.view(-1) > conf_thres]
 
         # Filter by class
+        # 如果开启了类别过滤，则只保留对应类别的信息，其他舍弃
         if classes is not None:
             x = x[(x[:, 5:6] == torch.tensor(classes, device=x.device)).any(1)]
 
@@ -1041,12 +1150,14 @@ def non_max_suppression(
         n = x.shape[0]  # number of boxes
         if not n:  # no boxes
             continue
+        # 对剩下的所有预测框进行排序（降序 -> 最大的在前面），并根据max_nms参数限制框的数量
         x = x[x[:, 4].argsort(descending=True)[:max_nms]]  # sort by confidence and remove excess boxes
 
         # Batched NMS
         c = x[:, 5:6] * (0 if agnostic else max_wh)  # classes
         boxes, scores = x[:, :4] + c, x[:, 4]  # boxes (offset by class), scores
-        i = torchvision.ops.nms(boxes, scores, iou_thres)  # NMS
+        # NMS推荐博文：https://blog.csdn.net/weixin_44878336/article/details/126163030
+        i = torchvision.ops.nms(boxes, scores, iou_thres)  # NMS，这里返回的是要保留的预测框的index
         i = i[:max_det]  # limit detections
         if merge and (1 < n < 3e3):  # Merge NMS (boxes merged using weighted mean)
             # update boxes as boxes(i,4) = weights(i,n) * boxes(n,4)
@@ -1055,10 +1166,11 @@ def non_max_suppression(
             x[i, :4] = torch.mm(weights, x[:, :4]).float() / weights.sum(1, keepdim=True)  # merged boxes
             if redundant:
                 i = i[iou.sum(1) > 1]  # require redundancy
-
+        # 只保留NMS筛选后的预测框
         output[xi] = x[i]
         if mps:
             output[xi] = output[xi].to(device)
+        # 统计for循环的运行时间，如果超时了则直接break
         if (time.time() - t) > time_limit:
             LOGGER.warning(f"WARNING ⚠️ NMS time limit {time_limit:.3f}s exceeded")
             break  # time limit exceeded

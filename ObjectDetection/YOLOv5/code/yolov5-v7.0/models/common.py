@@ -747,6 +747,7 @@ class AutoShape(nn.Module):
 
             # Post-process
             with dt[2]:
+                # 让模型推理得到的所有预测框都经过NMS，返回经过NMS筛选后的预测框
                 y = non_max_suppression(
                     y if self.dmb else y[0],
                     self.conf,
@@ -757,16 +758,32 @@ class AutoShape(nn.Module):
                     max_det=self.max_det,
                 )  # NMS
                 for i in range(n):
-                    scale_boxes(shape1, y[i][:, :4], shape0[i])
+                    scale_boxes(shape1, y[i][:, :4], shape0[i])  # 其中，shape1是当前图片的尺寸，shape0[i]是图片原始尺寸
 
-            return Detections(ims, y, files, dt, self.names, x.shape)
+            return Detections(ims=ims,           # 一个包含所有图片的list（元素数据类型为ndarray）
+                              pred=y,            # 一个包含所有标签的list（元素数据类型为tensor，且和ims中的元素一一对应）
+                              files=files,       # 一个包含所有图片名称的list（元素数据类型为str，且和ims中的元素一一对应）
+                              times=dt,          # 记录时间的类
+                              names=self.names,  # 一个包含所有类别索引的list，拿COCO举例：['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', ...]
+                              shape=x.shape)     # 输入图片的尺寸，一般为torch.Size([1, 3, 640, 480])
 
 
 class Detections:
     # YOLOv5 detections class for inference results
     def __init__(self, ims, pred, files, times=(0, 0, 0), names=None, shape=None):
+        """初始化YOLOv5检测类，并提供图像信息、预测结果、文件名、计时和归一化数据。
+        
+        Args:
+            ims (list): 一个包含所有图片的list（元素数据类型为ndarray）
+            pred (list): 一个包含所有标签的list（元素数据类型为tensor，且和ims中的元素一一对应）
+            files (list): 一个包含所有图片名称的list（元素数据类型为str，且和ims中的元素一一对应），例子：['bus.jpg']
+            times (tuple): 例子：(<utils.general.Profile object at 0x7f50aff49f10>, <utils.general.Profile object at 0x7f50aff49eb0>, <utils.general.Profile object at 0x7f50aff49e20>)
+            names (list): 一个包含所有类别索引的list，拿COCO举例：['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', ...]
+            shape (tensor): 输入图片的尺寸，一般为torch.Size([1, 3, 640, 480])
+        """
         super().__init__()
         d = pred[0].device  # device
+        # 创建用来归一化坐标的因数，例子：[tensor([ 810, 1080,  810, 1080,    1,    1], device='cuda:0'), ]
         gn = [torch.tensor([*(im.shape[i] for i in [1, 0, 1, 0]), 1, 1], device=d) for im in ims]  # normalizations
         self.ims = ims  # list of images as numpy arrays
         self.pred = pred  # list of tensors pred[0] = (xyxy, conf, cls)
@@ -775,8 +792,11 @@ class Detections:
         self.times = times  # profiling times
         self.xyxy = pred  # xyxy pixels
         self.xywh = [xyxy2xywh(x) for x in pred]  # xywh pixels
+        
+        # 对坐标进行归一化
         self.xyxyn = [x / g for x, g in zip(self.xyxy, gn)]  # xyxy normalized
         self.xywhn = [x / g for x, g in zip(self.xywh, gn)]  # xywh normalized
+        
         self.n = len(self.pred)  # number of images (batch size)
         self.t = tuple(x.t / self.n * 1e3 for x in times)  # timestamps (ms)
         self.s = tuple(shape)  # inference BCHW shape

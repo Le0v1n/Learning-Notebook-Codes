@@ -94,9 +94,16 @@ from utils.torch_utils import (
     torch_distributed_zero_first,
 )
 
+# 获取本地进程号，用于分布式训练。默认为-1，表示单机模式。
 LOCAL_RANK = int(os.getenv("LOCAL_RANK", -1))  # https://pytorch.org/docs/stable/elastic/run.html
+
+# 获取全局进程号，用于分布式训练。默认为-1，表示单机模式。
 RANK = int(os.getenv("RANK", -1))
+
+# 获取全局进程总数，用于分布式训练。默认为1，表示单机模式。
 WORLD_SIZE = int(os.getenv("WORLD_SIZE", 1))
+
+# 检查并获取Git版本信息，用于记录模型的版本和训练环境。
 GIT_INFO = check_git_info()
 
 
@@ -204,68 +211,83 @@ def train(hyp, opt, device, callbacks):  # hyp is path/to/hyp.yaml or hyp dictio
             v.requires_grad = False
 
     # Image size
+    # 根据模型最大下采样倍率（=grid大小）从而检查图片是否是grid的倍数，如果不是则调整图片大小到最接近grid倍率
     gs = max(int(model.stride.max()), 32)  # grid size (max stride)
-    imgsz = check_img_size(opt.imgsz, gs, floor=gs * 2)  # verify imgsz is gs-multiple
+    imgsz = check_img_size(opt.imgsz, gs, floor=gs * 2)  # 💡 返回值是一个int，即图片最合适的尺寸
 
     # Batch size
     if RANK == -1 and batch_size == -1:  # single-GPU only, estimate best batch size
+        # 获取占用80%显存的batchsize（没有2^n这个约束）
         batch_size = check_train_batch_size(model, imgsz, amp)
+        # 在WandB, Comet, or ClearML中更新batchsize的大小
         loggers.on_params_update({"batch_size": batch_size})
 
     # Optimizer
-    nbs = 64  # nominal batch size
+    nbs = 64  # 象征性的batchsize（nominal batch size）
+    
+    # 计算出一个积累系数用于改善weight_decay，因为默认的权值衰减系数是在batchsize=nbs=64下跑出来的，所以需要根据实际的batchsize进行调整
+    # 当batchsize>=nbs时：accumulate >= 1 --> 权值衰减变快
+    # 当batchsize<nbs时：accumulate < 1 --> 权值衰减变慢
     accumulate = max(round(nbs / batch_size), 1)  # accumulate loss before optimizing
     hyp["weight_decay"] *= batch_size * accumulate / nbs  # scale weight_decay
+    
+    # 智能创建优化器（）
     optimizer = smart_optimizer(model, opt.optimizer, hyp["lr0"], hyp["momentum"], hyp["weight_decay"])
 
     # Scheduler
-    if opt.cos_lr:
+    if opt.cos_lr:  # 从1到lrf(lr_finished)，以余弦的方式（没有周期）
         lf = one_cycle(1, hyp["lrf"], epochs)  # cosine 1->hyp['lrf']
     else:
-        lf = lambda x: (1 - x / epochs) * (1.0 - hyp["lrf"]) + hyp["lrf"]  # linear
+        lf = lambda x: (1 - x / epochs) * (1.0 - hyp["lrf"]) + hyp["lrf"]  # linear，💡 真是直线（虽然看起来很复杂，但真的是直线）
+    # 💡 torch.optim.lr_scheduler.LambdaLR()允许使用自定义的函数来调整优化器的学习率。
+    # 💡 自定义函数的要求：接受一个整数参数，表示当前的训练步数（或周期），并返回一个乘法因子，用于调整学习率
+    # 💡 lr_scheduler.LambdaLR中的last_epoch参数是一个可选参加，默认为-1。如果不为-1则表示上一个训练步数（或周期）的索引，用于恢复训练状态。
     scheduler = lr_scheduler.LambdaLR(optimizer, lr_lambda=lf)  # plot_lr_scheduler(optimizer, scheduler, epochs)
 
     # EMA
     ema = ModelEMA(model) if RANK in {-1, 0} else None
 
-    # Resume
+    # 恢复训练（断点续训）
+    # 💡 这里传入的epochs是ckpt对应的opt.yaml中的epochs而非--epochs传入的
     best_fitness, start_epoch = 0.0, 0
     if pretrained:
         if resume:
             best_fitness, start_epoch, epochs = smart_resume(ckpt, optimizer, ema, weights, epochs, resume)
         del ckpt, csd
 
-    # DP mode
-    if cuda and RANK == -1 and torch.cuda.device_count() > 1:
+    # DP mode（RANK==-1表示不是DDP环境）
+    if cuda and RANK == -1 and torch.cuda.device_count() > 1:  # 单机多卡的情况下，没有使用DDP训练，则使用DP
+        # 例子：WARNING ⚠️ DP not recommended, use torch.distributed.run for best DDP Multi-GPU results.
+        #       See Multi-GPU Tutorial at https://docs.ultralytics.com/yolov5/tutorials/multi_gpu_training to get started.
         LOGGER.warning(
             "WARNING ⚠️ DP not recommended, use torch.distributed.run for best DDP Multi-GPU results.\n"
             "See Multi-GPU Tutorial at https://docs.ultralytics.com/yolov5/tutorials/multi_gpu_training to get started."
         )
         model = torch.nn.DataParallel(model)
 
-    # SyncBatchNorm
+    # SyncBatchNorm（只有在DDP下才可以开启同步的BN，DP不行）
     if opt.sync_bn and cuda and RANK != -1:
         model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model).to(device)
         LOGGER.info("Using SyncBatchNorm()")
 
     # Trainloader
     train_loader, dataset = create_dataloader(
-        train_path,
-        imgsz,
-        batch_size // WORLD_SIZE,
-        gs,
-        single_cls,
-        hyp=hyp,
-        augment=True,
-        cache=None if opt.cache == "val" else opt.cache,
-        rect=opt.rect,
-        rank=LOCAL_RANK,
-        workers=workers,
-        image_weights=opt.image_weights,
-        quad=opt.quad,
-        prefix=colorstr("train: "),
-        shuffle=True,
-        seed=opt.seed,
+        train_path,  # 训练集路径，例子：'/data/yolov5/datasets/coco128/images/train2017'
+        imgsz,  # 图片尺寸，例子：640
+        batch_size // WORLD_SIZE,  # 单卡的batchsize，例子：40
+        gs,  # grid size，网格大小，例子：32
+        single_cls,  # 是否是单类别，例子：False
+        hyp=hyp,  # 一些超参数设置，例子：{'lr0': 0.01, 'lrf': 0.01, 'momentum': 0.937, 'weight_decay': 0.000625, 'warmup_epochs': 3.0, 'warmup_momentum': 0.8, 'warmup_bias_lr': 0.1, 'box': 0.05, 'cls': 0.5, 'cls_pw': 1.0, 'obj': 1.0, 'obj_pw': 1.0, 'iou_t': 0.2, 'anchor_t': 4.0, ...}
+        augment=True,  # 是否使用数据增强，默认是True
+        cache=None if opt.cache == "val" else opt.cache,  # 是否使用cache进行缓存，如果为None则不使用，可选："ram"（内存）、"disk"（硬盘）、"val"（训练集不使用，验证集使用）
+        rect=opt.rect,  # 是否使用矩形训练，例子：False
+        rank=LOCAL_RANK,  # 主线程（在DDP中为0，其他情况下为-1），例子：-1
+        workers=workers,  # Dataloader加载/处理数据时用的线程数，例子：8
+        image_weights=opt.image_weights,  # 是否对图片进行加权，例子：False
+        quad=opt.quad,  # 是否使用4倍加载器，例子：False
+        prefix=colorstr("train: "),  # tqdm的description
+        shuffle=True,  # 是否要对获取到的数据进行打乱，训练集一般会进行打乱
+        seed=opt.seed,  # 随机数种子，例子：0
     )
     labels = np.concatenate(dataset.labels, 0)
     mlc = int(labels[:, 0].max())  # max label class
@@ -557,10 +579,24 @@ def parse_opt(known=False):
     parser.add_argument("--ndjson-console", action="store_true", help="Log ndjson to console")
     parser.add_argument("--ndjson-file", action="store_true", help="Log ndjson to file")
 
+    # 如果已知的命令行参数存在（known=True），则只返回已知的命令行参数，忽略未知的命令行参数。
+    # 如果已知的命令行参数不存在（known=False），则返回所有解析的命令行参数，包括已知和未知的参数。
+    # 💡 不推荐使用known=True，这样不报错会影响我们传入参数的！
     return parser.parse_known_args()[0] if known else parser.parse_args()
 
 
 def main(opt, callbacks=Callbacks()):
+    """
+    - 在不开启DDP时（CPU、GPU、MPS），主进程为RANK==-1
+    - 当使用DDP时，主进程为RANK==0
+    
+    所以我们经常会看到：
+        if RANK in {-1, 0}: --> 这表明是主进程
+
+    这里需要注意，是否处于DDP就只和训练命令有关：
+        [ DDP训练 ] python -m torch.distributed.run --nproc_per_node 4 --master_port 1 train.py
+        [非DDP训练] python train.py
+    """
     # Checks
     if RANK in {-1, 0}:
         print_args(vars(opt))

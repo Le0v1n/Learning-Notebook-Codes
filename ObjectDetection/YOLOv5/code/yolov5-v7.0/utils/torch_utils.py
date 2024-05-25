@@ -90,8 +90,8 @@ def torch_distributed_zero_first(local_rank: int):
     """使用 @contextmanager 装饰器定义一个上下文管理器
     这个上下文管理器接受一个参数 local_rank，它表示当前进程的本地进程号
 
-    如果当前进程的 local_rank 不是 -1 或 0，则执行 dist.barrier()
-    这意味着除了 local_rank 为 -1 或 0 的进程外，其他进程都会在这里等待
+    如果当前进程的 local_rank 不是 -1 或 0（主进程），则执行 dist.barrier()
+    这意味着除了 local_rank 为 -1 或 0 的主进程外，其他进程都会在这里等待
     直到所有进程都到达这个 barrier，它们才会继续执行
 
     Args:
@@ -180,12 +180,22 @@ def time_sync():
 
 
 def profile(input, ops, n=10, device=None):
-    """YOLOv5 speed/memory/FLOPs profiler
+    """YOLOv5速度/内存/FLOPs分析器。
+
+    Args:
+        input (Tensor或list): 输入数据或数据列表。
+        ops (list或Callable): 要分析的运算或运算列表。
+        n (int, 可选): 迭代次数。默认为10。
+        device (torch.device, 可选): 执行运算的设备。默认为None。
+
+    Returns:
+        list: 包含每次运算的分析结果列表。
+        
     Usage:
         input = torch.randn(16, 3, 640, 640)
         m1 = lambda x: x * torch.sigmoid(x)
         m2 = nn.SiLU()
-        profile(input, [m1, m2], n=100)  # profile over 100 iterations
+        profile(input, [m1, m2], n=100)  # 对100次迭代进行分析
     """
     results = []
     if not isinstance(device, torch.device):
@@ -196,23 +206,30 @@ def profile(input, ops, n=10, device=None):
     )
 
     for x in input if isinstance(input, list) else [input]:
+        # x: 输入图片，一般为[B, 3, imgsz, imgsz]
         x = x.to(device)
         x.requires_grad = True
         for m in ops if isinstance(ops, list) else [ops]:
             m = m.to(device) if hasattr(m, "to") else m  # device
+            # 如果被测试模块支持FP16，那么就开启FP16
             m = m.half() if hasattr(m, "half") and isinstance(x, torch.Tensor) and x.dtype is torch.float16 else m
+            # tf: time of forward, tb: time of backward, t: total time
             tf, tb, t = 0, 0, [0, 0, 0]  # dt forward, backward
+            
+            # 先尝试推理一次，看看有没有问题，如果有问题，则flops=0
             try:
                 flops = thop.profile(m, inputs=(x,), verbose=False)[0] / 1e9 * 2  # GFLOPs
             except Exception:
                 flops = 0
 
             try:
+                # 多次测试
                 for _ in range(n):
                     t[0] = time_sync()
                     y = m(x)
                     t[1] = time_sync()
                     try:
+                        # 模型推理结果进行求和并反向传播
                         _ = (sum(yi.sum() for yi in y) if isinstance(y, list) else y).sum().backward()
                         t[2] = time_sync()
                     except Exception:  # no backward method
@@ -222,8 +239,10 @@ def profile(input, ops, n=10, device=None):
                     tb += (t[2] - t[1]) * 1000 / n  # ms per op backward
                 mem = torch.cuda.memory_reserved() / 1e9 if torch.cuda.is_available() else 0  # (GB)
                 s_in, s_out = (tuple(x.shape) if isinstance(x, torch.Tensor) else "list" for x in (x, y))  # shapes
+                # 计算该模块的可学习参数量
                 p = sum(x.numel() for x in m.parameters()) if isinstance(m, nn.Module) else 0  # parameters
                 print(f"{p:12}{flops:12.4g}{mem:>14.3f}{tf:14.4g}{tb:14.4g}{str(s_in):>24s}{str(s_out):>24s}")
+                # 保存结果：①模块参数；②flops；③预定显存（GB）；④输入图片大小；⑤输出形式，例子："list"
                 results.append([p, flops, mem, tf, tb, s_in, s_out])
             except Exception as e:
                 print(e)
@@ -381,31 +400,72 @@ def scale_img(img, ratio=1.0, same_shape=False, gs=32):  # img(16,3,256,416)
 
 
 def copy_attr(a, b, include=(), exclude=()):
-    # Copy attributes from b to a, options to only include [...] and to exclude [...]
+    """从模型b复制属性到模型a，可以选择只包含某些属性或排除某些属性。
+
+    Args:
+        a (nn.Module): 目标模型，将从中复制属性。
+        b (nn.Module): 源模型，从中复制属性。
+        include (tuple, optional): 需要包含的属性列表。如果为空，则不限制包含的属性。
+        exclude (tuple, optional): 需要排除的属性列表。Defaults to ().
+    """
+    # 遍历模型b的所有属性
     for k, v in b.__dict__.items():  # b.__dict_.keys(): dict_keys(['training', '_parameters', '_buffers', '_non_persistent_buffers_set', '_backward_hooks', '_is_full_backward_hook', '_forward_hooks', '_forward_pre_hooks', '_state_dict_hooks', '_load_state_dict_pre_hooks', '_load_state_dict_post_hooks', '_modules', 'yaml_file', 'yaml', 'save', 'names', 'inplace', 'stride'])
+        # 如果有include列表且当前属性不在include列表中，或者属性名以"_"开头，或者属性名在exclude列表中，则跳过
         if (len(include) and k not in include) or k.startswith("_") or k in exclude:
             continue
         else:
+            # 将属性从模型b复制到模型a
             setattr(a, k, v)
 
 
 def smart_optimizer(model, name="Adam", lr=0.001, momentum=0.9, decay=1e-5):
-    # YOLOv5 3-param group optimizer: 0) weights with decay, 1) weights no decay, 2) biases no decay
+    """初始化YOLOv5智能优化器，包含3个参数组，用于不同的衰减配置。函数的核心在于它将模型的参数分为三个组：
+        0) 带有衰减的权重（如卷积层的权重）
+        1) 不带衰减的权重（如BN层的权重）
+        2) 不带衰减的偏置（如卷积层和BN层的bias）
+    这样做的好处是能够为不同的参数定制不同的优化策略。例如，通常情况下：
+        - 我们会为权重应用L2正则化（权重衰减）
+        - 但是BN层的权重通常不需要这样的正则化
+        - 偏置通常也不需要权重衰减
+    
+    流程：
+        函数首先初始化一个优化器，只包含偏置参数。
+        然后，它会将另外两个参数组添加到优化器中，分别为它们设置适当的权重衰减值。
+        最后，它打印出关于优化器的信息，包括使用的优化器类型、学习率以及每个参数组的大小和配置。
+
+    Args:
+        model (nn.Module): 要优化的模型。
+        name (str, 可选): 优化器名称。默认为"Adam"。
+        lr (float, 可选): 学习率。默认为0.001。
+        momentum (float, 可选): 动量。默认为0.9。
+        decay (float, 可选): 衰减率。默认为1e-5。
+
+    Returns:
+        torch.optim.Optimizer: 初始化的优化器。
+    """
+    # 创建三个优化器参数组
     g = [], [], []  # optimizer parameter groups
+    
+    # 先获取一个BN有哪些参数，然后它就是一个判别器，可以知道哪些参数是BN的😂
     bn = tuple(v for k, v in nn.__dict__.items() if "Norm" in k)  # normalization layers, i.e. BatchNorm2d()
+    
+    # 查看模型的参数，根据（1）（2）（3）这三种类别对其进行分类
     for v in model.modules():
+        # 💡 当recurse=0时，named_parameters函数只会返回当前模块（v）中的参数，而不会递归地遍历其子模块的参数。
+        # 这意味着函数仅考虑当前模块的参数，而不会继续深入子模块。
         for p_name, p in v.named_parameters(recurse=0):
-            if p_name == "bias":  # bias (no decay)
+            if p_name == "bias":  # 3. bias (no decay) --> 不带衰减的偏置（如卷积层和BN层的bias）
                 g[2].append(p)
-            elif p_name == "weight" and isinstance(v, bn):  # weight (no decay)
+            elif p_name == "weight" and isinstance(v, bn):  # 2. weight (no decay)  --> 不带衰减的权重（如BN层的权重）
                 g[1].append(p)
             else:
-                g[0].append(p)  # weight (with decay)
+                g[0].append(p)  # 1. weight (with decay)  --> 带有衰减的权重（如卷积层的权重）
 
+    # 初始化一个优化器，只包含偏置参数g[2]
     if name == "Adam":
-        optimizer = torch.optim.Adam(g[2], lr=lr, betas=(momentum, 0.999))  # adjust beta1 to momentum
+        optimizer = torch.optim.Adam(g[2], lr=lr, betas=(momentum, 0.999))  # 调整beta1为动量
     elif name == "AdamW":
-        optimizer = torch.optim.AdamW(g[2], lr=lr, betas=(momentum, 0.999), weight_decay=0.0)
+        optimizer = torch.optim.AdamW(g[2], lr=lr, betas=(momentum, 0.999), weight_decay=0.0)  # 💡 不使用权值衰减
     elif name == "RMSProp":
         optimizer = torch.optim.RMSprop(g[2], lr=lr, momentum=momentum)
     elif name == "SGD":
@@ -413,12 +473,16 @@ def smart_optimizer(model, name="Adam", lr=0.001, momentum=0.9, decay=1e-5):
     else:
         raise NotImplementedError(f"Optimizer {name} not implemented.")
 
-    optimizer.add_param_group({"params": g[0], "weight_decay": decay})  # add g0 with weight_decay
-    optimizer.add_param_group({"params": g[1], "weight_decay": 0.0})  # add g1 (BatchNorm2d weights)
+    # 将另外两个参数组添加到优化器中，分别为它们设置适当的权重衰减值
+    optimizer.add_param_group({"params": g[0], "weight_decay": decay})  # 添加g0，带权重衰减
+    optimizer.add_param_group({"params": g[1], "weight_decay": 0.0})  # 添加g1 (BatchNorm2d的权重)
+    
+    # 例子：optimizer: SGD(lr=0.01) with parameter groups 57 weight(decay=0.0), 60 weight(decay=0.000609375), 60 bias
     LOGGER.info(
         f"{colorstr('optimizer:')} {type(optimizer).__name__}(lr={lr}) with parameter groups "
         f'{len(g[1])} weight(decay=0.0), {len(g[0])} weight(decay={decay}), {len(g[2])} bias'
     )
+    
     return optimizer
 
 
@@ -435,23 +499,57 @@ def smart_hub_load(repo="ultralytics/yolov5", model="yolov5s", **kwargs):
 
 
 def smart_resume(ckpt, optimizer, ema=None, weights="yolov5s.pt", epochs=300, resume=True):
-    # Resume training from a partially trained checkpoint
+    """智能恢复训练函数，从部分训练的检查点继续训练。
+
+    Args:
+        ckpt (dict): 包含模型检查点信息的字典。
+        optimizer (Optimizer): 优化器实例。
+        ema (ModelEMA, optional): 指数移动平均模型实例。Defaults to None.
+        weights (str, optional): 权重文件的路径。Defaults to "yolov5s.pt".
+        epochs (int, optional): 训练的总周期数。Defaults to 300.
+        resume (bool, optional): 是否从检查点恢复训练。Defaults to True.
+
+    Returns:
+        tuple: 包含最佳适应度、开始周期和总周期数的元组。
+        
+    OBS:
+        💡 epoch从0开始
+        💡 对于训练完成的last.pt，它的ckpt["epochs"]=-1（opt.yaml记录了之前训练时想要完成的epoch数，即--epoch参数）
+        💡 如果开启了--resume，那么目前传入的--epoch参数已经不管用了，会被--resume的opt.yaml文件中的epochs覆盖，所以
+           如果我们想要修改epochs，应该修改opt.yaml文件中的。但是我们还要注意：
+               如果opt.yaml中的epochs < last.pt已经训练的epoch，那么opt.yaml中的epochs相当于是微调（fine-tuning）的轮次
+               如果opt.yaml中的epochs > last.pt已经训练的epochs，那么相当于是恢复训练（断点续训），程序会一直训练直到达到opt.yaml中的epochs数
+    """
     best_fitness = 0.0
+    # 获取resume后开始的epoch --> 💡 epoch从0开始。💡 对于训练完成的last.pt，它的ckpt["epochs"]=-1，即start_epoch = 0
     start_epoch = ckpt["epoch"] + 1
+    
+    # 从ckpt中获取优化器和best_fitness参数
     if ckpt["optimizer"] is not None:
         optimizer.load_state_dict(ckpt["optimizer"])  # optimizer
         best_fitness = ckpt["best_fitness"]
+        
+    # 从ckpt中获取ema和updates（EMA执行次数）
     if ema and ckpt.get("ema"):
         ema.ema.load_state_dict(ckpt["ema"].float().state_dict())  # EMA
         ema.updates = ckpt["updates"]
+    
+    # 判断--epoch（epochs）与ckpt["epoch"]的关系，如果--epoch<=ckpt["epoch"]，则报错
     if resume:
         assert start_epoch > 0, (
             f"{weights} training to {epochs} epochs is finished, nothing to resume.\n"
             f"Start a new training without --resume, i.e. 'python train.py --weights {weights}'"
         )
+        # 示例：Resuming training from runs/train/exp/weights/last.pt from epoch 11 to 200 total epochs
         LOGGER.info(f"Resuming training from {weights} from epoch {start_epoch} to {epochs} total epochs")
+    
+    # 如果我们修改了last.pt所在的opt.yaml中的epochs参数，即epochs < start_epoch，那么epochs被认为是微调的epoch数
     if epochs < start_epoch:
+        # 例子（这里我把opt.yaml中的epochs从原来的200改成了5）：
+        # runs/train/exp/weights/last.pt has been trained for 10 epochs. Fine-tuning for 5 more epochs.
         LOGGER.info(f"{weights} has been trained for {ckpt['epoch']} epochs. Fine-tuning for {epochs} more epochs.")
+
+        # 把多出来的5加进去，相当于进行5个epoch的微调（fine-tuning）
         epochs += ckpt["epoch"]  # finetune additional epochs
     return best_fitness, start_epoch, epochs
 
@@ -482,31 +580,69 @@ class EarlyStopping:
 
 
 class ModelEMA:
-    """Updated Exponential Moving Average (EMA) from https://github.com/rwightman/pytorch-image-models
-    Keeps a moving average of everything in the model state_dict (parameters and buffers)
-    For EMA details see https://www.tensorflow.org/api_docs/python/tf/train/ExponentialMovingAverage
+    """模型指数移动平均（EMA）的更新版本，源自 https://github.com/rwightman/pytorch-image-models
+    维护模型状态字典（参数和缓冲区）的移动平均
+    关于EMA的详细信息，请参阅 https://www.tensorflow.org/api_docs/python/tf/train/ExponentialMovingAverage
     """
 
     def __init__(self, model, decay=0.9999, tau=2000, updates=0):
-        # Create EMA
-        self.ema = deepcopy(de_parallel(model)).eval()  # FP32 EMA
-        self.updates = updates  # number of EMA updates
-        self.decay = lambda x: decay * (1 - math.exp(-x / tau))  # decay exponential ramp (to help early epochs)
-        for p in self.ema.parameters():
+        """初始化ModelEMA类实例。
+
+        Args:
+            model (nn.Module): 需要应用EMA的模型。
+            decay (float, optional): EMA的衰减率。Defaults to 0.9999.
+            tau (int, optional): 控制衰减速度的参数。Defaults to 2000.
+            updates (int, optional): 已经执行的EMA更新次数。Defaults to 0.
+        """
+        # 创建EMA模型（de_parallel的作用：如果模型已经被DP或者DDP封装，则对其进行剥壳，得到不使用DP或DDP的模型）
+        self.ema = deepcopy(de_parallel(model)).eval()  # FP32 EMA 模型
+        
+        # 初始化EMA更新次数
+        self.updates = updates
+        
+        # 定义衰减函数，用于计算当前的衰减率
+        self.decay = lambda x: decay * (1 - math.exp(-x / tau))  # 衰减的指数斜坡（帮助早期迭代阶段）
+
+        # 将EMA模型的参数设置为不需要计算梯度
+        for p in self.ema.parameters(): 
             p.requires_grad_(False)
 
     def update(self, model):
-        # Update EMA parameters
+        """更新EMA参数。
+
+        Args:
+            model (nn.Module): 需要更新的原始模型。
+        """
+        # 增加EMA更新次数
         self.updates += 1
+        
+        # 计算当前的衰减率
         d = self.decay(self.updates)
 
-        msd = de_parallel(model).state_dict()  # model state_dict
+        # 获取原始模型的状态字典
+        msd = de_parallel(model).state_dict()  # msd = model state_dict
+        
+        # 遍历EMA模型的状态字典
         for k, v in self.ema.state_dict().items():
+            # 如果EMA模型某一层的权重数据类型是FP32或FP16
             if v.dtype.is_floating_point:  # true for FP16 and FP32
+                # ---------- 应用EMA更新公式 ----------
                 v *= d
                 v += (1 - d) * msd[k].detach()
         # assert v.dtype == msd[k].dtype == torch.float32, f'{k}: EMA {v.dtype} and model {msd[k].dtype} must be FP32'
 
     def update_attr(self, model, include=(), exclude=("process_group", "reducer")):
-        # Update EMA attributes
-        copy_attr(self.ema, model, include, exclude)
+        """更新EMA模型的属性。
+
+        Args:
+            model (nn.Module): 原始模型，用于更新EMA模型的属性。
+            include (tuple, optional): 需要包含的属性列表。Defaults to ().
+            exclude (tuple, optional): 需要排除的属性列表。Defaults to ("process_group", "reducer").
+        """
+        # 更新EMA模型的属性
+        copy_attr(
+            a=self.ema, 
+            b=model, 
+            include=include, 
+            exclude=exclude
+        )
