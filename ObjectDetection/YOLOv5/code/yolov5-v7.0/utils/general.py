@@ -933,7 +933,14 @@ def segment2box(segment, width=640, height=640):
 
 
 def segments2boxes(segments):
-    # Convert segment labels to box labels, i.e. (cls, xy1, xy2, ...) to (cls, xywh)
+    """将分割标签转换为目标检测标签，即从(cls, xy1, xy2, ...)转换为(cls, xywh)
+
+    Args:
+        segments (list): 一个列表，其中每个元素是一个numpy数组，代表一个分割的坐标点
+
+    Returns:
+        numpy.ndarray: 返回一个numpy数组，每个元素是一个目标检测标签，格式为(cls, xywh)
+    """
     boxes = []
     for s in segments:
         x, y = s.T  # segment xy

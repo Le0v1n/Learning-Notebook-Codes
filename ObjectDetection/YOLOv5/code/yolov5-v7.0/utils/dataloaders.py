@@ -1238,7 +1238,12 @@ def verify_image_label(args):
         ne：标签是空的图片数量。
         nc：图片是破损的数量。
         msg：警告信息（图片破损、重复样本）
-        segments：分割的数量。
+        segments：实例分割标签中对应的点（原始数据），因为实例分割的label和原始标签不一样（也被改造为[class, x, y, w, h]这样的形式了）
+        
+    标签说明：
+        labelme:  xyxy格式的json文件（坐标是原始坐标）
+        labelImg: xyxy格式的xml文件（坐标是原始坐标）
+        YOLO:     xywh格式的txt文件（坐标相对图片尺寸进行了归一化）
     """
     im_file, lb_file, prefix = args
     nm, nf, ne, nc, msg, segments = 0, 0, 0, 0, "", []  # number (missing, found, empty, corrupt), message, segments
@@ -1277,33 +1282,64 @@ def verify_image_label(args):
                 # 读取标签中所有的行，并存放为一个list
                 lb = [x.split() for x in f.read().strip().splitlines() if len(x)]
                 
-                # 目标检测是5列，如果大于5列那么这个标签就是语义分割的标签
+                # 如果大于5列那么这个标签就是语义分割的标签（目标检测是固定5列的）
                 if any(len(x) > 6 for x in lb):  # is segment
+                    # 取出语义分割标签每一行的类别
                     classes = np.array([x[0] for x in lb], dtype=np.float32)
+
+                    # 取出每一个对象的坐标点
                     segments = [np.array(x[1:], dtype=np.float32).reshape(-1, 2) for x in lb]  # (cls, xy1...)
+
+                    # ①将原本的多边形转换为矩形，且坐标从原来的x1y1x2y2x3y3...格式转换为xywh
+                    # ②将类别数和坐标进行组合，格式和目标检测的是一样的 -> [cls, x, y, w, h]
                     lb = np.concatenate((classes.reshape(-1, 1), segments2boxes(segments)), 1)  # (cls, xywh)
+                    
+                # 将label转换为ndarray对象
                 lb = np.array(lb, dtype=np.float32)
+                
+            # 计算一个标签有几个目标
             nl = len(lb)
+
+            # 如果该标签中存在目标
             if nl:
+                # 判断标签col的数量是否为5（💡 不管是目标检测还是实例分割，列的数量都是5）
                 assert lb.shape[1] == 5, f"labels require 5 columns, {lb.shape[1]} columns detected"
+
+                # 判断标签中所有坐标（包括类别数）都应该≥0，否则报错（报错会被except捕获）
                 assert (lb >= 0).all(), f"negative label values {lb[lb < 0]}"
+                
+                # 判断标签中所有标签都应该≤1（坐标范围为：[0, 1]），否则报错（报错会被except捕获）
                 assert (lb[:, 1:] <= 1).all(), f"non-normalized or out of bounds coordinates {lb[:, 1:][lb[:, 1:] > 1]}"
+
+                # 💡 np.unique用于去除标签中的重复元素，返回去重后的ndarray对象和不重复的行在原始array中的索引
+                # 例子：array([3, 0, 1, 7, 4, 6, 5, 2])
                 _, i = np.unique(lb, axis=0, return_index=True)
+
+                # 如果确实有重复的行
                 if len(i) < nl:  # duplicate row check
+                    # 删除掉重复的行
                     lb = lb[i]  # remove duplicates
                     if segments:
                         segments = [segments[x] for x in i]
+                    # 记录信息
                     msg = f"{prefix}WARNING ⚠️ {im_file}: {nl - len(i)} duplicate labels removed"
+
+            # 如果该标签中不存在目标 --> 创建一个全为0的对象标签（负样本）
             else:
                 ne = 1  # label empty
                 lb = np.zeros((0, 5), dtype=np.float32)
+                
         # 如果标签文件不存在或者是一个目录 --> 创建一个全为0的对象标签（负样本）
         else:
             nm = 1  # label missing（没有标签的图片数量+1）
             lb = np.zeros((0, 5), dtype=np.float32)
+            
+        # 返回最终的结果
         return im_file, lb, shape, segments, nm, nf, ne, nc, msg
+
+    # 如果在try过程中报错了
     except Exception as e:
-        nc = 1
+        nc = 1  # 破损图片+1
         msg = f"{prefix}WARNING ⚠️ {im_file}: ignoring corrupt image/label: {e}"
         return [None, None, None, None, nm, nf, ne, nc, msg]
 
