@@ -4,13 +4,11 @@ import cv2
 from tqdm import tqdm
 import tabulate
 import threading
-from utils.generator import create_folder
-
-from utils.outer import print_arguments
-
 sys.path.append(os.getcwd())
+from utils.generator import create_folder
+from utils.outer import print_arguments
 from utils.outer import xprint
-from items import VideoFormat
+from utils.items import VideoFormat
 from utils.getter import get_files
 
 
@@ -25,13 +23,13 @@ xprint(__doc__, color='blue', bold=True, hl="=", hl_num=2)
 
 
 """============================ 需要修改的地方 ==================================="""
-videos_dir = "utils/dataset/_example_dataset"  # 原始视频路径
-frames_save_path = 'utils/dataset/_example_dataset/extract_frames'  # 保存图片文件夹名称
+videos_dir = ""  # 原始视频路径
+frames_save_path = ""  # 保存图片文件夹名称
 
 sample_interval = 15  # 视频采样间隔，越小采样率越高 -> 60 | 30 | 15 | 10
 video_default_fps = 25  # [optional] 视频默认的帧数
 
-save_img_format = '.jpg'  # 保存的图片格式(.jpg | .png)
+save_img_format = '.png'  # 保存的图片格式(.jpg | .png)
 """==============================================================================="""
 
 # 得到存放所有视频的list
@@ -110,7 +108,7 @@ def process_video(vid_name, progress_bar, SUCCEED_NUM, statistics_dict):
             frame_name = f"{vid_pre}_{save_number:05d}{save_img_format}"
             frame_path = os.path.join(frames_save_path, frame_name)  # Python\常用脚本\EXAMPLE_FOLDER\extract_frames_results\test_vid_0016.jpg
 
-            progress_bar.set_description(f"\033[1;31m{vid_name}\033[0m -> "
+            progress_bar.set_description(f"\033[1;31m{vid_name:<30}\033[0m -> "
                                             f"\033[1;36m{save_number * sample_interval:08d}\033[0m"
                                             f" ({save_number:05d})")  # 更新tqdm的描述
             # 保存帧为图片
@@ -128,7 +126,7 @@ def process_video(vid_name, progress_bar, SUCCEED_NUM, statistics_dict):
     
 
 # 创建一个tqdm进度条对象
-progress_bar = tqdm.tqdm(total=len(video_list), desc="视频拆帧...", unit="vid")
+progress_bar = tqdm(total=len(video_list), desc="视频拆帧...", unit="vid")
 statistics_dict = dict()  # 创建一个字典，用于统计
 threads = []  # 保存线程的list
 for vid_name in video_list:  # 遍历所有的视频
