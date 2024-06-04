@@ -7,24 +7,22 @@ from xml.dom.minidom import Document
 import os
 import cv2
 import tqdm
-import sys
-sys.path.append('/mnt/f/Projects/本地代码/Learning-Notebook-Codes')
-from Datasets.coco128.classes import coco128_class
 
 
 """============================ 需要修改的地方 ==================================="""
-dataset_path = 'Datasets/coco128/train'  # 🧡数据集路径
-classes_dict = coco128_class  # 🧡类别字典
+IMAGE_PATH = "Datasets/coco128/train/images"  # 原图文件夹路径
+TXT_PATH = "Datasets/coco128/train/labels"  # 原txt标签文件夹路径
+XML_PATH = "Datasets/coco128/train/annotations-xml"  # 保存xml文件夹路径
+classes_dict = {  # 🧡类别字典
+    '0': 'person',
+    '1': 'bicycle',
+}
 
 image_type = '.jpg'
-create_empty_xml_for_neg = True  # 是否为负样本生成对应的空的xml文件
+create_empty_xml_for_neg = False  # 是否为负样本生成对应的空的xml文件
 """==============================================================================="""
 
-# 组合路径
-IMAGE_PATH = os.path.join(dataset_path, "images")  # 原图文件夹路径
-TXT_PATH = os.path.join(dataset_path, "labels")  # 原txt标签文件夹路径
-XML_PATH = os.path.join(dataset_path, "annotations-xml")  # 保存xml文件夹路径
-
+# 读取所有的.txt文件
 txt_file_list = [file for file in os.listdir(TXT_PATH) if file.endswith("txt") and file != 'classes.txt']
 
 "------------计数------------"

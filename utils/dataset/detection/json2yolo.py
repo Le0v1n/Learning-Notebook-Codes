@@ -17,13 +17,16 @@ IMAGE_PATH = 'EXAMPLE_FOLDER/images'
 ANNOTATION_PATH = 'EXAMPLE_FOLDER/annotations'
 LABELS_PATH = 'EXAMPLE_FOLDER/labels'
 
+LOG_FOLDER_NAME = "Logs"  # 日志的文件夹名称（只是名称）
 IMAGE_TYPE = '.jpg'  # 图片类型
 
 # 选择任务确定标签字典
-class_dict = {"cat": 0, 
-              "dog": 1}
+label_dict = {
+    '0': "cat", 
+    '1': "dog"
+}
 
-CONVERT_CLASS_DICT = False  # 是否需要把类别字典的key和value翻转一下?
+CONVERT_LABEL_DICT = False  # 是否需要把类别字典的key和value翻转一下?
 
 # 是否为负样本创建txt文件
 CREATE_TXT_4_NEG = True
@@ -34,7 +37,7 @@ CLIP_OUT_OF_BOUNDARY = True  # 对于 xmin 或 ymin < 0 的情况，直接截断
 VERBOSE = False  # 终端不会打印日志了（日志仍会生成）
 """==============================================================================="""
 
-label_dict = {v: k for k, v in label_dict.items()}  # 翻转字典
+label_dict = {v: k for k, v in label_dict.items()} if CONVERT_LABEL_DICT else label_dict  # 翻转字典
 
 "---------------------------------------日志---------------------------------------"
 script_path = os.path.abspath(__file__)  # 获取当前脚本的绝对路径
