@@ -55,6 +55,7 @@ bash,5=
 
 ```
 bdyj,5=🙄
+bjuz,5=🛠️
 bofh,5=▶️
 bold,5=<b></b>
 book,5=📖
@@ -66,11 +67,13 @@ center,5=
 </div>
 co,5=×
 co,4=❌
+config,5=🛠️
 cpp,5=
 ```cpp
 
 ```
 
+cube,5=🧊
 details,5=
 <details><summary></summary>
 
@@ -131,12 +134,15 @@ kbd,5=<kbd></kbd>
 kohc,5=〔〕
 kuxn,5=😂
 kuxn,4=😅
+lifhti,5=🧊
 lqmhxk,5=✡️
 music,5=🎵
 nerd,5=🤓
 new,5=🆕
 ok,5=👌
 ok,4=🆗
+option,4=⌥
+option,5=🛠️
 pen,5=✒️
 pen,4=🖊️
 phone,5=📱
