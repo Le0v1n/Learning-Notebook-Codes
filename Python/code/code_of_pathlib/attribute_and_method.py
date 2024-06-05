@@ -2,9 +2,9 @@ from pathlib import Path
 from prettytable import PrettyTable, MSWORD_FRIENDLY
 
 
-filepath = '/mnt/f/Learning-Notebook-Codes/Datasets/coco128.tar.gz'
+filepath = '/mnt/d/Learning-Notebook-Codes/Datasets/coco128.tar.gz'
 p = Path(filepath)
-p2 = Path('/mnt/f/Learning-Notebook-Codes/Datasets/coco128.tar.gz')
+p2 = Path('/mnt/d/Learning-Notebook-Codes/Datasets/coco128.tar.gz')
 d = Path('Datasets/coco128/val')
 f = Path('Datasets/coco128/train/labels/000000000572.txt')
 base_path = Path('Datasets/coco128')
