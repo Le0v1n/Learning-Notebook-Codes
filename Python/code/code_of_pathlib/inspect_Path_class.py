@@ -10,7 +10,13 @@ p = Path(path)
 ptab = PrettyTable(['性质', '用法', '说明'])
 for name, member in inspect.getmembers(Path):
     if inspect.isfunction(member) or inspect.ismethod(member):
-        ptab.add_row(['方法', name, ''])
+        if name.startswith(('_', '__')):
+            continue
+        else:
+            ptab.add_row(['🧊 方法', '.'+name+'()', ''])
     elif not name.startswith("__"):
-        ptab.add_row(['属性', name, ''])
+        if name.startswith(('_', '__')):
+            continue
+        else:
+            ptab.add_row(['🛠️ 属性', '.'+name, ''])
 print(ptab)
