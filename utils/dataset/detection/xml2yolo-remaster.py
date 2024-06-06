@@ -12,23 +12,7 @@ from PIL import Image
 from prettytable import PrettyTable
 
 
-ROOT = Path.cwd().resolve()
-FILE = Path(__file__).resolve()  # 当前脚本的绝对路径
-if str(ROOT) not in sys.path:  # 解决VSCode没有ROOT的问题
-    sys.path.append(str(ROOT))
-ROOT = ROOT.relative_to(Path.cwd())
-
-# 创建一个计数器字典，global
-COUNTER = {
-    'missing': 0,  # 缺少标签的图片数量
-    'corrupt': 0,  # 图片破损的数量
-    'background': 0,  # 负样本图片的数量
-    'incomplete_pts': 0,  # 标签点的数量不为4
-    'pass': 0,  # 完成的数量
-}
-
-
-def get_logger() -> logging:
+def get_logger() -> logging.Logger:
     # 定义日志保存路径
     current_time = datetime.datetime.now()  
     formatted_time = current_time.strftime("%Y%m%d%H%M%S")  # e.g. '20240606111504'
@@ -57,10 +41,6 @@ def get_logger() -> logging:
     logger.info(f"The log file has create at {str(log_filepath)}")
     
     return logger
-
-
-# 创建日志
-LOGGER = get_logger()
 
 
 def colorstr(*input):
@@ -114,10 +94,10 @@ def listdir(path: Union[Path, str], extension: Union[str, list, tuple]='.png') -
 
 
 def second_confirm():
-    LOGGER.info(colorstr("⌨️  Please enter 'yes' (y) to continue, or enter anything else to stop the program: "))
+    LOGGER.info(colorstr("Please enter 'yes' (y) to continue, or enter anything else to stop the program: "))
     user_input = input(colorstr('bold', '>>>> '))
     if user_input.lower() not in ('yes', 'y', 'continue'):
-        LOGGER.info(colorstr('red', f'Cancelled by {FILE.owner()}!'))
+        LOGGER.info(colorstr('red', f'The {str(FILE.name)} is cancelled by {FILE.owner()}!'))
         exit()
         
         
@@ -126,10 +106,13 @@ def verify_image(image: Path) -> bool:
         image = Path(image)
         
     im = Image.open(image)
-    im.verify()  # PIL verify --> 验证图像文件的完整性。如果有问题则报错，会被except捕获
-    shape = im.size
+    try:
+        im.verify()  # PIL verify --> 验证图像文件的完整性。如果有问题则报错，会被except捕获
+    except Exception as e:
+        return False
     
     # 检查图片尺寸（高度和宽度最小为10）
+    shape = im.size
     if shape[0] < 10 or shape[1] < 10:
         LOGGER.warning(f"⚠️  The size of {str(image.name)} ({shape[0]}×{shape[1]}) is less than 10×10!")
     
@@ -262,8 +245,8 @@ def xyxy2xywh(x1, y1, x2, y2):
 def parse_opt(known=False):
     parser = argparse.ArgumentParser()
     parser.add_argument("--image-path", type=str, default="Datasets/coco128/train/images", help="图片路径")
-    parser.add_argument("--xml-path", type=str, default="Datasets/coco128/train/annotations-xml", help="xml标签路径")
-    parser.add_argument("--yolo-path", type=str, default="Datasets/coco128/train/labels", help="yolo标签路径保存路径")
+    parser.add_argument("--label-path", type=str, default="Datasets/coco128/train/annotations-xml", help="xml标签路径")
+    parser.add_argument("--target-path", type=str, default="Datasets/coco128/train/labels", help="yolo标签路径保存路径")
     parser.add_argument("--classes", type=str, nargs='+', default=['cat', 'dog'], help="数据集标签")
     parser.add_argument("--image-format", type=str, nargs='+', default=['.png', '.jpg', '.jpeg', '.bmp', 'webp'], help="允许的图片格式")
     parser.add_argument("--override", action='store_true', default=False, help="如果对应的.txt文件存在，是否覆盖它")
@@ -272,53 +255,56 @@ def parse_opt(known=False):
     return parser.parse_known_args()[0] if known else parser.parse_args()
 
 
-def main(args: argparse, images: list, pbar: tqdm):
-    # found, missing, corrupt, incomplete_pts, background
-    nf, nm, nc, ni, nb = 0, 0, 0, 0, 0
+def process(args: argparse, images: list) -> None:
     for image in images:  # image: PosixPath
-        # 更新进度条信息
+        # update description of process bar 
         pbar.set_description(f"Processing {colorstr(image.name):<30s}")
+
+        COUNTER["touch"] += 1
         
-        # 获取图片尺寸
+        # Get size of image
         img_width, img_height = Image.open(image).size
-        if not verify_image(image):  # 验证图片是否破损
+        if not verify_image(image):  # verify whether corrupts
+            LOGGER.error(f"❌ [Corrupt image] Found corrupt image! -> {str(image)}")
             COUNTER["corrupt"] += 1
             pbar.update()
             continue
         
-        # 打开应对的xml文件，得到一个字典
-        xml = xml_dir.joinpath(image.stem + '.xml')
+        # Open the corresponding image and get a dict
+        xml = label_dir.joinpath(image.stem + '.xml')
         if not xml.exists():
-            LOGGER.error(f"❌ {str(image)} don't find the corresponding xml file!")
+            LOGGER.error(f"❌ [Label not found] Don't find the corresponding label file! -> {str(image)}")
             COUNTER["missing"] += 1
             pbar.update()
-            continue      
+            continue
         xml_data = read_xml(xml)
         
-        # 处理.txt
-        yolo = yolo_dir.joinpath(image.stem + '.txt')
-        if yolo.exists() and not yolo.read_text():  # 文件存在且不为空
-            if args.override:  # 覆盖掉之前的txt内容
-                LOGGER.warning(f"⚠️  {args.override = }, the content of {str(yolo)} will be overrode!")
-            else:  # 不覆盖
-                LOGGER.info(f"The {str(yolo)} file will not be overrode because {args.override = }.")
+        # 定义如何处理.txt文件
+        yolo = target_dir.joinpath(image.stem + '.txt')
+        if yolo.exists() and yolo.read_text():  # 如果文件存在且文件内容不为空
+            if args.override:  # override the previous content
+                LOGGER.warning(f"⚠️ [Override] The target file has existed, but its content will be overrode! -> {str(yolo)}")
+            else:
+                LOGGER.info(f"[Skip] The target file has existed, and it will not be overrode. -> {str(yolo)}")
+                COUNTER['skip'] += 1
                 pbar.update()
                 continue
-            
+        
+        # 处理.txt文件
         with yolo.open('w') as f:
             objects = xml_data.get("object", None)
             if not objects:  # Negative samples
-                COUNTER['background'] += 1
+                COUNTER["background"] += 1
                 pbar.update()
                 continue
             
             # Positive samples
             for index, obj in enumerate(xml_data["object"]):
-                # 检查是否有缺点的情况（坐标点的数量不为4）
+                # Check for the coordinates which the number should be 4).
                 num_pts = len(obj["bndbox"])
                 if num_pts != 4:
-                    LOGGER.error(f"❌ The {index} object of {str(xml)} has incomplete points({num_pts} < 4)")
-                    COUNTER['incomplete_pts'] += 1
+                    LOGGER.error(f"❌ [Incomplete points] The No.{index} object has incomplete points({num_pts} < 4)! -> {str(xml)}")
+                    COUNTER["incomplete_pts"] += 1
                     continue
                 
                 # 获取每个object的box信息
@@ -334,22 +320,24 @@ def main(args: argparse, images: list, pbar: tqdm):
                 if msg:
                     msg = [f"[{i}] {content}" for i, content in enumerate(msg)]
                     msg = ", ".join(msg)
-                    LOGGER.warning(f"⚠️ The {index} object of {str(xml)} has illegal coordinates: {msg}")
+                    LOGGER.warning(f"⚠️ [Out of boundary] The No.{index} object has illegal coordinates: {msg}! -> {str(xml)}")
+                    COUNTER["out_of_boundary"] += 1
                 
                 # 修复相反的坐标：x2y2x1y1 -> x1y1x2y2
                 x1, y1, x2, y2, msg = fix_reverse_coordinates(x1, y1, x2, y2)
                 if msg:
                     msg = [f"[{i}] {content}" for i, content in enumerate(msg)]
                     msg = ", ".join(msg)
-                    LOGGER.warning(f"⚠️ The {index} object of {str(xml)} has illegal coordinates: {msg}")
+                    LOGGER.warning(f"⚠️ [Reversed coordinates] The No.{index} object of has illegal coordinates: {msg}! -> {str(xml)}")
+                    COUNTER["reversed"] += 1
                 
                 # 获取对应的类别并转换为索引
                 class_name = obj["name"]
                 try:
                     class_index = classes_dict[class_name]
                 except:
-                    LOGGER.error(f"❌ {class_name} of {str(xml)} don't exist in {classes_dict}!")
-                    exit()
+                    LOGGER.error(f"❌ [Unknown class name] The class {class_name} don't exist in {classes_dict}! -> {str(xml)}")
+                    exit(f"❌ {class_name} of {str(xml)} don't exist in {classes_dict}!")
 
                 # xyxy2xywh
                 x, y, w, h = xyxy2xywh(x1, y1, x2, y2)
@@ -368,25 +356,9 @@ def main(args: argparse, images: list, pbar: tqdm):
                     f.write(" ".join(info))
                 else:
                     f.write("\n" + " ".join(info))
-        COUNTER["pass"] += 1
+        COUNTER["found"] += 1
         pbar.update()
     pbar.close()
-    
-    # 输出统计信息
-    ptab = PrettyTable(['Item', 'Description'])
-    ptab.add_row(['Images', COUNTER["images"]])
-    ptab.add_row(['Converted', COUNTER["pass"]])
-    ptab.add_row(['Missing xml', COUNTER["missing"]])
-    ptab.add_row(['Corrupt image', COUNTER["corrupt"]])
-    ptab.add_row(['Incomplete points', COUNTER["incomplete_pts"]])
-    ptab.add_row(['Background images', COUNTER["background"]])
-    
-    LOGGER.info(ptab)
-    
-    if COUNTER["pass"] + COUNTER["background"] == COUNTER["images"]:
-        LOGGER.info(f"✅ Conversion has done!")
-    else:
-        LOGGER.warning(f"⚠️ Some question have occurred, check dataset please!")
         
         
 def split_list_equally(lst, n):
@@ -397,67 +369,129 @@ def split_list_equally(lst, n):
     result = [lst[i*size:(i+1)*size] for i in range(n)]
     
     # 将剩余的元素分配到最后一份列表中
-    result[-1].extend(lst[-remainder:])
+    if remainder > 0:
+        result[-1].extend(lst[-remainder:])
     
     return result
-        
+
 
 if __name__ == "__main__":
-    args = parse_opt()
+    # 解析参数
+    args = parse_opt(known=False)  # 如果发现不认识的参数则报错
+
+    # 定义全局变量
+    ROOT = Path.cwd().resolve()
+    FILE = Path(__file__).resolve()  # 当前脚本的绝对路径
+    if str(ROOT) not in sys.path:  # 解决VSCode没有ROOT的问题
+        sys.path.append(str(ROOT))
+    ROOT = ROOT.relative_to(Path.cwd())
+
+    # 创建一个计数器字典 -> global
+    COUNTER = {
+        'found': 0,  # 完成转换的标签
+        'missing': 0,  # 缺少标签的图片数量
+        'corrupt': 0,  # 图片破损的数量
+        'incomplete_pts': 0,  # 标签点的数量不为4
+        'out_of_boundary': 0,  # 坐标点越界
+        'reversed': 0,  # 坐标点反了
+        'background': 0,  # 负样本图片的数量
+        'touch': 0,  # 触摸过的图片数量
+        'skip': 0,  # 目标文件存在，跳过的数量
+    }
+
+    # 创建日志 -> global
+    LOGGER = get_logger()
+
+    args.classes = [
+        'person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat', 'traffic light', 'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe', 'backpack', 'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat', 'baseball glove', 'skateboard', 'surfboard', 'tennis racket', 'bottle', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed', 'dining table', 'toilet', 'tv', 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush'
+    ]
     
     # 读取所有的图片和标签
-    images = listdir(args.image_path, extension=args.image_format)
-    labels = listdir(args.xml_path, extension='.xml')
-    COUNTER['images'] = len(images)
-    COUNTER['labels'] = len(labels)
+    total_images = listdir(args.image_path, extension=args.image_format)
+    total_labels = listdir(args.label_path, extension='.xml')
+    COUNTER['images'] = len(total_images)
+    COUNTER['labels'] = len(total_labels)
     
     # 创建类别字典
     classes_dict = {cla: i for i, cla in enumerate(args.classes)}  # str: int, e.g. {'cat': 0, 'dog': 1}
     COUNTER['nc'] = len(args.classes)
-    if COUNTER['images'] > COUNTER['xmls']:
-        LOGGER.warning(
-            f"❌ Image number ({COUNTER['images']}) > XML number({COUNTER['xmls']}),"
-            f"the image without xml file will be regarded as {colorstr('red', 'bold', 'negative!')}"
-        )
-    
+
+    # 根据线程数，得到每个线程需要处理的图片list
+    total_image_lists = split_list_equally(total_images, args.num_threading)
+
     ptab = PrettyTable(['参数', '详情'])
     ptab.align = 'l'
     ptab.add_row(['图片路径', args.image_path])
     ptab.add_row(['图片数量', COUNTER['images']])
-    ptab.add_row(['XML路径', args.xml_path])
-    ptab.add_row(['XML数量', COUNTER['xmls']])
+    ptab.add_row(['XML路径', args.label_path])
+    ptab.add_row(['XML数量', COUNTER['labels']])
     ptab.add_row(['类别数', COUNTER['nc']])
     ptab.add_row(['类别', ''])
     for i, cla in classes_dict.items():
-        ptab.add_row([f"    class-{i}", cla])
+        ptab.add_row([f"    {i}", cla])
+    ptab.add_row(['线程数', args.num_threading])
+    ptab.add_row(['并发量/线程', len(total_image_lists[0])])
     LOGGER.info(ptab)
+
+    if COUNTER['images'] > COUNTER['labels']:
+        LOGGER.warning(
+            f"⚠️ The number of image ({COUNTER['images']}) > labels ({COUNTER['labels']}), "
+            f"the image without label file will be regarded as {colorstr('red', 'bold', 'negative!')}"
+        )
+    if COUNTER['images'] < COUNTER['labels']:
+        LOGGER.warning(
+            f"⚠️ The number of image ({COUNTER['images']}) < labels ({COUNTER['labels']}), "
+            f"there are {COUNTER['labels'] - COUNTER['images']} redundant label file."
+        )
     
     # 2FA
     second_confirm()
     
     # 创建Path对象
-    xml_dir = Path(args.xml_path)
-    yolo_dir = Path(args.yolo_path)
+    label_dir = Path(args.label_path)
+    target_dir = Path(args.target_path)
     
     # 创建标签文件夹
-    yolo_dir.mkdir(exist_ok=True)
-    
-    # 根据线程数，得到每个线程需要处理的图片list
-    total_image_lists = split_list_equally(images, args.num_threading)
+    target_dir.mkdir(exist_ok=True)
     
     threads = []  # 保存线程的list
-    pbar = tqdm(images)  # for every image file
+    pbar = tqdm(total_images)  # for every image file
     for images in total_image_lists:
         t = threading.Thread(
-            target=main, 
+            target=process, 
             args=(
                 args, 
                 images,
-                pbar,
             )
         )
         threads.append(t)
         t.start()
 
+    # 等待所有线程都执行完毕
     for t in threads:
         t.join()
+
+    # 输出统计信息
+    ptab = PrettyTable(['Item', 'Number'])
+    ptab.add_row(['Total images', COUNTER["images"]])
+    ptab.add_row(['Converted', COUNTER["found"]])
+    ptab.add_row(['Missing label', COUNTER["missing"]])
+    ptab.add_row(['Corrupt', COUNTER["corrupt"]])
+    ptab.add_row(['Incomplete points', COUNTER["incomplete_pts"]])
+    ptab.add_row(['Out of boundary', COUNTER["out_of_boundary"]])
+    ptab.add_row(['Background', COUNTER["background"]])
+    ptab.add_row(['Skip existed target file', COUNTER["skip"]])
+    ptab.add_row(['Processed', COUNTER["touch"]])
+    
+    LOGGER.info(ptab)
+    
+    if COUNTER["found"] + COUNTER["background"] + COUNTER['skip'] == COUNTER["images"]:
+        LOGGER.info(colorstr('green', 'bold', '✅ All conversion has done correctly!'))
+    else:
+        LOGGER.warning(colorstr('red', 'bold', "⚠️ Some question have occurred, please check dataset!"))
+
+    if COUNTER['skip'] == COUNTER['images']:
+        LOGGER.warning(f"⚠️ All target file have been skipped, please check dataset!")
+
+    LOGGER.info(colorstr(f"👀 The detail information has saved at {LOGGER.handlers[0].baseFilename}"))
+        

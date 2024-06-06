@@ -20,7 +20,7 @@
 			</bndbox>
 		</object>
 		<object>
-			<name>dining_table</name>
+			<name>dining table</name>
 			<pose>Unspecified</pose>
 			<truncated>0</truncated>
 			<difficult>0</difficult>
