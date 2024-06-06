@@ -96,12 +96,14 @@ file,4=🖺
 film,5=🎞️
 film,4=🎥
 film,3=🎬
+fire,5=🔥
 fjbdyj,5=🙄
 folder,5=📂
 font,5=<font color='red'><b></b></font>
 font,4=<font color='red'></font>
 glasses,5=👓
 hehe,5=🙂
+ho,5=🔥
 hxji,5=🤪
 img,5=
 <a></a>
@@ -156,6 +158,7 @@ python,5=
 ```
 
 qkhxyr,5=-i https://pypi.tuna.tsinghua.edu.cn/simple
+re,5=🔥
 sh,5=↑
 shit,5=💩
 soon,5=🔜
