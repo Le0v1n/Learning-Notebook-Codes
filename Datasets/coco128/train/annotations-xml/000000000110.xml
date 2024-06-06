@@ -68,7 +68,7 @@
 			</bndbox>
 		</object>
 		<object>
-			<name>dining table</name>
+			<name>dining_table</name>
 			<pose>Unspecified</pose>
 			<truncated>0</truncated>
 			<difficult>0</difficult>
@@ -212,7 +212,7 @@
 			</bndbox>
 		</object>
 		<object>
-			<name>dining table</name>
+			<name>dining_table</name>
 			<pose>Unspecified</pose>
 			<truncated>0</truncated>
 			<difficult>0</difficult>
@@ -248,7 +248,7 @@
 			</bndbox>
 		</object>
 		<object>
-			<name>dining table</name>
+			<name>dining_table</name>
 			<pose>Unspecified</pose>
 			<truncated>0</truncated>
 			<difficult>0</difficult>
