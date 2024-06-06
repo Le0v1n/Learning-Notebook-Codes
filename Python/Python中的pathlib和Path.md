@@ -1,21 +1,94 @@
-﻿# 1. `pathlib库`介绍
+﻿# 1. pathlib库介绍
 
-相比常用的 `os.path` 而言，`pathlib` 对于目录路径的操作更简洁也更贴近 Pythonic（Python代码风格的）。但是**它不单纯是为了简化操作，还有更大的用途**。
+## 1.1 pathlib和pathlib.Path
 
-`pathlib` 是Python内置库，Python 文档给它的定义是：
+`pathlib`是Python标准库中的一个模块，它提供了一组面向对象的文件系统路径操作。在Python早期版本中，文件和目录路径通常使用字符串来处理，或者使用`os.path`模块中的函数来执行操作，如路径拼接、获取文件属性等。`pathlib`模块在Python 3.4及更高版本中引入，提供了一种更现代、更直观的方式来处理文件系统路径。
+
+`pathlib.Path`是`pathlib`模块中的核心类，它表示一个文件系统路径。`Path`对象可以表示文件或目录的路径，并且提供了许多方法来执行常见的路径操作，如路径拼接、检查路径是否存在、遍历目录、读取和写入文件等。
+
+## 1.2 Path的特点
+
+- **面向对象**：`Path`对象允许我们使用对象和方法来处理路径，而不是传统的字符串操作。这使得代码更加清晰和可读。
+- **跨平台**：`Path`对象会根据我们的操作系统自动处理路径分隔符（如Windows上的`\`和Unix/Linux/MacOS上的`/`），这使得我们的代码可以在不同的系统上运行，而无需做任何修改。
+- **便捷的方法**：`Path`提供了许多便捷的方法来执行常见的文件系统操作，如`open()`、`read_text()`、`write_text()`、`mkdir()`、`iterdir()`等，这些方法简化了文件和目录的操作。
+- **属性访问**：`Path`对象提供了许多属性，如`name`（文件名）、`suffix`（文件扩展名）、`stem`（无扩展名的文件名）、`parent`（父目录）等，这些属性可以很容易地访问路径的不同部分。
+- **模式匹配**：`Path`对象支持使用`glob`模式匹配来查找符合特定模式的文件或目录。
+- **操作符重载**：`Path`对象支持使用`/`操作符来进行路径拼接，这比使用字符串拼接更加直观。
+
+总之，使用`pathlib.Path`可以让我们以更统一、更现代的方式处理文件系统路径，从而提高代码的质量和可维护性。
+
+## 1.3 官方定义
 
 ```
 The pathlib module – object-oriented filesystem paths(面向对象的文件系统路径)
 ```
 
-`pathlib` 提供**表示文件系统路径的类**，其语义**适用于不同的操作系统**。
+简单来说，pathlib就是一个面向对象的文件操作类，我们一般会直接使用它的`Path`类。
+
+## 1.4 pathlib组成部分关系
 
 <a></a>
 <div align=center>
-    <img src=https://img-blog.csdnimg.cn/4f3f1c68ea734e3987d101804d1e220b.png
-    width=50%>
+    <img src=./imgs_markdown/pathlib中各部分关系图.png
+    width=40%>
     <center></center>
 </div></br>
+
+- `Path`：是一个方便的别名，它自动选择`PosixPath`或`WindowsPath`，具体取决于我们的操作系统。
+  - 在Unix-like系统上，`Path`等同于`PosixPath`；
+  - 在Windows系统上，`Path`等同于`WindowsPath`。
+- `PurePath`：这是一个抽象基类，提供了与操作系统无关的路径操作。它不能用于访问文件系统，但可以用于操作路径字符串。
+  - `PurePath`不处理路径的具体细节，如路径分隔符或文件系统的存在性。
+- `PurePosixPath`：`PurePath`的一个子类，用于表示类Unix操作系统的路径。
+  - 它使用`/`作为路径分隔符，并且遵循[POSIX路径规则](#POSIX介绍)。
+- `PureWindowsPath`：`PurePath`的一个子类，用于表示Windows操作系统的路径。
+  - 它使用`\`作为路径分隔符，并且可以处理Windows特有的路径形式，如驱动器号和UNC路径。
+- `PosixPath`：`Path`的一个子类，用于表示实际存在于类Unix操作系统中的路径。
+  - 它继承自`PurePosixPath`，并且提供了与文件系统交互的方法，如检查路径是否存在、遍历目录等。
+- `WindowsPath`：`Path`的一个子类，用于表示实际存在于Windows操作系统中的路径。
+  - 它继承自`PureWindowsPath`，并且提供了与文件系统交互的方法，如检查路径是否存在、遍历目录等。
+
+
+关系总结：
+
+- `PurePath`是所有路径类的抽象基类，提供了与操作系统无关的路径操作。
+- `PurePosixPath`和`PureWindowsPath`继承自`PurePath`，分别提供了特定于POSIX和Windows的路径操作。
+- `PosixPath`和`WindowsPath`继承自`PurePosixPath`和`PureWindowsPath`，分别提供了与实际文件系统交互的方法。
+- `Path`是一个方便的别名，根据操作系统自动指向`PosixPath`或`WindowsPath`。
+
+这种设计允许开发者编写可移植的代码，同时也能够处理特定操作系统的路径细节。通过使用`Path`，我们可以编写不依赖于操作系统的代码，而`PurePath`及其子类则提供了处理特定操作系统路径的能力。
+
+## 1.5 补充
+
+### 1.5.1 POSIX路径
+
+<a id=POSIX介绍></a>
+
+POSIX（Portable Operating System Interface）路径是指遵循POSIX标准的文件系统路径。POSIX是一个IEEE标准，旨在为Unix-like操作系统提供一系列API规范，以确保软件可以在不同的操作系统上运行。
+
+POSIX路径具有以下特点：
+
+1. **路径分隔符**：POSIX路径使用`/`作为目录分隔符。例如，`/home/user/documents`是一个POSIX路径。
+2. **相对路径和绝对路径**：POSIX路径可以是相对路径，也可以是绝对路径。相对路径是相对于当前工作目录的路径，而绝对路径是从文件系统的根开始的完整路径。
+3. **当前目录和父目录**：点`.`表示当前目录，而双点`..`表示父目录。例如，`../file.txt`表示当前目录的父目录中的`file.txt`文件。
+4. **文件名和扩展名**：文件名通常由两部分组成：基础名和扩展名。基础名是文件的名称，而扩展名通常是跟在最后一个点`.`后面的部分，表示文件的类型。例如，在文件名`document.txt`中，`document`是基础名，`txt`是扩展名。
+1. **路径解析**：POSIX路径解析遵循特定的规则，例如，连续的路径分隔符被视为单个分隔符，`.`表示当前目录，而`..`用于返回到上一级目录。
+POSIX路径规范被广泛应用于类Unix操作系统，如Linux、BSD、MacOS X等。这些系统的文件系统API通常遵循POSIX标准，以确保软件的兼容性和可移植性。
+
+### 1.5.2 驱动器号和UNC（Universal Naming Convention）路径
+
+它们俩都是Windows操作系统中的两个概念，用于指定文件或目录的位置。
+
+1. **驱动器号**：
+   - 在Windows系统中，每个物理或逻辑磁盘分区都被分配一个驱动器号，通常是一个字母后跟一个冒号。例如，`C:`通常是指系统启动磁盘，`D:`可能是指第二个磁盘分区，依此类推。驱动器号后面可以跟一个路径，如`C:\Windows\System32`，表示`C:`驱动器上的`Windows\System32`目录。
+   - 驱动器号是Windows特有的概念，不适用于Unix-like操作系统。
+2. **UNC路径**：
+   - UNC路径是一种用于指定网络资源位置的通用命名约定。UNC路径的格式通常是`\\servername\sharename\path\filename`，其中`servername`是网络服务器的主机名或IP地址，`sharename`是共享资源的名称，`path`是共享资源内的文件路径，`filename`是要访问的文件或目录的名称。
+   - UNC路径可以用于访问网络上的共享文件夹或打印机等资源，不依赖于特定的驱动器号。
+   - UNC路径在Windows网络环境中广泛使用，但也得到了其他支持SMB（Server Message Block）协议的系统的支持，如一些Unix-like系统。
+
+❗ 注意：驱动器号是Windows专有的，但UNC不是（Windows和Linux都有）。
+
 
 # 2. `pathlib`库下`Path`类的基本使用
 
@@ -27,43 +100,39 @@ The pathlib module – object-oriented filesystem paths(面向对象的文件系
 Python 3.10.14 (main, Mar 21 2024, 16:24:04) [GCC 11.2.0] on linux
 ```
 
-| 性质  | 用法 | 结果 | 数据类型 | 说明 |
-| :---: | :--- | :--- | :------- | :--- |
-|| p| /mnt/f/Learning-Notebook-Codes/Datasets/coco128.tar.gz| <class 'pathlib.PosixPath'> | Path的实例化对象|
-||||||
-| 🛠️  属性 | p.anchor| /| <class 'str'>| 路径的“锚”，通常是驱动器或UNC共享|
-| 🛠️  属性 | p.drive|| <class 'str'>| 返回路径的驱动器字母（如果有）|
-| 🛠️  属性 | p.name| coco128.tar.gz| <class 'str'>| 返回路径的最后一部分|
-| 🛠️  属性 | p.parent| /mnt/f/Learning-Notebook-Codes/Datasets| <class 'pathlib.PosixPath'> | 返回路径的父级目录（💡 还是一个Path对象）|
-| 🛠️  属性 | p.parts| ('/', 'mnt', 'f', 'Learning-Notebook-Codes', 'Datasets', 'coco128.tar.gz')| <class 'tuple'>| 返回路径的组成部分|
-||||||
-| 🛠️  属性 | p.root|/| <class 'str'>| 返回路径的根部分（💡 如果是相对路径则为""）：|
-| 🛠️  属性 | p.stem| coco128.tar| <class 'str'>| 返回没有后缀的文件名部分|
-| 🛠️  属性 | p.suffix| .gz| <class 'str'>| 返回文件扩展名|
-| 🛠️  属性 | p.suffixes| ['.tar', '.gz']| <class 'list'>| 返回文件所有后缀的列表|
-||||||
-| 🧊 方法 | p.absolute()| /mnt/f/Learning-Notebook-Codes/Datasets/coco128.tar.gz| <class 'pathlib.PosixPath'> | 返回对象的绝对路径|
-| 🧊 方法 | p.as_posix()| /mnt/f/Learning-Notebook-Codes/Datasets/coco128.tar.gz| <class 'str'>| 返回路径的POSIX风格字符串表示|
-| 🧊 方法 | p.as_uri()| file:///mnt/f/Learning-Notebook-Codes/Datasets/coco128.tar.gz| <class 'str'>| 返回路径的文件URI表示（💡 如果创建p为相对路径则报错）|
-| 🧊 方法 | p.chmod(0o744)| None| <class 'NoneType'>| 改变文件的模式和权限位（💡 如果文件不存在则报错）|
-| 🧊 方法 | p.cwd()| /mnt/f/Learning-Notebook-Codes| <class 'pathlib.PosixPath'> | 返回当前工作目录（绝对路径）|
-| 🧊 方法 | p.expanduser()| /mnt/f/Learning-Notebook-Codes/Datasets/coco128.tar.gz| <class 'pathlib.PosixPath'> | 展开路径中的~和~user|
-| 🧊 方法 | p.home()| /home/leovin| <class 'pathlib.PosixPath'> | 返回当前用户的主目录|
-| 🧊 方法 | p.is_absolute()| True| <class 'bool'>| 判断当前路径是否为绝对路径|
-| 🧊 方法 | p.is_dir()| False| <class 'bool'>| 判断当前路径是否为一个文件夹📂|
-| 🧊 方法 | p.is_file()| True| <class 'bool'>| 判断当前路径是否为一个文件📑|
-| 🧊 方法 | [dir.name for dir in list(d.iterdir())] | ['images', 'labels', 'labels.cache']| <class 'generator'>| 迭代目录中的所有路径（💡 如果不是一个目录则报错）|
-| 🧊 方法 | d.join(str, str)| Datasets/coco128/val/123/abc/结束| <class 'pathlib.PosixPath'> | 连接两个或多个路径|
-| 🧊 方法 | d.mkdir()| None| <class 'NoneType'>| 创建目录（💡 有两个报错参数！）|
-| 🧊 方法 | f.relative_to(base_path)| train/labels/000000000572.txt| <class 'pathlib.PosixPath'> | 计算相对路径（💡 需提供基准路径）|
-| 🧊 方法 | p.rename('Datasets/ms-coco128.tar.gz')  | Datasets/ms-coco128.tar.gz| <class 'pathlib.PosixPath'> | 重命名文件或目录|
-| 🧊 方法 | p.resolve()| /mnt/f/Learning-Notebook-Codes/Datasets/coco128.tar.gz| <class 'pathlib.PosixPath'> | 返回路径的绝对版本，并解析任何符号链接|
-| 🧊 方法 | Path('Datasets/empty_dir').rmdir()| None| <class 'NoneType'>| 删除目录（💡 目录不为空或不是目录，会报错）|
-| 🧊 方法 | p.samefile(p2)| True| <class 'bool'>| 如果两个路径指向相同的文件或目录，返回True|
-| 🧊 方法 | p.stat()| os.stat_result(st_mode=33279, st_ino=3940649674488502, st_dev=49, st_nlink=1, st_uid=1000, st_gid=1000, st_size=6909053, st_atime=1717463716, st_mtime=1717463716, st_ctime=1717468441) | <class 'os.stat_result'>    | 获取路径的统计信息|
-| 🧊 方法 | p.touch(mode: int = 438, exist_ok: bool = True)| None| <class 'NoneType'>| 创建一个文件（💡 1. 不能创建文件夹 2.需要确保父目录存在）|
-| 🧊 方法 | p.with_name(name='新名字')| /mnt/f/Learning-Notebook-Codes/Datasets/ms-coco128.zip| <class 'pathlib.PosixPath'> | 返回一个新的路径，其名称部分替换为给定名称（💡 需要我们指定后缀） |
-| 🧊 方法 | f.with_name(suffix='新后缀')| Datasets/coco128/train/labels/000000000572.zip| <class 'pathlib.PosixPath'> | 返回一个新的路径，其后缀部分替换为给定后缀（💡 不能缺少.）|
+|  性质    | 是否常用 | 用法           | 说明                                               |
+| :-----:  | :------: | :------------- | :------------------------------------------------- |
+| 🛠️属性  |          | .drive         | 获取路径的驱动器号（Windows系统）                  |
+| 🛠️属性  |    🔥    | .name          | 获取最后一级的文件或目录名                         |
+| 🛠️属性  |    🔥    | .parent        | 获取直接父目录的Path对象                           |
+| 🛠️属性  |          | .parents       | 返回一个生成器，可以遍历当前Path对象的所有上级目录 |
+| 🛠️属性  |    🔥    | .parts         | 获取路径的组成部分                                 |
+| 🛠️属性  |          | .root          | 获取路径的根部分                                   |
+| 🛠️属性  |    🔥    | .stem          | 获取文件名的基础部分（无扩展名）                   |
+| 🛠️属性  |    🔥    | .suffix        | 获取文件名的扩展名                                 |
+| 🛠️属性  |          | .suffixes      | 获取文件名的所有扩展名                             |
+| 🧊方法  |    🔥    | .absolute()    | 返回路径的绝对形式                                 |
+| 🧊方法  |          | .cwd()         | 返回当前工作目录的Path对象                         |
+| 🧊方法  |    🔥    | .exists()      | 检查路径是否指向一个已存在的文件或目录             |
+| 🧊方法  |          | .expanduser()  | 展开路径中的`~`和`~user`                           |
+| 🧊方法  |          | .glob()        | 根据模式匹配返回路径列表                           |
+| 🧊方法  |    🔥    | .is_absolute() | 检查路径是否为绝对路径                             |
+| 🧊方法  |    🔥    | .is_dir()      | 检查路径是否指向一个目录                           |
+| 🧊方法  |    🔥    | .is_file()     | 检查路径是否指向一个文件                           |
+| 🧊方法  |          | .iterdir()     | 遍历目录中的所有项                                 |
+| 🧊方法  |    🔥    | .joinpath()    | 将多个路径组件合并为一个路径                       |
+| 🧊方法  |    🔥    | .mkdir()       | 创建一个新目录                                     |
+| 🧊方法  |    🔥    | .open()        | 打开文件                                           |
+| 🧊方法  |    🔥    | .rename()      | 重命名文件或目录（可以用来移动文件）               |
+| 🧊方法  |          | .resolve()     | 解析路径，返回绝对路径                             |
+| 🧊方法  |    🔥    | .rglob()       | 递归地根据模式匹配目录中的路径                     |
+| 🧊方法  |          | .rmdir()       | 删除目录                                           |
+| 🧊方法  |          | .samefile()    | 检查两个路径是否指向同一个文件或目录               |
+| 🧊方法  |          | .stat()        | 返回关于文件或目录的信息                           |
+| 🧊方法  |    🔥    | .touch()       | 创建一个空文件                                     |
+| 🧊方法  |    🔥    | .unlink()      | 删除文件或符号链接                                 |
+| 🧊方法  |          | .with_name()   | 返回一个新的Path对象，其文件名部分替换为给定名称   |
+| 🧊方法  |          | .with_suffix() | 返回一个新的Path对象，其扩展名部分替换为给定后缀   |
 
 ## 2.1 🛠️ 属性解析
 
