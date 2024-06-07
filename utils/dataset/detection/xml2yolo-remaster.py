@@ -10,6 +10,8 @@ from tqdm import tqdm
 from lxml import etree
 from PIL import Image
 from prettytable import PrettyTable
+import time
+from datetime import timedelta
 
 
 def get_logger() -> logging.Logger:
@@ -273,7 +275,7 @@ def process(args: argparse, images: list) -> None:
         # Open the corresponding image and get a dict
         xml = label_dir.joinpath(image.stem + '.xml')
         if not xml.exists():
-            LOGGER.error(f"❌ [Label not found] Don't find the corresponding label file! -> {str(image)}")
+            LOGGER.info(f"⚠️ [Negative sample] {str(image)}")
             COUNTER["missing"] += 1
             pbar.update()
             continue
@@ -375,7 +377,27 @@ def split_list_equally(lst, n):
     return result
 
 
+def calc_cost_time(t1: float, t2: float) -> str:
+    # 计算时间差
+    t = t2 - t1
+    # 确保时间差是正数
+    assert t >= 0, f"❌  There occur an error about time(cost time({t}) < 0), the start time is: {t1}, and the end time is: {t2}."
+    
+    # 使用 timedelta 将时间差转换为时分秒
+    td = timedelta(seconds=t)
+    
+    # 提取小时、分钟和秒
+    hours, remainder = divmod(td.seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    
+    # 格式化输出
+    return f"{hours}h {minutes}m {seconds}s"
+        
+
+
 if __name__ == "__main__":
+    t1 = time.time()
+    
     # 解析参数
     args = parse_opt(known=False)  # 如果发现不认识的参数则报错
 
@@ -401,10 +423,6 @@ if __name__ == "__main__":
 
     # 创建日志 -> global
     LOGGER = get_logger()
-
-    args.classes = [
-        'person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat', 'traffic light', 'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe', 'backpack', 'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat', 'baseball glove', 'skateboard', 'surfboard', 'tennis racket', 'bottle', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed', 'dining table', 'toilet', 'tv', 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush'
-    ]
     
     # 读取所有的图片和标签
     total_images = listdir(args.image_path, extension=args.image_format)
@@ -485,13 +503,15 @@ if __name__ == "__main__":
     
     LOGGER.info(ptab)
     
-    if COUNTER["found"] + COUNTER["background"] + COUNTER['skip'] == COUNTER["images"]:
+    if COUNTER["found"] + COUNTER["background"] + COUNTER['skip'] + COUNTER['missing'] == COUNTER["images"]:
         LOGGER.info(colorstr('green', 'bold', '✅ All conversion has done correctly!'))
+        if COUNTER['missing'] != 0:
+            LOGGER.warning(colorstr('yellow', 'bold', f"⚠️ There are {COUNTER['missing']} images without label, and they have be regarded as negative samples!"))
     else:
         LOGGER.warning(colorstr('red', 'bold', "⚠️ Some question have occurred, please check dataset!"))
 
     if COUNTER['skip'] == COUNTER['images']:
         LOGGER.warning(f"⚠️ All target file have been skipped, please check dataset!")
 
-    LOGGER.info(colorstr(f"👀 The detail information has saved at {LOGGER.handlers[0].baseFilename}"))
-        
+    LOGGER.info(f"⏳ The cost time of {str(FILE.name)} is {colorstr(calc_cost_time(t1, time.time()))}")
+    LOGGER.info(f"👀 The detail information has saved at {colorstr(LOGGER.handlers[0].baseFilename)}")
