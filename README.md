@@ -2,7 +2,13 @@
 
 ## TODO
 
-- [ ] 📔 <font color='blue'>20240605</font> 重新撰写脚本：`xml2yolo.py`、`json2yolo.py`、`yolo2xml.py`、`yolo2json.py`、`xml2json.py`、`json2xml.py`
+- [ ] 📔 <font color='blue'>20240605</font> 重新撰写脚本：
+  - [x] `xml2yolo.py` @20240607
+  - [ ] `yolo2xml.py`
+  - [ ] `json2yolo.py`
+  - [ ] `yolo2json.py`
+  - [ ] `xml2json.py`
+  - [ ] `json2xml.py`
 - [ ] 📔 <font color='blue'>20240306</font> 学习 `glob`
 - [ ] 📔 <font color='blue'>20240220</font> 编写 `知识蒸馏` 相关文档
 - [ ] 📔 <font color='blue'>20240131</font> 编写 `tqdm.rich` 相关文档
