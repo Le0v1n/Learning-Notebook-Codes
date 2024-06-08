@@ -10,3 +10,6 @@
 ObjectDetection/YOLOv5/code/yolov5-v7.0/coco128
 
 __pycache__
+
+VOC2012-5000
+logs
