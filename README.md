@@ -4,7 +4,7 @@
 
 - [ ] 📔 <font color='blue'>20240605</font> 重新撰写脚本：
   - [x] `xml2yolo.py` @20240607
-  - [ ] `yolo2xml.py`
+  - [x] `yolo2xml.py` @20240608
   - [ ] `json2yolo.py`
   - [ ] `yolo2json.py`
   - [ ] `xml2json.py`
