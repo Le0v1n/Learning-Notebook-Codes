@@ -207,7 +207,7 @@ if __name__ == "__main__":
     check_dataset(num_images=RECORDER['images'], num_labels=RECORDER['labels'])
     
     # 2FA
-    second_confirm(script=FILE)
+    second_confirm(script=FILE, LOGGER=LOGGER)
     
     # 创建Path对象
     label_dir = Path(args.label_path)
