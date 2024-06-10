@@ -1,162 +1,255 @@
-"""
-+ 脚本说明：目标检测中yolo标注文件转换为json格式
-+ 用途：YOLO 模型推理得到 txt 文件 -> 转换为 json 标注文件。
-+ 要求：要有对应的图片文件，这样读取到的尺寸信息是最准确的。
-"""
-import os
-import cv2
-import tqdm
-import json
 import sys
-sys.path.append('/mnt/f/Projects/本地代码/Learning-Notebook-Codes')
-from Datasets.coco128.classes import coco128_class
+import argparse
+import threading
+from pathlib import Path
+from PIL import Image
+import time
+try:
+    from tqdm.rich import tqdm
+except:
+    from tqdm import tqdm
 
 
-"""============================ 需要修改的地方 ==================================="""
-dataset_path = 'Datasets/coco128/train'  # 🧡数据集路径
-classes_dict = coco128_class  # 🧡类别字典
+ROOT = Path.cwd().resolve()
+FILE = Path(__file__).resolve()  # 当前脚本的绝对路径
+if str(ROOT) not in sys.path:  # 解决VSCode没有ROOT的问题
+    sys.path.append(str(ROOT))
+ROOT = ROOT.relative_to(Path.cwd())
 
-image_folder_name = 'images'  # 图片文件夹名称
-txt_folder_name = 'labels'  # txt文件夹名称
-json_save_folder_path = 'annotations-json'  # json文件夹名称
-
-image_type = '.jpg'  # 图片类型
-create_empty_json_for_neg = True  # 是否为负样本生成对应的空的json文件
-decimal_places = 6  # 标签保留几位小数, 默认为6
-
-# 生成的 Json 文件基础信息
-__version = "0.2.2"
-__imageData = None
-"""==============================================================================="""
-
-# 组合路径
-IMAGE_PATH = os.path.join(dataset_path, image_folder_name)
-TXT_PATH = os.path.join(dataset_path, txt_folder_name)
-JSON_PATH = os.path.join(dataset_path, json_save_folder_path)
-
-txt_file_list = [file for file in os.listdir(TXT_PATH) if file.endswith("txt") and file != 'classes.txt']
-
-"------------计数------------"
-TOTAL_NUM = len(txt_file_list)
-SUCCEED_NUM = 0  # 成功创建json数量
-SKIP_NUM = 0  # 跳过创建json文件数量
-OBJECT_NUM = 0  # object数量
-ERROR_NUM = 0  # 没有对应图片
-ERROR_LIST = []
-"---------------------------"
-
-_str = (f"💡 图片路径: \033[1;33m{IMAGE_PATH}\033[0m"
-        f"\n💡 TXT文件路径为: \033[1;33m{TXT_PATH}\033[0m"
-        f"\n💡 JSON文件路径为: \033[1;33m{JSON_PATH}\033[0m"
-        f"\n 所有TXT文件数量: \033[1;33m{TOTAL_NUM}\033[0m"
-        f"\n 类别字典为:")
-
-for idx, value in classes_dict.items():
-    _str += f"\n\t[{idx}] {value}"
-
-_str += f"\n\n请输入 \033[1;31m'yes'\033[0m 继续，输入其他停止"
-print(_str)
-
-_INPUT = input()
-if _INPUT != "yes":
-    exit()
-
-if not os.path.exists(JSON_PATH):
-    os.makedirs(JSON_PATH)
-
-process_bar = tqdm.tqdm(total=TOTAL_NUM, desc="yolo2json", unit='.txt')
-for i, txt_name in enumerate(txt_file_list):
-    process_bar.set_description(f"Process in \033[1;31m{txt_name}\033[0m")
-    txt_pre, txt_ext = os.path.splitext(txt_name)  # 分离前缀和后缀
-
-    # 完整路径
-    txt_path = os.path.join(TXT_PATH, txt_name)
-    image_path = os.path.join(IMAGE_PATH, txt_pre) + image_type
-    json_save_path = os.path.join(JSON_PATH, txt_pre) + '.json'
+from utils.general import (
+    IMAGE_TYPE, RECORDER, TranslationDict,
+    get_logger, colorstr, listdir, second_confirm, verify_image, read_txt, JsonWriter, 
+    exif_size, fix_illegal_coordinates, fix_reverse_coordinates, xywh2xyxy, 
+    split_list_equally, calc_cost_time, check_dataset, dict2table, statistics)
         
-    # 打开 txt 文件
-    txtFile = open(txt_path)
-    txtList = txtFile.readlines()  # 以一行的形式读取txt所有内容
-    
-    if not txtList and not create_empty_json_for_neg:  # 如果 txt 文件内容为空且不允许为负样本创建json文件
-        SKIP_NUM += 1
-        process_bar.update()
-        continue
-    
-    # 如果图片不存在 -> 报错且跳过
-    if not os.path.exists(image_path):  
-        ERROR_NUM += 1
-        ERROR_LIST.append(txt_path)
-        process_bar.update()
-        continue
-    
-    # 读取图片
-    img = cv2.imread(image_path)
-    height, width, channel = img.shape  # 获取图片尺寸
-    
-    # 创建 Json 文件的内容
-    json_data = {"version": __version,
-                 "flags": {},
-                 "shapes": [],
-                 "imagePath": f'../{os.path.join(os.path.basename(IMAGE_PATH), os.path.basename(image_path))}',  # 图片路径
-                 "imageData": __imageData,
-                 "imageHeight": height,
-                 "imageWidth": width
-                }
-    
-    # 读取 txt 内容，追加 json 文件的 shapes 内容
-    for line in txtList:  # 正样本(txt内容不为空)
-        # oneline: ['0', '0.660937', '0.161111', '0.0625', '0.107407'] -> [标签索引, x_center, y_center, w, h]
-        oneline = line.strip().split(" ")
-        
-        # 获取坐标并转换为左上和右下的形式
-        x_center, y_center, w, h = float(oneline[1]), float(oneline[2]), float(oneline[3]), float(oneline[4])
-        
-        # 将归一化的坐标还原为真实坐标
-        x_center, y_center = x_center * width, y_center * height  # 还原中心点坐标
-        w, h = w * width, h * height  # 还原宽度和高度
-        
-        xmin = round(x_center - w / 2, decimal_places)
-        ymin = round(y_center - h / 2, decimal_places)
-        xmax = round(x_center + w / 2, decimal_places)
-        ymax = round(y_center + h / 2, decimal_places)
-        
-        # 添加到 shapes 列表中
-        json_data["shapes"].append({
-            "label": classes_dict[oneline[0]],
-            "text": "",
-            "points": [
-                [xmin, ymin],
-                [xmax, ymax]
-            ],
-            "group_id": None,
-            "shape_type": "rectangle",
-            "flags": {}
-        })
-        
-        OBJECT_NUM += 1
 
-    # 保存为json文件
-    with open(json_save_path, "w", encoding="utf-8") as json_file:
-        json.dump(json_data, json_file, ensure_ascii=False, indent=2)
+def parse_opt(known=False):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--image-path", type=str, default="Datasets/coco128/train/images", help="图片路径")
+    parser.add_argument("--label-path", type=str, default="Datasets/coco128/train/labels", help="xml标签路径")
+    parser.add_argument("--target-path", type=str, default="Datasets/coco128/train/jsons", help="目标标签保存路径")
+    parser.add_argument("--classes", type=str, nargs='+', default=['cat', 'dog'], help="数据集标签")
+    parser.add_argument("--override", action='store_true', default=False, help="如果对应的target文件存在，是否覆盖它")
+    parser.add_argument("--num-threading", type=int, default=4, help="使用的线程数，不使用多线程则设置为1")
+    parser.add_argument("--ndigit", type=int, default=None, help="坐标保留的小数位，默认为None")
     
-    SUCCEED_NUM += 1
-    process_bar.update()
-process_bar.close()
+    return parser.parse_known_args()[0] if known else parser.parse_args()
 
-for idx, e in enumerate(ERROR_LIST):
-    print("没有对应图片的TXT文件如下:") if idx == 0 else ...
-    print(f"[{idx + 1}] {e}")
 
-print(f"👌yolo2json已完成, 详情如下:"
-      f"\n\t成功转换文件数量/总文件数量 = \033[1;32m{SUCCEED_NUM}\033[0m/{TOTAL_NUM}"
-      f"\n\t跳过转换文件数量/总文件数量 = \033[1;31m{SKIP_NUM}\033[0m/{TOTAL_NUM}"
-      f"\n\t所有样本的 object 数量/总文件数量 = \033[1;32m{OBJECT_NUM}\033[0m/{TOTAL_NUM}"
-      f"\n\t平均每个json文件中object的数量为: {int(OBJECT_NUM / SUCCEED_NUM)}"
-      f"\n\t没有对应图片的数量为: {ERROR_NUM}"
-      f"\n\t结果保存路径为: {JSON_PATH}")
+def process(args: argparse, images: list) -> None:
+    for image in images:  # image: PosixPath
+        image = Path(image)  # 为了方便IDE给出代码提示
 
-if SUCCEED_NUM + SKIP_NUM + ERROR_NUM == TOTAL_NUM:
-    print(f"\n👌 \033[1;32mNo Problem\033[0m")
-else:
-    print(f"\n🤡 \033[1;31m貌似有点问题, 请仔细核查!\033[0m")
+        # 更新进度条显示信息
+        pbar.set_description(f"Processing {colorstr(image.name):<30s}")
+
+        RECORDER["touch"] += 1
+        
+        # 验证图片是否破损
+        if not verify_image(image):  # 验证图片是否破损
+            pbar.clear()
+            LOGGER.error(f"❌ [Corrupt image] Found corrupt image! -> {str(image)}")
+            RECORDER["corrupt"] += 1
+            pbar.update()
+            continue
+
+        # 获取图片尺寸
+        img_width, img_height = exif_size(Image.open(image))
+        
+        # 确定label位置
+        label = label_dir.joinpath(image.stem + '.txt')
+        
+        # 判断label是否存在：不存在 -> 负样本
+        if not label.exists():
+            pbar.clear()
+            LOGGER.info(f"⚠️ [Negative sample] {str(image)}")
+            RECORDER["missing"] += 1
+            pbar.update()
+            continue
+            
+        # 读取label信息并获取"object"信息
+        objects = read_txt(label)
+
+        # 如果没有object -> 定义为负样本
+        if not objects:
+            RECORDER["background"] += 1
+            pbar.update()
+            continue
+        
+        # 如果target文件存在
+        target = target_dir.joinpath(image.stem + '.json')
+        if target.exists() and target.read_text():  # 如果文件存在且文件内容不为空
+            if args.override:  # 覆盖掉之前的内容
+                pbar.clear()
+                LOGGER.warning(f"⚠️ [Override] The target file has existed, but its content will be overrode! -> {str(target)}")
+            else:
+                pbar.clear()
+                LOGGER.info(f"[Skip] The target file has existed, and it will not be overrode. -> {str(target)}")
+                RECORDER['skip'] += 1
+                pbar.update()
+                continue
+
+        # 创建Json写入器
+        json_writer = JsonWriter(image, img_width, img_height)
+
+        # 处理objects
+        for index, object_info in enumerate(objects):
+            object_info = object_info.split(' ')  # str -> list e.g. '11 0.143 0.76 0.282 0.48' -> [11, 0.143, 0.76, 0.282, 0.48]
+            # 检查：坐标点的个数是否为4
+            num_pts = len(object_info[1:])
+            if num_pts != 4:
+                pbar.clear()
+                LOGGER.error(f"❌ [Illegal points] The No.{index} object has illegal points({num_pts} != 4)! -> {str(label)}")
+                RECORDER["illegal_pts"] += 1
+                pbar.update()
+                continue
+            
+            # 获取每个object的box信息
+            x = float(object_info[1])
+            y = float(object_info[2])
+            w = float(object_info[3])
+            h = float(object_info[4])
+
+            # xywh -> xyxy
+            x1, y1, x2, y2 = xywh2xyxy(x, y, w, h)
+
+            # 坐标映射回原图大小
+            x1 = round(x1 * img_width, args.ndigit)
+            y1 = round(y1 * img_height, args.ndigit)
+            x2 = round(x2 * img_width, args.ndigit)
+            y2 = round(y2 * img_height, args.ndigit)
+            
+            # 检查：修复不合规的坐标：负数和越界
+            x1, y1, x2, y2, msg = fix_illegal_coordinates(
+                x1, y1, x2, y2, 
+                img_width, img_height
+            )
+            if msg:
+                msg = [f"[{i}] {content}" for i, content in enumerate(msg)]
+                msg = ", ".join(msg)
+                pbar.clear()
+                LOGGER.warning(f"⚠️ [Out of boundary] The No.{index} object has illegal coordinates: {msg}! -> {str(label)}")
+                RECORDER["out_of_boundary"] += 1
+            
+            # 检查：修复相反的坐标：x2y2x1y1 -> x1y1x2y2
+            x1, y1, x2, y2, msg = fix_reverse_coordinates(x1, y1, x2, y2)
+            if msg:
+                msg = [f"[{i}] {content}" for i, content in enumerate(msg)]
+                msg = ", ".join(msg)
+                pbar.clear()
+                LOGGER.warning(f"⚠️ [Reversed coordinates] The No.{index} object of has illegal coordinates: {msg}! -> {str(label)}")
+                RECORDER["reversed"] += 1
+            
+            # 根据对应的类别索引获取类别名称
+            class_index = int(object_info[0])
+            try:
+                class_name = classes_dict[class_index]
+            except:
+                pbar.clear()
+                msg = f"❌ [Unknown class index] The class index {class_index} don't exist in {classes_dict}! -> {str(label)}"
+                LOGGER.error(msg)
+                raise KeyError(msg)
+            
+            # 添加object
+            json_writer.add_object(class_name, x1, y1, x2, y2)
+
+            RECORDER['objects'] += 1  # 记录对象+1
+
+        # 记录完所有的objects，保存文件
+        json_writer.save(target)
+
+        RECORDER["found"] += 1
+        pbar.update()
+    
+
+if __name__ == "__main__":
+    t1 = time.time()
+    LOGGER = get_logger(FILE)  # global
+    
+    # 解析参数
+    args = parse_opt(known=False)  # 如果发现不认识的参数则报错
+    
+    # 记录
+    RECORDER['image path'] = args.image_path
+    RECORDER['label path'] = args.label_path
+    RECORDER['target path'] = args.target_path
+    
+    # 读取所有的图片和标签
+    total_images = listdir(args.image_path, extension=IMAGE_TYPE)
+    total_labels = listdir(args.label_path, extension='.txt')
+    RECORDER['images'] = len(total_images)
+    RECORDER['labels'] = len(total_labels)
+    RECORDER['ndigit'] = args.ndigit
+    
+    # 创建类别字典
+    classes_dict = {i: cla for i, cla in enumerate(args.classes)}  # int: str, e.g. {0: 'cat', 1: 'dog'}
+    RECORDER['nc'] = len(args.classes)
+    RECORDER['classes_dict'] = classes_dict
+
+    # 根据线程数，得到每个线程需要处理的图片list
+    total_image_lists = split_list_equally(total_images, args.num_threading)
+
+    # 记录线程相关信息
+    RECORDER['threadings'] = args.num_threading
+    RECORDER['data num of every threading'] = len(total_image_lists[0])
+    RECORDER['script'] = str(FILE.name)
+    
+    # 输出开始执行脚本前的统计信息
+    LOGGER.info(dict2table(RECORDER, align='l', replace_keys=TranslationDict))
+    
+    # 根据图片和标签数量发出对应的告警
+    check_dataset(num_images=RECORDER['images'], num_labels=RECORDER['labels'])
+    
+    # 2FA
+    second_confirm(script=FILE)
+    
+    # 创建Path对象
+    label_dir = Path(args.label_path)
+    target_dir = Path(args.target_path)
+    
+    # 创建标签文件夹
+    target_dir.mkdir(exist_ok=True)
+    
+    threads = []  # 保存线程的list
+    pbar = tqdm(total_images, dynamic_ncols=True)  # for every image file
+    for images in total_image_lists:
+        t = threading.Thread(
+            target=process, 
+            args=(
+                args, 
+                images,
+            )
+        )
+        threads.append(t)
+        t.start()
+
+    # 等待所有线程都执行完毕
+    for t in threads:
+        t.join()
+
+    # 所有进程结束后再关闭进度条
+    pbar.close()
+
+    # 统计正样本情况
+    RECORDER = statistics(RECORDER)
+    
+    # 再次输出统计信息
+    LOGGER.info(dict2table(RECORDER, align='l', replace_keys=TranslationDict))
+    
+    if RECORDER["found"] + RECORDER["background"] + RECORDER['skip'] + RECORDER['missing'] == RECORDER["images"]:
+        LOGGER.info(colorstr('green', 'bold', '✅ All conversion has done correctly!'))
+        if RECORDER['missing'] != 0:
+            LOGGER.warning(colorstr('yellow', 'bold', f"⚠️ There are {RECORDER['missing']} images without label, "
+                                    f"and they have be regarded as negative samples!"))
+    else:
+        LOGGER.warning(colorstr('red', 'bold', "⚠️ Some question have occurred, please check dataset!"))
+
+    if RECORDER['skip'] == RECORDER['images']:
+        LOGGER.warning(f"⚠️ All target file have been skipped, please check dataset!")
+
+    LOGGER.info(f"⏳ The cost time of {str(FILE.name)} is {colorstr(calc_cost_time(t1, time.time()))}")
+    LOGGER.info(
+        f"👀 The detailed information has been saved to {colorstr(LOGGER.handlers[0].baseFilename)}. \n"
+        f"    This script is formatted with {colorstr('ANSI')} color codes, so it is recommended to {colorstr('use a terminal or a compatible tool')} "
+        f"that supports color display for viewing."
+    )
