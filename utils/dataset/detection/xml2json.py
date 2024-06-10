@@ -1,182 +1,250 @@
-"""
-用于将xml格式标注文件转换为json格式
-"""
-import os
-import tqdm
-from lxml import etree
-from PIL import Image
-import json
-from prettytable import PrettyTable
 import sys
-sys.path.append('/mnt/f/Projects/本地代码/Learning-Notebook-Codes')
-from Datasets.coco128.classes import coco128_class
+import argparse
+import threading
+from pathlib import Path
+from PIL import Image
+from prettytable import PrettyTable
+import time
+try:
+    from tqdm.rich import tqdm
+except:
+    from tqdm import tqdm
 
 
-"""============================ 需要修改的地方 ==================================="""
-dataset_path = 'Datasets/coco128/train'  # 🧡数据集路径
-classes_dict = coco128_class  # 🧡类别字典
+ROOT = Path.cwd().resolve()
+FILE = Path(__file__).resolve()  # 当前脚本的绝对路径
+if str(ROOT) not in sys.path:  # 解决VSCode没有ROOT的问题
+    sys.path.append(str(ROOT))
+ROOT = ROOT.relative_to(Path.cwd())
 
-image_type = '.jpg'
-OVERRIDE = True  # 是否覆盖已存在的json文件
-"""==============================================================================="""
-IMAGE_PATH = os.path.join(dataset_path, "images")
-XML_PATH = os.path.join(dataset_path, "annotations-xml")
-JSON_SAVE_PATH = os.path.join(dataset_path, "annotations-json")
-
-assert os.path.exists(IMAGE_PATH), f"图像文件夹[{IMAGE_PATH}]不存在!"
-assert os.path.exists(XML_PATH), f"xml文件夹[{XML_PATH}]不存在!"
-
-xml_file_list = [file for file in os.listdir(XML_PATH) if file.endswith(".xml")]
-
-"------------计数------------"
-TOTAL_NUM = len(xml_file_list)
-SUCCEED_NUM = 0  # 成功创建xml数量
-SKIP_NUM = 0  # 跳过创建xml文件数量
-OBJECT_NUM = 0  # object数量
-WARNING_NUM = 0  # 没有对应图片
-WARNING_LIST = []
-"---------------------------"
-
-
-table = PrettyTable(["Class Index", "Class Name"])
-for class_name, count in classes_dict.items():
-    table.add_row([class_name, count])
-
-print(f"\n图片文件夹路径: \033[1;32m{IMAGE_PATH}\033[0m"
-      f"\nXML文件保存路径: \033[1;32m{XML_PATH}\033[0m"
-      f"\nJSON文件夹路径: \033[1;32m{JSON_SAVE_PATH}\033[0m"
-      f"\n是否覆盖已存在的json文件: \033[1;32m{OVERRIDE}\033[0m"
-      f"\n{table}"
-      f"\n\n请输入 \033[1;31m'yes'\033[0m 继续，输入其他停止")
-
-_INPUT = input()
-if _INPUT != "yes":
-    exit()
-
-os.makedirs(JSON_SAVE_PATH) if not os.path.exists(JSON_SAVE_PATH) else None
-
-def parse_xml_to_dict(xml):
-    """
-    将xml文件解析成字典形式，参考tensorflow的recursive_parse_xml_to_dict
-    Args：
-        xml: xml tree obtained by parsing XML file contents using lxml.etree
-
-    Returns:
-        Python dictionary holding XML contents.
-    """
-
-    if len(xml) == 0:  # 遍历到底层，直接返回tag对应的信息
-        return {xml.tag: xml.text}
-
-    result = {}
-    for child in xml:
-        child_result = parse_xml_to_dict(child)  # 递归遍历标签信息
-        if child.tag != 'object':
-            result[child.tag] = child_result[child.tag]
-        else:
-            if child.tag not in result:  # 因为object可能有多个，所以需要放入列表里
-                result[child.tag] = []
-            result[child.tag].append(child_result[child.tag])
-    return {xml.tag: result}
-
-process_bar = tqdm.tqdm(total=TOTAL_NUM, desc="xml2json", unit='.xml')
-for i, xml_name in enumerate(xml_file_list):
-    process_bar.set_description(f"Process in \033[1;31m{xml_name}\033[0m")
-    xml_pre, xml_ext = os.path.splitext(xml_name)  # 分离前缀和后缀
-    
-    xml_full_path = os.path.join(XML_PATH, xml_name)  # xml文件完整路径
-    json_save_path = os.path.join(JSON_SAVE_PATH, xml_pre) + '.json'  # xml文件完整路径
-
-    if not OVERRIDE and os.path.exists(json_save_path):  # 目标json文件存在 -> 跳过
-        SKIP_NUM += 1
-        process_bar.update()
-        continue
-
-    # 打开xml文件
-    with open(xml_full_path) as fid:
-        xml_str = fid.read()
+from utils.general import (
+    IMAGE_TYPE, RECORDER, TranslationDict,
+    get_logger, colorstr, listdir, second_confirm, verify_image, exif_size, read_xml, fix_illegal_coordinates, 
+    fix_reverse_coordinates, JsonWriter, split_list_equally, calc_cost_time, check_dataset, dict2table, statistics)
         
-    # 将XML字符串编码为字节序列
-    xml_bytes = xml_str.encode('utf-8')
 
-    # 使用lxml解析字节序列的XML数据
-    xml = etree.fromstring(xml_bytes)
-    data = parse_xml_to_dict(xml)["annotation"]
+def parse_opt(known=False):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--image-path", type=str, default="Datasets/coco128/train/images", help="图片路径")
+    parser.add_argument("--label-path", type=str, default="Datasets/coco128/train/xmls", help="xml标签路径")
+    parser.add_argument("--target-path", type=str, default="Datasets/coco128/train/jsons", help="目标标签保存路径")
+    parser.add_argument("--override", action='store_true', default=False, help="如果对应的target文件存在，是否覆盖它")
+    parser.add_argument("--num-threading", type=int, default=4, help="使用的线程数，不使用多线程则设置为1")
+    parser.add_argument("--ndigit", type=int, default=None, help="坐标保留的小数位，默认为None")
     
-    # 构建图片路径
-    img_full_path = os.path.join(IMAGE_PATH, xml_pre) + image_type
+    return parser.parse_known_args()[0] if known else parser.parse_args()
+
+
+def process(args: argparse, images: list) -> None:
+    for image in images:  # image: PosixPath
+        image = Path(image)  # 为了方便IDE给出代码提示
+
+        # 更新进度条显示信息
+        pbar.set_description(f"Processing {colorstr(image.name):<30s}")
+
+        RECORDER["touch"] += 1
+        
+        # 读取图片尺寸
+        im = Image.open(image)
+
+        # 验证图片是否破损
+        if not verify_image(image):  # 验证图片是否破损
+            pbar.clear()
+            LOGGER.error(f"❌ [Corrupt image] Found corrupt image! -> {str(image)}")
+            RECORDER["corrupt"] += 1
+            pbar.update()
+            continue
+        
+        # 获取图片尺寸
+        img_width, img_height = exif_size(im)
+
+        # 获取图片通道数
+        img_channel = 3 if im.mode == "RGB" else 1 if im.mode == "L" else 4 if im.mode == "RGBA" else "Unknown"
+        
+        # 确定label位置
+        label = label_dir.joinpath(image.stem + '.xml')
+        
+        # 判断label是否存在：不存在 -> 负样本
+        if not label.exists():
+            pbar.clear()
+            LOGGER.info(f"⚠️ [Negative sample] {str(image)}")
+            RECORDER["missing"] += 1
+            pbar.update()
+            continue
+            
+        # 读取label信息并获取"object"信息
+        objects = read_xml(label).get("object", None)
+
+        # 如果没有object -> 定义为负样本
+        if not objects:
+            RECORDER["background"] += 1
+            pbar.update()
+            continue
+        
+        # 如果target文件存在
+        target = target_dir.joinpath(image.stem + '.json')
+        if target.exists() and target.read_text():  # 如果文件存在且文件内容不为空
+            if args.override:  # 覆盖掉之前的内容
+                pbar.clear()
+                LOGGER.warning(f"⚠️ [Override] The target file has existed, but its content will be overrode! -> {str(target)}")
+            else:
+                pbar.clear()
+                LOGGER.info(f"[Skip] The target file has existed, and it will not be overrode. -> {str(target)}")
+                RECORDER['skip'] += 1
+                pbar.update()
+                continue
+        
+        # 创建写入器
+        json_writer = JsonWriter(image, img_width, img_height)
+
+        # 处理objects文件
+        for index, object_info in enumerate(objects):
+            # 检查：坐标点的个数是否为4
+            num_pts = len(object_info["bndbox"])
+            if num_pts != 4:
+                pbar.clear()
+                LOGGER.error(f"❌ [Illegal points] The No.{index} object has illegal points({num_pts} != 4)! -> {str(label)}")
+                RECORDER["illegal_pts"] += 1
+                pbar.update()
+                continue
+            
+            # 获取每个object的box信息
+            x1 = round(float(object_info["bndbox"]["xmin"]), args.ndigit)
+            y1 = round(float(object_info["bndbox"]["ymin"]), args.ndigit)
+            x2 = round(float(object_info["bndbox"]["xmax"]), args.ndigit)
+            y2 = round(float(object_info["bndbox"]["ymax"]), args.ndigit)
+            
+            # 检查：修复不合规的坐标：负数和越界
+            x1, y1, x2, y2, msg = fix_illegal_coordinates(
+                x1, y1, x2, y2, img_width, img_height
+            )
+            if msg:
+                msg = [f"[{i}] {content}" for i, content in enumerate(msg)]
+                msg = ", ".join(msg)
+                pbar.clear()
+                LOGGER.warning(f"⚠️ [Out of boundary] The No.{index} object has illegal coordinates: {msg}! -> {str(label)}")
+                RECORDER["out_of_boundary"] += 1
+            
+            # 检查：修复相反的坐标：x2y2x1y1 -> x1y1x2y2
+            x1, y1, x2, y2, msg = fix_reverse_coordinates(x1, y1, x2, y2)
+            if msg:
+                msg = [f"[{i}] {content}" for i, content in enumerate(msg)]
+                msg = ", ".join(msg)
+                pbar.clear()
+                LOGGER.warning(f"⚠️ [Reversed coordinates] The No.{index} object of has illegal coordinates: {msg}! -> {str(label)}")
+                RECORDER["reversed"] += 1
+            
+            # 获取对应的类别并转换为索引
+            class_name = object_info["name"]
+
+            # 将获取到的类别添加到集合中
+            classes_dict.add(class_name)
+
+            # 添加object，保持6位小数
+            json_writer.add_object(class_name, x1, y1, x2, y2)
+            RECORDER['objects'] += 1  # 记录对象+1
+
+        # 记录完所有的objects，保存文件
+        json_writer.save(target)
+
+        RECORDER["found"] += 1
+        pbar.update()
     
-    # 图片存在 -> 获取图片的宽度和高度(确保这两个值是正确的)
-    if os.path.exists(img_full_path):
-        img = Image.open(img_full_path)
-        img_width, img_height = img.size
-        img.close()
-    else:  # 图片不存在 -> 获取 xml 中的图片高度和宽度
-        WARNING_NUM += 1
-        WARNING_LIST.append(xml_full_path)
-        img_width = int(data["size"]["width"])  # 图片宽度
-        img_height = int(data["size"]["height"])  # 图片高度
 
-    # 创建要保存的json数据字典
-    json_data = {
-        "version": "0.2.2",
-        "flags": {},
-        "shapes": [],
-        "imagePath": f"{xml_pre}{image_type}",
-        "imageData": None,
-        "imageHeight": img_height,
-        "imageWidth": img_width,
-        "text": ""
-    }
-
-    # 处理每个 object
-    for obj in data.get("object", []):
-        label = obj["name"]
-        xmin = float(obj["bndbox"]["xmin"])
-        ymin = float(obj["bndbox"]["ymin"])
-        xmax = float(obj["bndbox"]["xmax"])
-        ymax = float(obj["bndbox"]["ymax"])
-
-        # 计算中心点坐标和宽高
-        center_x = (xmin + xmax) / 2.0
-        center_y = (ymin + ymax) / 2.0
-        width = xmax - xmin
-        height = ymax - ymin
-
-        # 添加到 shapes 列表中
-        json_data["shapes"].append({
-            "label": label,
-            "text": "",
-            "points": [
-                [xmin, ymin],
-                [xmax, ymax]
-            ],
-            "group_id": None,
-            "shape_type": "rectangle",
-            "flags": {}
-        })
-        OBJECT_NUM += 1
-
-    # 保存为json文件
-    with open(json_save_path, "w", encoding="utf-8") as json_file:
-        json.dump(json_data, json_file, ensure_ascii=False, indent=2)
+if __name__ == "__main__":
+    t1 = time.time()
+    LOGGER = get_logger(FILE)  # global
     
-    SUCCEED_NUM += 1
-    process_bar.update()
-process_bar.close()
+    # 解析参数
+    args = parse_opt(known=False)  # 如果发现不认识的参数则报错
 
-for _warning in WARNING_LIST:
-    print(f"⚠️ {_warning}")
+    # 记录
+    RECORDER['image path'] = args.image_path
+    RECORDER['label path'] = args.label_path
+    RECORDER['target path'] = args.target_path
+    
+    # 读取所有的图片和标签
+    total_images = listdir(args.image_path, extension=IMAGE_TYPE)
+    total_labels = listdir(args.label_path, extension='.xml')
+    RECORDER['images'] = len(total_images)
+    RECORDER['labels'] = len(total_labels)
+    RECORDER['ndigit'] = args.ndigit
+    
+    # 创建类别字典
+    classes_dict = set()  # 空集合
 
-print(f"👌 xml2json已完成, 详情如下:"
-      f"\n\t成功转换文件数量/总文件数量 = \033[1;32m{SUCCEED_NUM}\033[0m/{TOTAL_NUM}"
-      f"\n\t跳过转换文件数量/总文件数量 = \033[1;31m{SKIP_NUM}\033[0m/{TOTAL_NUM}"
-      f"\n\t所有样本的 object 数量/总文件数量 = \033[1;32m{OBJECT_NUM}\033[0m/{TOTAL_NUM}"
-      f"\n\t平均每个json文件中object的数量为: {OBJECT_NUM / SUCCEED_NUM:.2f}"
-      f"\n\t ⚠️没有对应图片的数量为: {WARNING_NUM}"
-      f"\n\n\t结果保存路径为: \033[1;31m{JSON_SAVE_PATH}\033[0m")
+    # 根据线程数，得到每个线程需要处理的图片list
+    total_image_lists = split_list_equally(total_images, args.num_threading)
 
-if SUCCEED_NUM + SKIP_NUM == TOTAL_NUM:
-    print(f"\n👌 \033[1;32mNo Problem\033[0m")
-else:
-    print(f"\n🤡 \033[1;31m貌似有点问题, 请仔细核查!\033[0m")
+    # 记录线程相关
+    RECORDER['threadings'] = args.num_threading
+    RECORDER['data num of every threading'] = len(total_image_lists[0])
+    RECORDER['script'] = str(FILE.name)
+    
+    # 输出开始执行脚本前的统计信息
+    LOGGER.info(dict2table(RECORDER, align='l', replace_keys=TranslationDict))
+    
+    # 根据图片和标签数量发出对应的告警
+    check_dataset(num_images=RECORDER['images'], num_labels=RECORDER['labels'])
+    
+    # 2FA
+    second_confirm(script=FILE)
+    
+    # 创建Path对象
+    label_dir = Path(args.label_path)
+    target_dir = Path(args.target_path)
+    
+    # 创建标签文件夹
+    target_dir.mkdir(exist_ok=True)
+    
+    threads = []  # 保存线程的list
+    pbar = tqdm(total=RECORDER['images'], dynamic_ncols=True)  # for every image file
+    for images in total_image_lists:
+        t = threading.Thread(
+            target=process, 
+            args=(
+                args, 
+                images,
+            )
+        )
+        threads.append(t)
+        t.start()
+
+    # 等待所有线程都执行完毕
+    for t in threads:
+        t.join()
+
+    # 所有进程结束后再关闭进度条
+    pbar.close()
+
+    # 统计获取到的类别情况
+    RECORDER['nc'] = len(classes_dict)
+    RECORDER['classes_dict'] = {class_index: class_name for class_index, class_name in enumerate(classes_dict)}
+
+    # 统计正样本情况
+    RECORDER = statistics(RECORDER)
+    
+    # 再次输出统计信息
+    LOGGER.info(dict2table(RECORDER, align='l', replace_keys=TranslationDict))
+    
+    if RECORDER["found"] + RECORDER["background"] + RECORDER['skip'] + RECORDER['missing'] == RECORDER["images"]:
+        LOGGER.info(colorstr('green', 'bold', '✅ All conversion has done correctly!'))
+        if RECORDER['missing'] != 0:
+            LOGGER.warning(colorstr('yellow', 'bold', f"⚠️ There are {RECORDER['missing']} images without label, "
+                                    f"and they have be regarded as negative samples!"))
+    else:
+        LOGGER.warning(colorstr('red', 'bold', "⚠️ Some question have occurred, please check dataset!"))
+
+    if RECORDER['skip'] == RECORDER['images']:
+        LOGGER.warning(f"⚠️ All target file have been skipped, please check dataset!")
+
+    LOGGER.info(f"⏳ The cost time of {str(FILE.name)} is {colorstr(calc_cost_time(t1, time.time()))}")
+    LOGGER.info(
+        f"❗ Please check the {colorstr('blue', 'bold', 'num classes')} and {colorstr('blue', 'bold', 'class name')} in the table, "
+        f"which are obtained from the {colorstr('yellow', 'bold', 'XML')}s ({colorstr('green', 'the order of classes is not important')})."
+    )
+    LOGGER.info(
+        f"👀 The detailed information has been saved to {colorstr(LOGGER.handlers[0].baseFilename)}. \n"
+        f"    This script is formatted with {colorstr('ANSI')} color codes, so it is recommended to {colorstr('use a terminal or a compatible tool')} "
+        f"that supports color display for viewing."
+    )
