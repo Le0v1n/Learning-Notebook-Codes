@@ -120,7 +120,7 @@ if __name__ == "__main__":
     LOGGER.info(dict2table(RECORDER, align='l', replace_keys=TranslationDict))
     
     # 2FA
-    second_confirm(script=FILE)
+    second_confirm(script=FILE, LOGGER=LOGGER)
 
     # 记录
     RECORDER['touch'] = 0
