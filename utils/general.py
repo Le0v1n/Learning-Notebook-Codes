@@ -3,11 +3,12 @@ import logging
 import datetime
 from pathlib import Path
 from typing import Union
-from PIL import ExifTags, Image, ImageOps
+from PIL import ExifTags, Image
 from lxml import etree
 from datetime import timedelta
 from prettytable import PrettyTable
 from xml.dom.minidom import Document
+import json
 
 
 IMAGE_TYPE = ['.png', '.jpg', '.jpeg', '.bmp', 'webp']
@@ -22,7 +23,41 @@ RECORDER = {
     'found': 0,  # 完成转换的标签
     'missing': 0,  # 缺少标签的图片数量
     'background': 0,  # 负样本图片的数量
-    'objects': 0,  # 对象总数
+    'objects': 0,  # 对象总数,
+    'gray': 0,  # 灰度图数量
+    'RGBA': 0,  # RGBA图片的数量
+}
+
+TranslationDict = {
+    'found': '正样本(有标签)数量',
+    'missing': '负样本(没有标签)数量',
+    '❌ corrupt': '破损的图片数量',
+    '❌ illegal_pts': '坐标点个数≠4的数量',
+    '❌ out_of_boundary': '坐标越界的数量',
+    '❌ reversed': '坐标点反了的数量',
+    'background': '负样本(有空标签)的数量',
+    'touch': '程序touch过的数量',
+    'skip': '跳过(目标标签存在)的数量',
+    'image path': '图片路径',
+    'label path': '标签路径',
+    'target path': '保存路径',
+    'images': '图片的数量',
+    'labels': '标签的数量',
+    'ndigit': '坐标保存小数点位数',
+    'nc': '类别数',
+    'num classes': '类别数',
+    'threadings': '使用的线程数',
+    'data num of every threading': '单个线程的并发量',
+    'script': '脚本名称',
+    'objects': '对象总数',
+    'average objects for all': '平均每张图片的对象数',
+    'average objects for positives': '平均每张正样本图片的对象数',
+    'positive ratio': '正样本比例',
+    'negative ratio': '负样本比例',
+    'label not exist': '图片对应标签不存在的数量',
+    '❌ label issue': '标签有问题的数量',
+    'label format': '标签格式',
+    'redundant': '冗余标签（没有对应图片）的数量',
 }
 
 # Get orientation exif tag
@@ -165,6 +200,23 @@ def verify_image(image: Path, LOGGER: logging.Logger = None) -> bool:
                 msg = f"⚠️  {image} is a corrupt image!"
                 LOGGER.warning(msg) if LOGGER else print(msg)
                 return False
+    
+    # 检查图片通道数
+    img_channel = 3 if im.mode == "RGB" else 1 if im.mode == "L" else 4 if im.mode == "RGBA" else "Unknown"
+    if img_channel == 1:
+        msg = f"⚠️ [Gray image] Found gray image! -> {str(image)}"
+        LOGGER.warning(msg) if LOGGER else print(msg)
+        RECORDER["gray"] += 1
+    elif img_channel == 4:
+        msg = f"⚠️ [RGBA image] Found RGBA image! -> {str(image)}"
+        LOGGER.warning(msg) if LOGGER else print(msg)
+        RECORDER["RGBA"] += 1
+    elif img_channel == "Unknown":
+        msg = f"❌ [Unknown channel image] Found unknown channel image! -> {str(image)}"
+        LOGGER.warning(msg) if LOGGER else print(msg)
+        RECORDER["RGBA"] += 1
+        return False
+
     return True
 
 
@@ -219,8 +271,7 @@ def parse_xml_to_dict(xml):
 
 
 def read_xml(xml: Path) -> dict:
-    if isinstance(xml, str):
-        xml = Path(xml)
+    xml = Path(xml)
         
     with xml.open('r') as f:
         xml_str = f.read()
@@ -235,13 +286,18 @@ def read_xml(xml: Path) -> dict:
 
 
 def read_txt(txt: Path) -> list:
-    if isinstance(txt, str):
-        txt = Path(txt)
-
+    txt = Path(txt)
+        
     with txt.open('r') as f:
         lines = f.readlines()
     
     return [line.strip() for line in lines]
+
+
+def read_json(jsonfile: Path) -> dict:
+    with jsonfile.open('r') as f:
+        return json.load(f)
+
 
 def fix_illegal_coordinates(xmin, ymin, xmax, ymax, img_width, img_height) -> tuple:
     """
@@ -360,12 +416,12 @@ def check_dataset(num_images, num_labels, LOGGER: logging.Logger=None) -> None:
     assert num_labels > 0, colorstr('red', 'bold', "❌ The number of labels is 0, it's illegal!")
 
     if num_images > num_labels:
-        msg = f"⚠️ The number of image ({num_images}) > labels ({num_labels}), \
-            the image without label file will be regarded as {colorstr('red', 'bold', 'negative!')}"
+        msg = f"⚠️ The number of image ({num_images}) > labels ({num_labels}), " \
+              f"the image without label file will be regarded as {colorstr('red', 'bold', 'negative!')}"
         LOGGER.warning(msg) if LOGGER else print(msg)
     if num_images < num_labels:
-        msg = f"⚠️ The number of image ({num_images}) < labels ({num_labels}), \
-            there are {num_labels - num_images} redundant label file."
+        msg = f"⚠️ The number of image ({num_images}) < labels ({num_labels}), " \
+              f"there are {num_labels - num_images} redundant label file."
         LOGGER.warning(msg) if LOGGER else print(msg)
 
 
@@ -426,12 +482,30 @@ def statistics(recorder: dict) -> dict:
     recorder['negative ratio'] = (f"{round(negatives / samples * 100, 2)}%") if samples > 0 else 'N/A'
 
     return recorder
+
+
+class TXTWriter():
+    def __init__(self):
+        self.objects = []
     
 
-class XMLRecorder():
+    def add_object(self, class_id, x, y, w, h):
+        # 💡 强制保留6位小数
+        self.objects.append([str(f"{int(class_id)}"), f"{x:.6f}", f"{y:.6f}", f"{w:.6f}", f"{h:.6f}"])
+
+    
+    def save(self, target_path: Path):
+        with target_path.open('w') as f:  # 一次性将所有的objects都写入txt
+            for i, obj_data in enumerate(self.objects):
+                # 使用join将列表转换为字符串，并用空格分隔
+                line = " ".join(obj_data)
+                # 写入文件，如果i不是0，则在前面添加一个换行符
+                f.write(line if i == 0 else '\n' + line)
+    
+
+class XMLWriter():
     def __init__(self, image: Path, img_w: int, img_h: int, img_c: Union[int, str]):
-        if not isinstance(image, Path):
-            self.image = Path(image)
+        self.image = Path(image)
 
         self.xmlBuilder = Document()  # 创建一个 XML 文档构建器
         self.annotation = self.xmlBuilder.createElement("annotation")  # 创建annotation标签
@@ -500,29 +574,25 @@ class XMLRecorder():
         bndbox = self.xmlBuilder.createElement("bndbox")  
         # 5.1 xmin标签
         xmin = self.xmlBuilder.createElement("xmin")  
-        mathData = x1
-        xminContent = self.xmlBuilder.createTextNode(str(mathData))
+        xminContent = self.xmlBuilder.createTextNode(str(x1))
         xmin.appendChild(xminContent)
         bndbox.appendChild(xmin)  # xmin标签结束
 
         # 5.2 ymin标签
         ymin = self.xmlBuilder.createElement("ymin")  # ymin标签
-        mathData = y1
-        yminContent = self.xmlBuilder.createTextNode(str(mathData))
+        yminContent = self.xmlBuilder.createTextNode(str(y1))
         ymin.appendChild(yminContent)
         bndbox.appendChild(ymin)  # ymin标签结束
         
         # 5.3 xmax标签
         xmax = self.xmlBuilder.createElement("xmax")  # xmax标签
-        mathData = x2
-        xmaxContent = self.xmlBuilder.createTextNode(str(mathData))
+        xmaxContent = self.xmlBuilder.createTextNode(str(x2))
         xmax.appendChild(xmaxContent)
         bndbox.appendChild(xmax)  # xmax标签结束
 
         # 5.4 ymax标签
         ymax = self.xmlBuilder.createElement("ymax")  # ymax标签
-        mathData = y2
-        ymaxContent = self.xmlBuilder.createTextNode(str(mathData))
+        ymaxContent = self.xmlBuilder.createTextNode(str(y2))
         ymax.appendChild(ymaxContent)
         bndbox.appendChild(ymax)  # ymax标签结束
 
@@ -538,3 +608,282 @@ class XMLRecorder():
                 addindent='\t', 
                 encoding='utf-8'
             )
+
+
+class JsonWriter():
+    def __init__(self, image: Path, img_w: int, img_h: int, version="5.4.1"):
+        self.image = Path(image)
+
+        # 创建 Json 文件的内容
+        self.json_dict = {
+            "version": version,
+            "flags": {},
+            "shapes": [],
+            "imagePath": str(image.name),
+            "imageData": None,
+            "imageHeight": img_h,
+            "imageWidth": img_w
+        }
+
+    
+    def add_object(self, class_name, x1, y1, x2, y2):
+        self.json_dict["shapes"].append(
+            {
+                "label": class_name,
+                "points": [
+                    [x1, y1],
+                    [x2, y2]
+                ],
+                "group_id": None,
+                "description": "",
+                "shape_type": "rectangle",
+                "flags": {},
+                "mask": None
+            }
+        )
+
+    
+    def save(self, target_path: Path):
+        with target_path.open('w', encoding='utf-8') as f:
+            json.dump(
+                self.json_dict, 
+                f,
+                ensure_ascii=False,
+                indent=2
+            ) 
+
+
+def fix_label_format(label_format: str) -> str:
+    if isinstance(label_format, str):
+        if '.' not in label_format:  # 如果没有.则添加
+            label_format = '.' + label_format
+
+        if label_format.lower() in ('.txt', '.yolo'):
+            return '.txt'
+        elif label_format.lower() in ('.json', ):
+            return '.json'
+        elif label_format.lower() in ('.xml', ):
+            return '.xml'
+        else:
+            raise NotImplementedError(
+                f"❌ The current script only supports label with {colorstr('.txt, .json, .xml')}, "
+                f"and does not support {colorstr(label_format)}!"
+            )
+    else:
+        raise TypeError(f"❌ The type of label_format should be {colorstr('str')} instead of {colorstr(type(label_format))}!")
+    
+
+class LabelVerifier():
+    def __init__(self, image: Path, label: Path, classes_dict: int, img_width: int, img_height: int, img_channel: int):
+        self.image = Path(image)
+        self.label = Path(label)
+        self.classes_dict = classes_dict
+        self.img_width = img_width
+        self.img_height = img_height
+        self.img_channel = img_channel
+        self.msgs = []  # 存放报错信息用的
+        self.count = 1
+
+        # 获取标签的后缀
+        self.suffix = self.label.suffix
+
+
+    def log(self, msg: str):
+        self.count += 1
+        self.msgs.append(msg)        
+
+
+    def objects_exist(self) -> bool:
+        # 如果没有object -> 定义为负样本
+        if not self.objects:
+            self.log(f"[{self.count}] There is no any objects.")
+            return False
+        return True
+
+    
+    def verify_coordinates_for_object(self, x1, y1, x2, y2) -> None:
+        # 检查不合规的坐标：负数和越界
+        msg = fix_illegal_coordinates(x1, y1, x2, y2, self.img_width, self.img_height)[-1]
+        if msg:
+            self.log(f"[{self.count}] The object has negative number or out of boundary {msg}.")
+
+        # 检查相反的坐标：x2y2x1y1 -> x1y1x2y2
+        msg = fix_reverse_coordinates(x1, y1, x2, y2)[-1]
+        if msg:
+            self.log(f"[{self.count}] The object of has reversed coordinates {msg}.")
+
+
+    def verify_num_coordinates_for_object(self, object_info) -> bool:
+        if self.suffix == '.txt':
+            object_info = object_info.split(' ')
+            # 将坐标点转换为一个list
+            num_pts = len(object_info[1:])
+        elif self.suffix == '.xml':
+            # 先判断有没有<bndbox>
+            if not object_info.get('bndbox', None):
+                self.log(f"[{self.count}] The object don't have 'bndbox').")
+                return False
+            
+            # 将坐标点转换为一个list
+            num_pts = len(object_info["bndbox"])
+
+        elif self.suffix == '.json':
+            # # 将坐标点转换为一个list
+            object_info['points'] = [coordinate for pair in object_info['points'] for coordinate in pair]
+            num_pts = len(object_info["points"])
+
+        # 检查：坐标点的个数是否为4
+        if num_pts != 4:
+            self.log(f"[{self.count}] The object has illegal points({num_pts} != 4).")
+            return False
+        return True
+
+
+    def normalize_coordinates_for_object(self, object_info) -> tuple:
+        if self.suffix == '.txt':
+            object_info = object_info.split(' ')
+
+            # 获取每个object的box信息
+            x = float(object_info[1])
+            y = float(object_info[2])
+            w = float(object_info[3])
+            h = float(object_info[4])
+
+            # xywh -> xyxy
+            x1, y1, x2, y2 = xywh2xyxy(x, y, w, h)
+
+            # 坐标映射回原图大小
+            x1 = round(x1 * self.img_width)
+            y1 = round(y1 * self.img_height)
+            x2 = round(x2 * self.img_width)
+            y2 = round(y2 * self.img_height)
+
+        elif self.suffix == '.xml':
+            # 获取每个object的box信息
+            x1 = round(float(object_info["bndbox"]["xmin"]))
+            y1 = round(float(object_info["bndbox"]["ymin"]))
+            x2 = round(float(object_info["bndbox"]["xmax"]))
+            y2 = round(float(object_info["bndbox"]["ymax"]))
+
+        elif self.suffix == '.json':
+            # 获取每个object的box信息
+            x1 = round(float(object_info["points"][0]))
+            y1 = round(float(object_info["points"][1]))
+            x2 = round(float(object_info["points"][2]))
+            y2 = round(float(object_info["points"][3]))
+
+        return x1, y1, x2, y2
+
+
+    def verify_coordinates(self):
+        # 如果有object，检查object是否合法
+        for object_info in self.objects:
+            # 如果点的个数不全，那么则不进行具体的坐标检查
+            if self.verify_num_coordinates_for_object(object_info):
+                # 坐标标准化
+                x1, y1, x2, y2 = self.normalize_coordinates_for_object(object_info)
+                
+                # 检查每个object的坐标是否有问题
+                self.verify_coordinates_for_object(x1, y1, x2, y2)
+
+
+    def verify_metadata(self):
+        # 提升作用域
+        filename = None
+        width = None
+        height = None
+        depth = None
+        shape_type = None
+        imagedata = None
+
+        if self.suffix == '.txt':
+            # 获取当前objects的所有类别索引，并计算最大值
+            class_index = [int(object_info.split(' ')[0]) for object_info in self.objects]
+            max_class_index = max(class_index)
+
+        elif self.suffix == '.xml':
+            # 获取的信息
+            filename = self.xml_data["filename"]
+            width = int(self.xml_data["size"]["width"])
+            height = int(self.xml_data["size"]["height"])
+            depth = int(self.xml_data["size"]["depth"])
+
+            # 获取最大的类别索引（先判断每个object的类别是否在classes_dict中，如果不在则将这个类别保留（方便报错））
+            class_index = [self.classes_dict.get(object_info['name'], object_info['name']) for object_info in self.objects]
+
+            # 对class_index这个list进行遍历，看看有没有字符串，如果有则报错
+            for cn in class_index:  # class name
+                if isinstance(cn, str):
+                    self.log(f"[{self.count}] Unknown class name found: {cn}.")
+                    class_index.remove(cn)  # 把这个字符串删掉
+            max_class_index = max(class_index) if class_index else 0
+
+        elif self.suffix == '.json':
+
+            # 获取信息
+            filename = self.json_data['imagePath']
+            imagedata = self.json_data['imageData']
+            width = self.json_data['imageWidth']
+            height = self.json_data['imageHeight']
+
+            for object_info in self.objects:
+                if object_info.get('shape_type', None) != 'rectangle':  # 'rectangle'
+                    self.log(f"[{self.count}] The 'shape_type' is '{object_info.get('shape_type', None)}'(label) instead of 'rectangle'(image).")
+
+            # 获取最大的类别索引（先判断每个object的类别是否在classes_dict中，如果不在则将这个类别保留（方便报错））
+            class_index = [self.classes_dict.get(object_info['label'], object_info['label']) for object_info in self.objects]
+
+            # 对class_index这个list进行遍历，看看有没有字符串，如果有则报错
+            for cn in class_index:  # class name
+                if isinstance(cn, str):
+                    self.log(f"[{self.count}] Unknown class name found: {cn}.")
+                    class_index.remove(cn)  # 把这个字符串删掉
+            max_class_index = max(class_index) if class_index else 0
+
+        # 检查信息
+        if max_class_index > len(self.classes_dict) - 1:
+            self.log(f"[{self.count}] The max class index of object ({max_class_index}) is out of boundary ({len(self.classes_dict) - 1}).")
+        if filename and str(self.image.name) not in filename:
+            self.log(f"[{self.count}] The filename is {filename}(label) instead of {str(self.image.name)}(image).")
+        elif width and width != self.img_width:
+            self.log(f"[{self.count}] The width is {width}(label) instead of {self.img_width}(image).")
+        elif height and height != self.img_height:
+            self.log(f"[{self.count}] The height is {height}(label) instead of {self.img_height}(image).")
+        elif depth and depth != self.img_channel:
+            self.log(f"[{self.count}] The channel is {depth}(label) instead of {self.img_channel}(image).")
+        elif imagedata:
+            self.log(f"[{self.count}] The 'imageData' is not empty.")
+    
+    
+    def label_exists(self) -> bool:
+        return self.label.exists()
+    
+
+    def start_and_receive_results(self) -> list:
+        # 根据标签后缀读取标签
+        if self.suffix == '.txt':
+            self.objects = read_txt(self.label)
+        elif self.suffix == '.xml':
+            self.xml_data = read_xml(self.label)
+            self.objects = self.xml_data.get("object", None)
+        elif self.suffix == '.json':
+            self.json_data = read_json(self.label)
+            self.objects = self.json_data['shapes']
+        else:
+            raise NotImplementedError(
+                f"❌ The current script only supports label with {colorstr('.txt, .json, .xml')}, "
+                f"and does not support {colorstr(self.suffix)}!"
+            )
+
+        # 检查1：检查坐标点是存在
+        if not self.objects:  # 坐标点不存在
+            self.log(f"[{self.count}] There is no any objects.")
+        else:  # 坐标点存在，进一步检查坐标是否正确
+            # 检查2：坐标是否正确（包括点的个数是否=4）
+            self.verify_coordinates()
+
+            # 检查3：metadata是否正确
+            self.verify_metadata()
+
+        # 输出结果
+        return self.msgs
