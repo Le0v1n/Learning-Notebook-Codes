@@ -149,11 +149,11 @@ def listdir(path: Union[Path, str], extension: Union[str, list, tuple]=IMAGE_TYP
     return files
 
 
-def second_confirm(script: Path = None, LOGGER: logging.Logger = None):
+def second_confirm(msg: str = None, script: Path = None, LOGGER: logging.Logger = None):
     script_name = str(script.name) if script else 'script'
     user_name = str(script.owner()) if script else Path.cwd().owner()
 
-    msg = colorstr("Please enter 'yes' (y) to continue, or enter anything else to stop the program: ")
+    msg = colorstr("Please enter 'yes' (y) to continue, or enter anything else to stop the program: ") if not msg else msg
     LOGGER.info(msg) if LOGGER else print(msg)
 
     user_input = input(colorstr('bold', '>>>> '))
