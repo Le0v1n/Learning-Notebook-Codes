@@ -546,7 +546,7 @@ def img2label_paths(img_paths):
 
     # str.rsplit("/images/", maxsplit)会在字符串 str 中从右向左搜索第一个出现的 /images/，然后将字符串拆分成两部分，
     # 分隔符 /images/ 作为拆分的标志。拆分后的结果以列表的形式返回，其中第一个元素是分隔符右侧的部分，第二个元素是分隔符左侧的部分（如果有的话）
-    # 💡 简单来说，就是把"/train/"替换为"/labels/"，并将后缀换为".txt"
+    # 💡 简单来说，就是把"/images/"替换为"/labels/"，并将后缀换为".txt"
     return [sb.join(x.rsplit(sa, 1)).rsplit(".", 1)[0] + ".txt" for x in img_paths]
 
 
@@ -785,7 +785,10 @@ class LoadImagesAndLabels(Dataset):
         with Pool(NUM_THREADS) as pool:
             # 开启进度条。例子：train: Scanning /data/yolov5/datasets/coco128/labels/train2017...:   0%|          | 0/128 [00:00<?, ?it/s]
             pbar = tqdm(
-                pool.imap(verify_image_label, zip(self.im_files, self.label_files, repeat(prefix))),
+                pool.imap(  # imap将一个函数func映射到iterable中的每个元素上，并返回一个迭代器。与map不同的是，imap在多个进程中并行执行这些函数调用。
+                    func=verify_image_label, 
+                    iterable=zip(self.im_files, self.label_files, repeat(prefix))
+                ),
                 desc=desc,
                 total=len(self.im_files),
                 bar_format=TQDM_BAR_FORMAT,
