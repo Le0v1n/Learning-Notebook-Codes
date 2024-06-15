@@ -16,3 +16,4 @@ VOC2012-5000
 logs
 raw_data
 voc2012-Le0v1n
+ObjectDetection/YOLO-World/code/*.json
