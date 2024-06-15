@@ -1,0 +1,358 @@
+<mxfile host="Electron" modified="2024-06-15T07:35:30.154Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.4.0 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="lgTihgDd0W3AZgoazx4I" version="24.4.0" type="device" pages="2">
+  <diagram name="同步" id="SGpFKA9xvLAup0tgNSaU">
+    <mxGraphModel dx="968" dy="561" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="7yiq34vByzXEWlUBxW1O-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="1" source="7yiq34vByzXEWlUBxW1O-1" target="7yiq34vByzXEWlUBxW1O-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-1" value="主线程/主进程" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Sarasa Mono SC;" vertex="1" parent="1">
+          <mxGeometry x="340" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-76" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="1" source="7yiq34vByzXEWlUBxW1O-2" target="7yiq34vByzXEWlUBxW1O-71">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-2" value="创建多个线程/进程&lt;br&gt;（每个线程/进程都被分配了相应的任务）" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Sarasa Mono SC;" vertex="1" parent="1">
+          <mxGeometry x="340" y="140" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="fU0nQYWMUvTh28BO4Xrq-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="1" source="7yiq34vByzXEWlUBxW1O-18" target="fU0nQYWMUvTh28BO4Xrq-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-18" value="在主线程/进程中&lt;div&gt;等待所有线程/进程执行完毕&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Sarasa Mono SC;" vertex="1" parent="1">
+          <mxGeometry x="315" y="620" width="170" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-91" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Sarasa Mono SC;" edge="1" parent="1" source="7yiq34vByzXEWlUBxW1O-19" target="7yiq34vByzXEWlUBxW1O-90">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-19" value="执行主线程/进程中&lt;div&gt;其他代码&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Sarasa Mono SC;" vertex="1" parent="1">
+          <mxGeometry x="340" y="820" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="fU0nQYWMUvTh28BO4Xrq-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="1" source="7yiq34vByzXEWlUBxW1O-71" target="7yiq34vByzXEWlUBxW1O-73">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fU0nQYWMUvTh28BO4Xrq-5" value="返回自己的状态" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;dashed=1;startArrow=classic;startFill=1;fontFamily=Sarasa Mono SC;" edge="1" parent="1" source="7yiq34vByzXEWlUBxW1O-71" target="7yiq34vByzXEWlUBxW1O-18">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="620" y="266" />
+              <mxPoint x="620" y="650" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-71" value="&lt;div&gt;启动&lt;/div&gt;线程/进程1" style="label;whiteSpace=wrap;html=1;image=img/clipart/Gear_128x128.png;fontFamily=Sarasa Mono SC;" vertex="1" parent="1">
+          <mxGeometry x="340" y="236" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="fU0nQYWMUvTh28BO4Xrq-2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Sarasa Mono SC;" edge="1" parent="1" source="7yiq34vByzXEWlUBxW1O-73" target="7yiq34vByzXEWlUBxW1O-74">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fU0nQYWMUvTh28BO4Xrq-6" value="返回自己的状态" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;dashed=1;startArrow=classic;startFill=1;fontFamily=Sarasa Mono SC;" edge="1" parent="1" source="7yiq34vByzXEWlUBxW1O-73" target="7yiq34vByzXEWlUBxW1O-18">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="580" y="360" />
+              <mxPoint x="580" y="640" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-73" value="&lt;div&gt;启动&lt;/div&gt;线程/进程2" style="label;whiteSpace=wrap;html=1;image=img/clipart/Gear_128x128.png;fontFamily=Sarasa Mono SC;" vertex="1" parent="1">
+          <mxGeometry x="340" y="330" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="fU0nQYWMUvTh28BO4Xrq-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="1" source="7yiq34vByzXEWlUBxW1O-74" target="7yiq34vByzXEWlUBxW1O-78">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fU0nQYWMUvTh28BO4Xrq-7" value="返回自己的状态" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;dashed=1;startArrow=classic;startFill=1;fontFamily=Sarasa Mono SC;" edge="1" parent="1" source="7yiq34vByzXEWlUBxW1O-74" target="7yiq34vByzXEWlUBxW1O-18">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="550" y="460" />
+              <mxPoint x="550" y="630" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-74" value="&lt;div&gt;启动&lt;/div&gt;线程/进程3" style="label;whiteSpace=wrap;html=1;image=img/clipart/Gear_128x128.png;fontFamily=Sarasa Mono SC;" vertex="1" parent="1">
+          <mxGeometry x="340" y="430" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-58" value="" style="group;fontFamily=Sarasa Mono SC;" vertex="1" connectable="0" parent="1">
+          <mxGeometry y="272" width="140" height="212" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-59" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="7yiq34vByzXEWlUBxW1O-58" source="7yiq34vByzXEWlUBxW1O-60" target="7yiq34vByzXEWlUBxW1O-62">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-60" value="执行任务1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Sarasa Mono SC;" vertex="1" parent="7yiq34vByzXEWlUBxW1O-58">
+          <mxGeometry x="29" y="12" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-61" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="7yiq34vByzXEWlUBxW1O-58" source="7yiq34vByzXEWlUBxW1O-62" target="7yiq34vByzXEWlUBxW1O-64">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-62" value="执行任务2" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Sarasa Mono SC;" vertex="1" parent="7yiq34vByzXEWlUBxW1O-58">
+          <mxGeometry x="29" y="58" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-63" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="7yiq34vByzXEWlUBxW1O-58" source="7yiq34vByzXEWlUBxW1O-64" target="7yiq34vByzXEWlUBxW1O-65">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-64" value="..." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;fontFamily=Sarasa Mono SC;" vertex="1" parent="7yiq34vByzXEWlUBxW1O-58">
+          <mxGeometry x="29" y="102" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-65" value="所有任务执行完毕&lt;div&gt;&lt;div&gt;声明自己的状态&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Sarasa Mono SC;" vertex="1" parent="7yiq34vByzXEWlUBxW1O-58">
+          <mxGeometry x="9" y="144" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-66" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;fontFamily=Sarasa Mono SC;" vertex="1" parent="7yiq34vByzXEWlUBxW1O-58">
+          <mxGeometry width="140" height="212" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-67" value="线程/进程-3" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontFamily=Sarasa Mono SC;" vertex="1" parent="7yiq34vByzXEWlUBxW1O-58">
+          <mxGeometry x="63" y="196" width="77" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-48" value="" style="group;fontFamily=Sarasa Mono SC;" vertex="1" connectable="0" parent="1">
+          <mxGeometry y="60" width="140" height="212" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-49" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="7yiq34vByzXEWlUBxW1O-48" source="7yiq34vByzXEWlUBxW1O-50" target="7yiq34vByzXEWlUBxW1O-52">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-50" value="执行任务1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Sarasa Mono SC;" vertex="1" parent="7yiq34vByzXEWlUBxW1O-48">
+          <mxGeometry x="29" y="12" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="7yiq34vByzXEWlUBxW1O-48" source="7yiq34vByzXEWlUBxW1O-52" target="7yiq34vByzXEWlUBxW1O-54">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-52" value="执行任务2" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Sarasa Mono SC;" vertex="1" parent="7yiq34vByzXEWlUBxW1O-48">
+          <mxGeometry x="29" y="58" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-53" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="7yiq34vByzXEWlUBxW1O-48" source="7yiq34vByzXEWlUBxW1O-54" target="7yiq34vByzXEWlUBxW1O-55">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-54" value="..." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;fontFamily=Sarasa Mono SC;" vertex="1" parent="7yiq34vByzXEWlUBxW1O-48">
+          <mxGeometry x="29" y="102" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-55" value="所有任务执行完毕&lt;div&gt;&lt;div&gt;声明自己的状态&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Sarasa Mono SC;" vertex="1" parent="7yiq34vByzXEWlUBxW1O-48">
+          <mxGeometry x="9" y="144" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-56" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;fontFamily=Sarasa Mono SC;" vertex="1" parent="7yiq34vByzXEWlUBxW1O-48">
+          <mxGeometry width="140" height="212" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-57" value="线程/进程-1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontFamily=Sarasa Mono SC;" vertex="1" parent="7yiq34vByzXEWlUBxW1O-48">
+          <mxGeometry x="63" y="199" width="77" height="12" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-82" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="1" source="7yiq34vByzXEWlUBxW1O-78" target="7yiq34vByzXEWlUBxW1O-18">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-78" value="在主线程/进程中&lt;div&gt;&lt;div&gt;声明所有线程/进程均需要主线程等待&lt;/div&gt;&lt;div&gt;（阻塞）&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Sarasa Mono SC;" vertex="1" parent="1">
+          <mxGeometry x="290" y="524.5" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-89" value="主线程/进程正式结束" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Sarasa Mono SC;" vertex="1" parent="1">
+          <mxGeometry x="340" y="1109" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-93" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Sarasa Mono SC;" edge="1" parent="1" source="7yiq34vByzXEWlUBxW1O-90" target="7yiq34vByzXEWlUBxW1O-92">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-90" value="在主线程/进程&lt;div&gt;结束之前&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Sarasa Mono SC;" vertex="1" parent="1">
+          <mxGeometry x="340" y="910" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-94" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Sarasa Mono SC;" edge="1" parent="1" source="7yiq34vByzXEWlUBxW1O-92" target="7yiq34vByzXEWlUBxW1O-89">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-92" value="关闭所有&lt;div&gt;没有设置“线程守护”&lt;/div&gt;&lt;div&gt;的线程&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Sarasa Mono SC;" vertex="1" parent="1">
+          <mxGeometry x="340" y="1010" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-95" value="" style="group;fontFamily=Sarasa Mono SC;" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="140" y="60" width="140" height="212" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="7yiq34vByzXEWlUBxW1O-95" source="7yiq34vByzXEWlUBxW1O-22" target="7yiq34vByzXEWlUBxW1O-23">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-22" value="执行任务1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Sarasa Mono SC;" vertex="1" parent="7yiq34vByzXEWlUBxW1O-95">
+          <mxGeometry x="30" y="12" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="7yiq34vByzXEWlUBxW1O-95" source="7yiq34vByzXEWlUBxW1O-23" target="7yiq34vByzXEWlUBxW1O-25">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-23" value="执行任务2" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Sarasa Mono SC;" vertex="1" parent="7yiq34vByzXEWlUBxW1O-95">
+          <mxGeometry x="30" y="58" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="7yiq34vByzXEWlUBxW1O-95" source="7yiq34vByzXEWlUBxW1O-25" target="7yiq34vByzXEWlUBxW1O-26">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-25" value="..." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;fontFamily=Sarasa Mono SC;" vertex="1" parent="7yiq34vByzXEWlUBxW1O-95">
+          <mxGeometry x="30" y="102" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-26" value="所有任务执行完毕&lt;div&gt;&lt;div&gt;声明自己的状态&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Sarasa Mono SC;" vertex="1" parent="7yiq34vByzXEWlUBxW1O-95">
+          <mxGeometry x="10" y="144" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-33" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;fontFamily=Sarasa Mono SC;" vertex="1" parent="7yiq34vByzXEWlUBxW1O-95">
+          <mxGeometry width="140" height="212" as="geometry" />
+        </mxCell>
+        <mxCell id="7yiq34vByzXEWlUBxW1O-45" value="线程/进程-2" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontFamily=Sarasa Mono SC;" vertex="1" parent="7yiq34vByzXEWlUBxW1O-95">
+          <mxGeometry x="63" y="196" width="77" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="fU0nQYWMUvTh28BO4Xrq-11" value="是" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="1" source="fU0nQYWMUvTh28BO4Xrq-8" target="7yiq34vByzXEWlUBxW1O-19">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="lZ1AnM1X-497Efx3Dq5--1" value="否" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="1" source="fU0nQYWMUvTh28BO4Xrq-8">
+          <mxGeometry x="-0.2177" relative="1" as="geometry">
+            <mxPoint x="400" y="600" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="280" y="730" />
+              <mxPoint x="280" y="600" />
+            </Array>
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fU0nQYWMUvTh28BO4Xrq-8" value="所有线程&lt;div&gt;是否都执行完毕&lt;/div&gt;" style="rhombus;whiteSpace=wrap;html=1;fontFamily=Sarasa Mono SC;" vertex="1" parent="1">
+          <mxGeometry x="330" y="690" width="140" height="80" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="异步" id="dX5mAPdwl5t7ZyiTKzjN">
+    <mxGraphModel dx="1652" dy="958" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="mbK7YHkTme7d6ge4fecC-0" />
+        <mxCell id="mbK7YHkTme7d6ge4fecC-1" parent="mbK7YHkTme7d6ge4fecC-0" />
+        <mxCell id="7i_67nksjkMRy4hA10Kd-0" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="mbK7YHkTme7d6ge4fecC-1" source="7i_67nksjkMRy4hA10Kd-1" target="7i_67nksjkMRy4hA10Kd-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-1" value="主线程/主进程" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Sarasa Mono SC;" vertex="1" parent="mbK7YHkTme7d6ge4fecC-1">
+          <mxGeometry x="340" y="40" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="mbK7YHkTme7d6ge4fecC-1" source="7i_67nksjkMRy4hA10Kd-3" target="7i_67nksjkMRy4hA10Kd-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-3" value="创建多个线程/进程&lt;br&gt;（每个线程/进程都被分配了相应的任务）" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Sarasa Mono SC;" vertex="1" parent="mbK7YHkTme7d6ge4fecC-1">
+          <mxGeometry x="340" y="140" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Sarasa Mono SC;" edge="1" parent="mbK7YHkTme7d6ge4fecC-1" source="7i_67nksjkMRy4hA10Kd-7" target="7i_67nksjkMRy4hA10Kd-41">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-7" value="执行主线程/进程中&lt;div&gt;其他代码&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Sarasa Mono SC;" vertex="1" parent="mbK7YHkTme7d6ge4fecC-1">
+          <mxGeometry x="340" y="630" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="mbK7YHkTme7d6ge4fecC-1" source="7i_67nksjkMRy4hA10Kd-10" target="7i_67nksjkMRy4hA10Kd-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-10" value="&lt;div&gt;启动&lt;/div&gt;线程/进程1" style="label;whiteSpace=wrap;html=1;image=img/clipart/Gear_128x128.png;fontFamily=Sarasa Mono SC;" vertex="1" parent="mbK7YHkTme7d6ge4fecC-1">
+          <mxGeometry x="340" y="236" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Sarasa Mono SC;" edge="1" parent="mbK7YHkTme7d6ge4fecC-1" source="7i_67nksjkMRy4hA10Kd-13" target="7i_67nksjkMRy4hA10Kd-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-13" value="&lt;div&gt;启动&lt;/div&gt;线程/进程2" style="label;whiteSpace=wrap;html=1;image=img/clipart/Gear_128x128.png;fontFamily=Sarasa Mono SC;" vertex="1" parent="mbK7YHkTme7d6ge4fecC-1">
+          <mxGeometry x="340" y="330" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="mbK7YHkTme7d6ge4fecC-1" source="7i_67nksjkMRy4hA10Kd-16" target="7i_67nksjkMRy4hA10Kd-38">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-16" value="&lt;div&gt;启动&lt;/div&gt;线程/进程3" style="label;whiteSpace=wrap;html=1;image=img/clipart/Gear_128x128.png;fontFamily=Sarasa Mono SC;" vertex="1" parent="mbK7YHkTme7d6ge4fecC-1">
+          <mxGeometry x="340" y="430" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-17" value="" style="group;fontFamily=Sarasa Mono SC;" vertex="1" connectable="0" parent="mbK7YHkTme7d6ge4fecC-1">
+          <mxGeometry y="272" width="140" height="212" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="7i_67nksjkMRy4hA10Kd-17" source="7i_67nksjkMRy4hA10Kd-19" target="7i_67nksjkMRy4hA10Kd-21">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-19" value="执行任务1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Sarasa Mono SC;" vertex="1" parent="7i_67nksjkMRy4hA10Kd-17">
+          <mxGeometry x="29" y="12" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="7i_67nksjkMRy4hA10Kd-17" source="7i_67nksjkMRy4hA10Kd-21" target="7i_67nksjkMRy4hA10Kd-23">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-21" value="执行任务2" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Sarasa Mono SC;" vertex="1" parent="7i_67nksjkMRy4hA10Kd-17">
+          <mxGeometry x="29" y="58" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="7i_67nksjkMRy4hA10Kd-17" source="7i_67nksjkMRy4hA10Kd-23" target="7i_67nksjkMRy4hA10Kd-24">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-23" value="..." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;fontFamily=Sarasa Mono SC;" vertex="1" parent="7i_67nksjkMRy4hA10Kd-17">
+          <mxGeometry x="29" y="102" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-24" value="所有任务执行完毕&lt;div&gt;&lt;div&gt;声明自己的状态&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Sarasa Mono SC;" vertex="1" parent="7i_67nksjkMRy4hA10Kd-17">
+          <mxGeometry x="9" y="144" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-25" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;fontFamily=Sarasa Mono SC;" vertex="1" parent="7i_67nksjkMRy4hA10Kd-17">
+          <mxGeometry width="140" height="212" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-26" value="线程/进程-3" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontFamily=Sarasa Mono SC;" vertex="1" parent="7i_67nksjkMRy4hA10Kd-17">
+          <mxGeometry x="63" y="196" width="77" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-27" value="" style="group;fontFamily=Sarasa Mono SC;" vertex="1" connectable="0" parent="mbK7YHkTme7d6ge4fecC-1">
+          <mxGeometry y="60" width="140" height="212" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="7i_67nksjkMRy4hA10Kd-27" source="7i_67nksjkMRy4hA10Kd-29" target="7i_67nksjkMRy4hA10Kd-31">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-29" value="执行任务1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Sarasa Mono SC;" vertex="1" parent="7i_67nksjkMRy4hA10Kd-27">
+          <mxGeometry x="29" y="12" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-30" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="7i_67nksjkMRy4hA10Kd-27" source="7i_67nksjkMRy4hA10Kd-31" target="7i_67nksjkMRy4hA10Kd-33">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-31" value="执行任务2" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Sarasa Mono SC;" vertex="1" parent="7i_67nksjkMRy4hA10Kd-27">
+          <mxGeometry x="29" y="58" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="7i_67nksjkMRy4hA10Kd-27" source="7i_67nksjkMRy4hA10Kd-33" target="7i_67nksjkMRy4hA10Kd-34">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-33" value="..." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;fontFamily=Sarasa Mono SC;" vertex="1" parent="7i_67nksjkMRy4hA10Kd-27">
+          <mxGeometry x="29" y="102" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-34" value="所有任务执行完毕&lt;div&gt;&lt;div&gt;声明自己的状态&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Sarasa Mono SC;" vertex="1" parent="7i_67nksjkMRy4hA10Kd-27">
+          <mxGeometry x="9" y="144" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-35" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;fontFamily=Sarasa Mono SC;" vertex="1" parent="7i_67nksjkMRy4hA10Kd-27">
+          <mxGeometry width="140" height="212" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-36" value="线程/进程-1" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontFamily=Sarasa Mono SC;" vertex="1" parent="7i_67nksjkMRy4hA10Kd-27">
+          <mxGeometry x="63" y="199" width="77" height="12" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-57" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="mbK7YHkTme7d6ge4fecC-1" source="7i_67nksjkMRy4hA10Kd-38" target="7i_67nksjkMRy4hA10Kd-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-38" value="在主线程/进程中&lt;div&gt;&lt;div&gt;声明所有线程/进程均&lt;font color=&quot;#ff0000&quot;&gt;不&lt;/font&gt;需要主线程等待&lt;/div&gt;&lt;div&gt;（&lt;font color=&quot;#ff0000&quot;&gt;不&lt;/font&gt;阻塞）&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Sarasa Mono SC;" vertex="1" parent="mbK7YHkTme7d6ge4fecC-1">
+          <mxGeometry x="290" y="524.5" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-39" value="主线程/进程正式结束" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Sarasa Mono SC;" vertex="1" parent="mbK7YHkTme7d6ge4fecC-1">
+          <mxGeometry x="340" y="919" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-40" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Sarasa Mono SC;" edge="1" parent="mbK7YHkTme7d6ge4fecC-1" source="7i_67nksjkMRy4hA10Kd-41" target="7i_67nksjkMRy4hA10Kd-43">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-41" value="在主线程/进程&lt;div&gt;结束之前&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Sarasa Mono SC;" vertex="1" parent="mbK7YHkTme7d6ge4fecC-1">
+          <mxGeometry x="340" y="720" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-42" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Sarasa Mono SC;" edge="1" parent="mbK7YHkTme7d6ge4fecC-1" source="7i_67nksjkMRy4hA10Kd-43" target="7i_67nksjkMRy4hA10Kd-39">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-43" value="关闭所有&lt;div&gt;没有设置“线程守护”&lt;/div&gt;&lt;div&gt;的线程&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Sarasa Mono SC;" vertex="1" parent="mbK7YHkTme7d6ge4fecC-1">
+          <mxGeometry x="340" y="820" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-44" value="" style="group;fontFamily=Sarasa Mono SC;" vertex="1" connectable="0" parent="mbK7YHkTme7d6ge4fecC-1">
+          <mxGeometry x="140" y="60" width="140" height="212" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-45" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="7i_67nksjkMRy4hA10Kd-44" source="7i_67nksjkMRy4hA10Kd-46" target="7i_67nksjkMRy4hA10Kd-48">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-46" value="执行任务1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Sarasa Mono SC;" vertex="1" parent="7i_67nksjkMRy4hA10Kd-44">
+          <mxGeometry x="30" y="12" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-47" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="7i_67nksjkMRy4hA10Kd-44" source="7i_67nksjkMRy4hA10Kd-48" target="7i_67nksjkMRy4hA10Kd-50">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-48" value="执行任务2" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Sarasa Mono SC;" vertex="1" parent="7i_67nksjkMRy4hA10Kd-44">
+          <mxGeometry x="30" y="58" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-49" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontFamily=Sarasa Mono SC;" edge="1" parent="7i_67nksjkMRy4hA10Kd-44" source="7i_67nksjkMRy4hA10Kd-50" target="7i_67nksjkMRy4hA10Kd-51">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-50" value="..." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;fontFamily=Sarasa Mono SC;" vertex="1" parent="7i_67nksjkMRy4hA10Kd-44">
+          <mxGeometry x="30" y="102" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-51" value="所有任务执行完毕&lt;div&gt;&lt;div&gt;声明自己的状态&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Sarasa Mono SC;" vertex="1" parent="7i_67nksjkMRy4hA10Kd-44">
+          <mxGeometry x="10" y="144" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-52" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;fontFamily=Sarasa Mono SC;" vertex="1" parent="7i_67nksjkMRy4hA10Kd-44">
+          <mxGeometry width="140" height="212" as="geometry" />
+        </mxCell>
+        <mxCell id="7i_67nksjkMRy4hA10Kd-53" value="线程/进程-2" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1;fontFamily=Sarasa Mono SC;" vertex="1" parent="7i_67nksjkMRy4hA10Kd-44">
+          <mxGeometry x="63" y="196" width="77" height="16" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
