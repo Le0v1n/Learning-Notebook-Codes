@@ -1,57 +1,64 @@
 ﻿# 1. 软件名称及其链接
 
-1. <kbd>IDE</kbd> ：[VSCode](https://code.visualstudio.com/)
+## 1.1 常用软件
+
+1. <kbd>输入法</kbd>：[搜狗输入法](https://pinyin.sogou.com/mac/)
 2. <kbd>解压软件</kbd>：[7-zip](https://www.7-zip.org/)
 3. <kbd>卸载软件</kbd>：[Geek Uninstaller](https://geekuninstaller.com/)
-4. <kbd>录屏</kbd>：[OBS Studio](https://obsproject.com/)
+4.  <kbd>QQ</kbd>：[QQ](https://im.qq.com/index/)
+5. <kbd>微信</kbd>：[微信](https://weixin.qq.com/)
+6. <kbd>网易云音乐客户端</kbd>：[网易云音乐](https://music.163.com/#/download)
+7. <kbd>酷狗音乐客户端</kbd>：[酷狗音乐](https://download.kugou.com/)
+8. <kbd>剪切板历史</kbd>：[Ditto](https://ditto-cp.sourceforge.io/)
+9. <kbd>视频播放器</kbd>：🌟[VLC](https://www.videolan.org/) | [PotPlayer](http://www.potplayercn.com/download)
+10. <kbd>云盘</kbd>：[阿里云盘](https://www.aliyundrive.com/)
+11. <kbd>Markdown 文档编写（本地）</kbd>：[VSCode](https://code.visualstudio.com/) | [Typora](https://typoraio.cn/)
+12. <kbd>Markdown 文档编写（云端）</kbd>：[语雀](https://www.yuque.com/about)（邀请码 SGXMFL :smile:）
+13. <kbd>图形绘制</kbd>：[draw.io(客户端)](https://github.com/jgraph/drawio/releases) | [draw.io(Web)](https://app.diagrams.net/)
+14. <kbd>截屏</kbd>：[Snipaste](https://www.snipaste.com/)
+15. <kbd>Office 公式编写</kbd>：MathType
+16. <kbd>邮箱</kbd>：[网易邮箱大师](https://dashi.163.com/download.html)
+17. <kbd>本地搜索文件</kbd>：[Everything](https://www.voidtools.com/zh-cn/)
+18. <kbd>桌面助手</kbd>：[360桌面助手](http://www.360.cn/desktop/)
+19. <kbd>远程连接</kbd>：[To Desk](https://www.todesk.com/)
+20. <kbd>按空格快速预览文件</kbd>：[QuickLook](https://github.com/QL-Win/QuickLook)
+21. <kbd>右键管理</kbd>：[ContextMenuManager](https://github.com/BluePointLilac/ContextMenuManager)
+22. <kbd>Windows 10 任务栏居中</kbd>：[StartIsBack++](https://www.ghxi.com/startisback.html)
+23. <kbd>Windows 10/11 资源监控</kbd>：[TrafficMonitor](https://github.com/zhongyang219/TrafficMonitor)（下载 x64 即可）
+24. <kbd>等宽字体推荐</kbd>：[Sarasa Mono SC](https://github.com/be5invis/Sarasa-Gothic)（在 VSCode 中，中文是英文宽度的两倍，实现完美排版）
+25. <kbd>Steam 客户端</kbd>：[Steam](https://store.steampowered.com/about/)
+26. <kbd>WeGame</kbd>：[WeGame](https://www.wegame.com.cn/home/)
+27. <kbd>录屏</kbd>：[OBS Studio](https://obsproject.com/)
+28. <kbd>GIF录制</kbd>：[GifCam](https://gifcam.en.softonic.com/) | 🌟[Gif123](https://github.com/aardio/Gif123)
+29. <kbd>WPS</kbd>：[WPS](https://www.wps.cn/)
+
+## 1.2 编程相关
+1. <kbd>IDE</kbd> ：[VSCode](https://code.visualstudio.com/)
+2. <kbd>文本编辑器</kbd>：[Notepad++](https://github.com/notepad-plus-plus/notepad-plus-plus)
+3. <kbd>Anaconda</kbd>：[Anaconda](https://www.anaconda.com/download)
+4. <kbd>模型权重查看</kbd>：[Netron(客户端)](https://github.com/lutzroeder/netron) | [Netron(Web版)](https://netron.app/)
 5. <kbd>终端</kbd>：[Git Bash](https://blog.csdn.net/weixin_44878336/article/details/132698736)
-6. <kbd>输入法</kbd>：[搜狗输入法](https://pinyin.sogou.com/mac/)
-7. <kbd>中英文浮窗显示</kbd>：[ImTip ( 通用输入法状态跟踪提示 )](https://github.com/aardio/ImTip)
-8. <kbd>GIF录制</kbd>：[GifCam](https://gifcam.en.softonic.com/) | 🌟[Gif123](https://github.com/aardio/Gif123)
-9. <kbd>Markdown 文档编写（本地）</kbd>：[VSCode](https://code.visualstudio.com/) | [Typora](https://typoraio.cn/)
-10. <kbd>Markdown 文档编写（云端）</kbd>：[语雀](https://www.yuque.com/about)（邀请码 SGXMFL :smile:）
-11. <kbd>回到桌面（不影响副屏）</kbd>：[ShowDesktopOneMonitor](https://github.com/ruzrobert/ShowDesktopOneMonitor)
-12. <kbd>文本格式化工具</kbd>： [Reformat-Text-for-Clips](https://github.com/Le0v1n/Reformat-Text-for-Clips)
-13. <kbd>将图片转换为图标</kbd>：[image2ico](https://github.com/Le0v1n/image2ico)
-14. <kbd>模型权重查看</kbd>：[Netron(客户端)](https://github.com/lutzroeder/netron) | [Netron(Web版)](https://netron.app/)
-15. <kbd>图形绘制</kbd>：[draw.io(客户端)](https://github.com/jgraph/drawio/releases) | [draw.io(Web)](https://app.diagrams.net/)
-16. <kbd>图片查看</kbd>[JPEGView](https://github.com/sylikc/jpegview#formats-supported)
-17. <kbd>剪切板历史</kbd>：[Ditto](https://ditto-cp.sourceforge.io/)
-18. <kbd>截屏</kbd>：[Snipaste](https://www.snipaste.com/)
-19. <kbd>Office 公式编写</kbd>：MathType
-20. <kbd>邮箱</kbd>：[网易邮箱大师](https://dashi.163.com/download.html)
-21. <kbd>本地搜索文件</kbd>：[Everything](https://www.voidtools.com/zh-cn/)
-22. <kbd>音乐播放下载器</kbd>：[lx-music-desktop](https://github.com/lyswhut/lx-music-desktop)
-23. <kbd>视频播放器</kbd>：🌟[VLC](https://www.videolan.org/) | [PotPlayer](http://www.potplayercn.com/download)
-24. <kbd>视频剪切</kbd>：[FFmpeg](https://github.com/BtbN/FFmpeg-Builds)
-25. <kbd>桌面助手</kbd>：[360桌面助手](http://www.360.cn/desktop/)
-26. <kbd>云盘</kbd>：[阿里云盘](https://www.aliyundrive.com/)
-27. <kbd>远程连接</kbd>：[To Desk](https://www.todesk.com/)
-28. <kbd>SSH 远程连接</kbd>：[VSCode](https://code.visualstudio.com/) | [MobaXterm](https://mobaxterm.mobatek.net/) | [MobaXterm-汉化版](https://github.com/RipplePiam/MobaXterm-Chinese-Simplified)
-29. <kbd>待办事项</kbd>：[滴答清单(Web)](https://www.dida365.com/webapp/#q/all/tasks) | [滴答清单(客户端)](https://www.dida365.com/about/download)
-30. <kbd>铃声制作</kbd>：[酷狗铃声制作专家(需下载酷狗音乐)](https://download.kugou.com/)
-31. <kbd>视频剪辑</kbd>：[剪映专业版](https://www.capcut.cn/)
-32. <kbd>手机与电脑传输文件</kbd>：[KDE Connect](https://kdeconnect.kde.org/) | [LANDrop](https://landrop.app/#downloads)
-33. <kbd>平板充当电脑副屏</kbd>：[SpaceDesk](https://www.spacedesk.net/zh/)
-34. <kbd>按空格快速预览文件</kbd>：[QuickLook](https://github.com/QL-Win/QuickLook)
-35. <kbd>右键管理</kbd>：[ContextMenuManager](https://github.com/BluePointLilac/ContextMenuManager)
-36. <kbd>Windows 10 音量模块修改</kbd>（<font color='red'>有 Bug：多媒体暂停和继续播放无效</font>）：[ModernFlyouts](https://github.com/ModernFlyouts-Community/ModernFlyouts)
-37. <kbd>Windows 10 任务栏居中</kbd>：[StartIsBack++](https://www.ghxi.com/startisback.html)
-38. <kbd>Windows 10/11 资源监控</kbd>：[TrafficMonitor](https://github.com/zhongyang219/TrafficMonitor)（下载 x64 即可）
-39. <kbd>哔哩哔哩视频下载</kbd>：[BBDown](https://github.com/nilaoda/BBDown)
-40. <kbd>等宽字体推荐</kbd>：[Sarasa Mono SC](https://github.com/be5invis/Sarasa-Gothic)（在 VSCode 中，中文是英文宽度的两倍，实现完美排版）
-41. <kbd>快速预览文件内容</kbd>：[QuickLook](https://github.com/QL-Win/QuickLook)（在 Windows 系统中实现像 MAC 那样按空格预览文件）
-42. <kbd>文本编辑器</kbd>：[Notepad++](https://github.com/notepad-plus-plus/notepad-plus-plus)
-43. <kbd>按键显示软件</kbd>：[Keyviz](https://github.com/mulaRahul/keyviz)（可以显示当前按下的按键）
-44. <kbd>GitHub 客户端</kbd>：[GitHub Desktop](https://desktop.github.com/)
-45. <kbd>Git</kbd>：[Git](https://git-scm.com/downloads)
-46. <kbd>Anaconda</kbd>：[Anaconda](https://www.anaconda.com/download)
-47. <kbd>微信</kbd>：[微信](https://weixin.qq.com/)
-48. <kbd>QQ</kbd>：[QQ](https://im.qq.com/index/)
-49. <kbd>Steam 客户端</kbd>：[Steam](https://store.steampowered.com/about/)
-50. <kbd>网易云音乐客户端</kbd>：[网易云音乐](https://music.163.com/#/download)
-51. <kbd>酷狗音乐客户端</kbd>：[酷狗音乐](https://download.kugou.com/)
-52. <kbd>WeGame</kbd>：[WeGame](https://www.wegame.com.cn/home/)
+6. <kbd>SSH 远程连接</kbd>：[VSCode](https://code.visualstudio.com/) | [MobaXterm](https://mobaxterm.mobatek.net/) | [MobaXterm-汉化版](https://github.com/RipplePiam/MobaXterm-Chinese-Simplified)
+7. <kbd>GitHub 客户端</kbd>：[GitHub Desktop](https://desktop.github.com/)
+9. <kbd>Git</kbd>：[Git](https://git-scm.com/downloads)
+10. <kbd>ffmpeg</kbd>：[ffmpeg](https://www.gyan.dev/ffmpeg/builds/)
+
+## 1.3 可选软件
+1. <kbd>回到桌面（不影响副屏）</kbd>：[ShowDesktopOneMonitor](https://github.com/ruzrobert/ShowDesktopOneMonitor)
+2. <kbd>中英文浮窗显示</kbd>：[ImTip ( 通用输入法状态跟踪提示 )](https://github.com/aardio/ImTip)
+4. <kbd>文本格式化工具</kbd>： [Reformat-Text-for-Clips](https://github.com/Le0v1n/Reformat-Text-for-Clips)
+5. <kbd>将图片转换为图标</kbd>：[image2ico](https://github.com/Le0v1n/image2ico)
+6. <kbd>图片查看</kbd>[JPEGView](https://github.com/sylikc/jpegview#formats-supported)
+7. <kbd>音乐播放下载器</kbd>：[lx-music-desktop](https://github.com/lyswhut/lx-music-desktop)
+8. <kbd>视频剪切</kbd>：[FFmpeg](https://github.com/BtbN/FFmpeg-Builds)
+9.  <kbd>待办事项</kbd>：[滴答清单(Web)](https://www.dida365.com/webapp/#q/all/tasks) | [滴答清单(客户端)](https://www.dida365.com/about/download)
+10. <kbd>铃声制作</kbd>：[酷狗铃声制作专家(需下载酷狗音乐)](https://download.kugou.com/)
+11. <kbd>视频剪辑</kbd>：[剪映专业版](https://www.capcut.cn/)
+12. <kbd>手机与电脑传输文件</kbd>：[KDE Connect](https://kdeconnect.kde.org/) | [LANDrop](https://landrop.app/#downloads)
+13. <kbd>平板充当电脑副屏</kbd>：[SpaceDesk](https://www.spacedesk.net/zh/)
+14. <kbd>Windows 10 音量模块修改</kbd>（<font color='red'>有 Bug：多媒体暂停和继续播放无效</font>）：[ModernFlyouts](https://github.com/ModernFlyouts-Community/ModernFlyouts)
+15. <kbd>哔哩哔哩视频下载</kbd>：[BBDown](https://github.com/nilaoda/BBDown)
+16. <kbd>按键显示软件</kbd>：[Keyviz](https://github.com/mulaRahul/keyviz)（可以显示当前按下的按键）
 
 # 2. 常用网站
 
@@ -194,6 +201,17 @@ width=40%>
 # 5. 软件使用
 
 ## 5.1 FFmpeg
+
+### 5.1.0 安装
+
+参考：[【最新】windows电脑FFmpeg安装教程手把手详解](https://www.cnblogs.com/wwwwariana/p/18191233)
+
+1. 软件下载链接：[ffmpeg](https://www.gyan.dev/ffmpeg/builds/)
+2. 下载 [ffmpeg-release-full.7z](https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-full.7z)
+3. 解压缩
+4. 放到合适的盘符中
+5. 复制`bin`文件夹的路径
+6. 将其添加到系统环境变量`Path`中，例如：`D:\Downloads\ffmpeg-7.0.1-full_build\bin`。
 
 ### 5.1.1 压缩视频
 
