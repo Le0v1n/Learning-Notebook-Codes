@@ -33,7 +33,7 @@ def get_opts():
     parser = argparse.ArgumentParser(description='The example for Le0v1n article')
 
     # 为解析器对象添加参数
-    parser.add_argument('--mode', action='store_const', const='DEBUG', default='INFO', help='Set the mode to const value')
+    parser.add_argument('--items', '-i', action='append', default=['Le0v1n'], help='可以多次指定的参数')
 
     # 让解析器对象解析参数
     args = parser.parse_args()
