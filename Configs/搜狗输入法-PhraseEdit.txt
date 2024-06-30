@@ -104,6 +104,7 @@ font,4=<font color='red'></font>
 glasses,5=👓
 hehe,5=🙂
 ho,5=🔥
+hojm,5=🚀
 hxji,5=🤪
 img,5=
 <a></a>
@@ -159,6 +160,7 @@ python,5=
 
 qkhxyr,5=-i https://pypi.tuna.tsinghua.edu.cn/simple
 re,5=🔥
+rocket,5=🚀
 sh,5=↑
 shit,5=💩
 soon,5=🔜
@@ -185,6 +187,7 @@ wfjmjx,5=📂
 wjj,5=📂
 worry,5=😟
 xb,5=🧡
+xkqq,5=🪐
 xkxk,5=🌟
 xn,5=🤣
 xn,4=😄
@@ -209,7 +212,10 @@ Python,5=
 ```python
 
 ```
-QA,5=
-<kbd><b>Question</b></kbd>：
+QA,3=
+🤔 𝑸𝒖𝒆𝒔𝒕𝒊𝒐𝒏：
+🥳 𝑨𝒏𝒔𝒘𝒆𝒓：
 
-<kbd><b>Answer</b></kbd>：
+QA,2=
+<kbd>🤔 𝑸𝒖𝒆𝒔𝒕𝒊𝒐𝒏</kbd>：
+<kbd>🥳 𝑨𝒏𝒔𝒘𝒆𝒓</kbd>：
