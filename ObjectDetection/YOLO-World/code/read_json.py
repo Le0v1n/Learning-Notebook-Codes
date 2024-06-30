@@ -8,7 +8,7 @@ def read_json(jsonfile: Path) -> dict:
     
     
 if __name__ == "__main__":
-    json_path = Path('ObjectDetection/YOLO-World/code/lvis-demo.json')
+    json_path = Path('ObjectDetection/YOLO-World/code/instances_val2017.json')
     json_dict = read_json(json_path)
     
     # print(f"{json_dict.keys()}")
