@@ -32,10 +32,10 @@ def get_opts():
     # 创建一个解析器对象
     parser = argparse.ArgumentParser(description='The example for Le0v1n article')
 
-    # 为解析器对象添加参数
-    parser.add_argument('--items', '-i', action='append', default=['Le0v1n'], help='可以多次指定的参数')
-
-    # 让解析器对象解析参数
+    parser.add_argument('--input', '-i', nargs='+', help='输入文件路径（至少有一个参数）')
+    parser.add_argument('--output', '-o', nargs=1, help='输出文件路径（只能有一个）')
+    parser.add_argument('--log_level', '-log', nargs='?', default='INFO', type=str, choices=['INFO', 'DEBUG', 'WARNING', 'ERROR', 'CRITICAL'], help='日常级别，默认为INFO')
+    
     args = parser.parse_args()
     
     return args, parser
