@@ -31,6 +31,7 @@
 27. <kbd>录屏</kbd>：[OBS Studio](https://obsproject.com/)
 28. <kbd>GIF录制</kbd>：[GifCam](https://gifcam.en.softonic.com/) | 🌟[Gif123](https://github.com/aardio/Gif123)
 29. <kbd>WPS</kbd>：[WPS](https://www.wps.cn/)
+30. <kbd>思维导图</kbd>：[Xmind](https://xmind.cn/)
 
 ## 1.2 编程相关
 1. <kbd>IDE</kbd> ：[VSCode](https://code.visualstudio.com/)
@@ -205,12 +206,11 @@ width=40%>
 
 参考：[【最新】windows电脑FFmpeg安装教程手把手详解](https://www.cnblogs.com/wwwwariana/p/18191233)
 
-1. 软件下载链接：[ffmpeg](https://www.gyan.dev/ffmpeg/builds/)
-2. 下载 [ffmpeg-release-full.7z](https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-full.7z)
-3. 解压缩
-4. 放到合适的盘符中
-5. 复制`bin`文件夹的路径
-6. 将其添加到系统环境变量`Path`中，例如：`D:\Downloads\ffmpeg-7.0.1-full_build\bin`。
+1. 下载 [ffmpeg-release-full.7z](https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-full.7z)
+2. 解压缩
+3. 放到合适的盘符中
+4. 复制`bin`文件夹的路径
+5. 将其添加到系统环境变量`Path`中，例如：`D:\Downloads\ffmpeg-7.0.1-full_build\bin`。
 
 ### 5.1.1 压缩视频
 
