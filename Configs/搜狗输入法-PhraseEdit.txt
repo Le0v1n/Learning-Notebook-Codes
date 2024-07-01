@@ -49,6 +49,7 @@
 
 a,5=😦
 aa,5=😦
+anchor,5=<a id=></a>
 angry,5=😠
 bash,5=
 ```bash
