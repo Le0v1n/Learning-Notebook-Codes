@@ -24,7 +24,7 @@
 20. <kbd>按空格快速预览文件</kbd>：[QuickLook](https://github.com/QL-Win/QuickLook)
 21. <kbd>右键管理</kbd>：[ContextMenuManager](https://github.com/BluePointLilac/ContextMenuManager)
 22. <kbd>Windows 10 任务栏居中</kbd>：[StartIsBack++](https://www.ghxi.com/startisback.html)
-23. <kbd>Windows 10/11 资源监控</kbd>：[TrafficMonitor](https://github.com/zhongyang219/TrafficMonitor)（下载 x64 即可）
+23. <kbd>Windows 10/11 资源监控</kbd>：[TrafficMonitor](https://github.com/zhongyang219/TrafficMonitor)（下载 x64 即可，Windows11可能有点小问题，但还是好用）
 24. <kbd>等宽字体推荐</kbd>：[Sarasa Mono SC](https://github.com/be5invis/Sarasa-Gothic)（在 VSCode 中，中文是英文宽度的两倍，实现完美排版）
 25. <kbd>Steam 客户端</kbd>：[Steam](https://store.steampowered.com/about/)
 26. <kbd>WeGame</kbd>：[WeGame](https://www.wegame.com.cn/home/)
@@ -37,11 +37,11 @@
 2. <kbd>文本编辑器</kbd>：[Notepad++](https://github.com/notepad-plus-plus/notepad-plus-plus)
 3. <kbd>Anaconda</kbd>：[Anaconda](https://www.anaconda.com/download)
 4. <kbd>模型权重查看</kbd>：[Netron(客户端)](https://github.com/lutzroeder/netron) | [Netron(Web版)](https://netron.app/)
-5. <kbd>终端</kbd>：[Git Bash](https://blog.csdn.net/weixin_44878336/article/details/132698736)
+5. <kbd>终端</kbd>：🌟[Tabby](https://tabby.sh/) | [Git Bash](https://blog.csdn.net/weixin_44878336/article/details/132698736)
 6. <kbd>SSH 远程连接</kbd>：[VSCode](https://code.visualstudio.com/) | [MobaXterm](https://mobaxterm.mobatek.net/) | [MobaXterm-汉化版](https://github.com/RipplePiam/MobaXterm-Chinese-Simplified)
 7. <kbd>GitHub 客户端</kbd>：[GitHub Desktop](https://desktop.github.com/)
-9. <kbd>Git</kbd>：[Git](https://git-scm.com/downloads)
-10. <kbd>ffmpeg</kbd>：[ffmpeg](https://www.gyan.dev/ffmpeg/builds/)
+8. <kbd>Git</kbd>：[Git](https://git-scm.com/downloads)
+9.  <kbd>ffmpeg</kbd>：[ffmpeg](https://www.gyan.dev/ffmpeg/builds/)（安装请见[FFMPEG安装](#FFMPEG安装)）
 
 ## 1.3 可选软件
 1. <kbd>回到桌面（不影响副屏）</kbd>：[ShowDesktopOneMonitor](https://github.com/ruzrobert/ShowDesktopOneMonitor)
@@ -63,7 +63,6 @@
 # 2. 常用网站
 
 1. [NVIDIA 显卡驱动下载](https://www.nvidia.cn/geforce/drivers/)
-
 
 # 3. VSCode 配置
 ## 3.1 VSCode 插件
@@ -202,7 +201,7 @@ width=40%>
 
 ## 5.1 FFmpeg
 
-### 5.1.0 安装
+### 5.1.0 安装<a id=FFMPEG安装></a>
 
 参考：[【最新】windows电脑FFmpeg安装教程手把手详解](https://www.cnblogs.com/wwwwariana/p/18191233)
 
