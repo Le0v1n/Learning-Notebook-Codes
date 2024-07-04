@@ -15,10 +15,14 @@ YOLO-World 的核心创新点包括：
 
 前置知识包括：
 
-|名称|文内链接|
-|
+| 名称         | 文内链接         |
+| :----------- | :--------------- |
+| 零样本       | [文内链接](#6.1) |
+| CLIP         | [文内链接](#6.2) |
+| 开集目标检测 | [文内链接](#6.3) |
+| LVIS数据集   | [文内链接](#6.4) |
 
-请在文末找到前置知识部分。
+请点击对应链接跳转到本文的对应位置。
 
 # 1. 安装
 
@@ -46,7 +50,7 @@ mim install mmengine=0.10.4
 mim install mmyolo=0.6.0
 ```
 
-如果MMYOLO安装失败，那么从MMYOLO官方仓库下载项目压缩包，之后再：
+<font color='red'><b>如果MMYOLO安装失败</b></font>（安装成功了则不需要了），那么从MMYOLO官方仓库下载项目压缩包，之后再：
 
 ```bash
 # 解压
@@ -59,7 +63,7 @@ mv mmyolo-main mmyolo
 pip install -e mmyolo
 ```
 
-安装完成后再安装其他依赖：
+安装完成后再安装其他依赖（其他MMOpenlab的库如果安装失败，那么也可以使用这样的方式来进行）：
 
 ```bash
 # 安装其他依赖包
@@ -119,8 +123,8 @@ YOLO-World的预训练模型采用了下表列出的几个数据集：
 - **grounding**：将自然语言描述与图像中的具体物体建立联系的过程。
 - **image-text**：涉及将图像内容与相应的文本描述进行匹配的任务，可能包括图像标注、图像描述生成等。
 
-> 🤔 𝑸𝒖𝒆𝒔𝒕𝒊𝒐𝒏：grounding和image-text有什么区别？
-> 🥳 𝑨𝒏𝒔𝒘𝒆𝒓：在视觉领域，"grounding"和"image-text"是两个相关但有所区别的概念：
+🤔 𝑸𝒖𝒆𝒔𝒕𝒊𝒐𝒏：grounding和image-text有什么区别？
+🥳 𝑨𝒏𝒔𝒘𝒆𝒓：在视觉领域，"grounding"和"image-text"是两个相关但有所区别的概念：
 
 1. **Grounding**：
    - 在视觉接地（Visual Grounding）任务中，"grounding"指的是将文本描述中的词汇或短语与图像中的具体物体或场景相匹配的过程。这通常涉及到理解和关联语言描述与视觉信息，以识别图像中与文本描述相对应的物体或区域。
@@ -1832,7 +1836,7 @@ bash tools/dist_train.sh \
 需要通过 `tools/generate_text_prompts.py` 生成文本嵌入并将其保存为形状为 `NxD`的`numpy.array`。
 
 🤔 𝑸𝒖𝒆𝒔𝒕𝒊𝒐𝒏：不是说Re-parameterize Finetuning不再依赖于Text Embedding了吗？为什么我们还要生成这个`ndarray`的嵌入向量？
-🥳 𝑨𝒏𝒔𝒘𝒆𝒓：只是说在训练阶段不再依赖Text Embedding向量，在训练完毕后我们需要
+🥳 𝑨𝒏𝒔𝒘𝒆𝒓：只是说在训练阶段不再依赖Text Embedding向量，在训练开始前我们是需要它的，目的是生成一个嵌入了该向量的模型。
 
 
 #### 2. 重参数化预训练权重
@@ -2283,60 +2287,17 @@ bash tools/dist_train.sh \
 
 暂无。
 
-# 5. 导出为ONNX
+# 5. 前置知识
 
-## 5.1 安装库
+## 5.1 零样本（zero-shot）<a id=6.1></a>
 
-```bash
-pip install supervision onnx onnxruntime onnxsim
-```
-
-## 5.2 模型导出
-
-我们可以使用 `export_onnx.py` 获取ONNX模型。我们可以为自定义提示指定 `--custom-text` 和自己的 `Text JSON`。 `Text JSON` 的格式可以在 `docs/data` 中找到。
-
-```bash
-PYTHONPATH=./ python deploy/export_onnx.py path/to/config path/to/weights --custom-text path/to/customtexts --opset 11
-```
-
-## 5.3 删除NMS
-
-如果我们不想在 ONNX 模型中包含 NMS 或“后处理”，则可以添加 `--without-nms`：
-
-```bash
-PYTHONPATH=./ python deploy/export_onnx.py path/to/config path/to/weights --custom-text path/to/customtexts --opset 11 --without-nms
-```
-
-## 5.4 删除bbox解码器
-
-如果我们想用ONNX模型量化YOLO-World，最好删除 NMS和bbox_decoder 并添加 `--without-bbox-decoder`：
-
-```bash
-PYTHONPATH=./ python deploy/export_onnx.py path/to/config path/to/weights --custom-text path/to/customtexts --opset 11 --without-bbox-decoder
-```
-
-## 5.5 运行 ONNX
-
-```bash
-python deploy/onnx_demo.py path/to/model.onnx path/to/images path/to/texts
-```
-
-## 5.6 FAQ
-
-🤔 𝑸𝒖𝒆𝒔𝒕𝒊𝒐𝒏：`RuntimeError: Exporting the operator einsum to ONNX opset version 11 is not supported. Support for this operator was added in version 12, try exporting with this version.`
-🥳 𝑨𝒏𝒔𝒘𝒆𝒓：出现这个错误是因为 YOLO-World 采用 `einsum` 进行矩阵乘法，而 `opset 11` 不支持。如果我们的设备支持，可以将 `--opset`从11 设置为 12 ，或将 `einsum` 更改为正常 `permute/reshape/multiplication` 通过在 `MaxSigmoidCSPLayerWithTwoConv`和`YOLOWorldHeadModule` 中设置 `use_einsum=False`。我们可以参考不带 `einsum` 的示例配置。
-
-# 6. 前置知识
-
-## 6.1 零样本（zero-shot）
-
-### 6.1.1 概念
+### 5.1.1 概念
 
 零样本学习（zero-shot learning）是机器学习领域中的一种技术，它允许模型在没有接受过<font color='red'><b>特定类别</b></font>训练数据的情况下，识别或预测这些类别。这通常通过利用模型对其他类别的已有知识来实现，或者通过某种形式的语义或属性描述来辅助模型理解新的类别。
 
 > 💡 推荐阅读《[零次学习（Zero-Shot Learning）入门](https://zhuanlan.zhihu.com/p/34656727)》，该文章讲得非常好。
 
-### 6.1.2 FAQ
+### 5.1.2 FAQ
 
 🤔 𝑸𝒖𝒆𝒔𝒕𝒊𝒐𝒏：zero-shot和测试集有什么区别，不都是模型没有见过的吗？
 🥳 𝑨𝒏𝒔𝒘𝒆𝒓：确实，zero-shot learning 和测试集都涉及到模型在面对未见过的数据时的表现，但它们之间存在一些关键的区别：
@@ -2360,9 +2321,9 @@ python deploy/onnx_demo.py path/to/model.onnx path/to/images path/to/texts
   - **one-shot**：如果一个模型只见过一张猫的图片，它可以通过这张图片进行学习，并在之后对新的猫的图像进行分类。one-shot是在非常有限的数据情况下进行学习和推断的一种能力。
   - **few-shot**：如果一个模型仅仅通过观察几个图像，就可以学会识别不同品种的狗，然后能够对新的狗图像进行分类。few-shot要求模型能够从少量示例中抽取出关键特征和模式，以便进行准确的预测。
 
-## 6.2 CLIP（Contrastive Language-Image pre-training）
+## 5.2 CLIP（Contrastive Language-Image pre-training）<a id=6.2></a>
 
-### 6.2.1 介绍
+### 5.2.1 介绍
 
 CLIP（Contrastive Language–Image Pre-training）是一种多模态学习模型，由OpenAI在2021年提出。它的作用主要包括：
 
@@ -2375,7 +2336,7 @@ CLIP（Contrastive Language–Image Pre-training）是一种多模态学习模�
 
 > CLIP模型因其强大的通用性和灵活性，在图像和文本的多模态任务中被广泛研究和应用。
 
-### 6.2.2 输入输出
+### 5.2.2 输入输出
 
 CLIP模型的输入如下：
 
@@ -2392,7 +2353,7 @@ CLIP模型的输出如下：
 
 > CLIP模型的设计使其能够处理多种模态的输入，并在不同的任务中提供有用的输出，这使得它在多模态学习和人工智能领域非常受欢迎。
 
-### 6.2.3 FAQ
+### 5.2.3 FAQ
 
 🤔 𝑸𝒖𝒆𝒔𝒕𝒊𝒐𝒏：CLIP可以只输入一个文本或一张图片吗？
 🥳 𝑨𝒏𝒔𝒘𝒆𝒓：CLIP模型设计时主要是为了处理成对（pair）的输入，即图像和文本的组合，以便学习两者之间的关联。然而，模型的两个主要组件——图像编码器（Image Encoder）和文本编码器（Text Encoder）都是可以独立使用的。
@@ -2405,12 +2366,9 @@ CLIP模型的输出如下：
 
 然而，如果我们想要CLIP模型输出图像与文本的匹配分数，那么就需要同时提供图像和文本的输入。如果只有文本而没有图像，就无法使用CLIP模型来评估图像与文本的一致性或进行零样本分类等任务。
 
-
-### 0.2.2 开集目标检测
+## 5.3 开集目标检测<a id=6.3></a>
 
 > 推荐阅读文章《[Grounding DINO检测一切](https://zhuanlan.zhihu.com/p/664623532)》。
-
-
 
 🤔 𝑸𝒖𝒆𝒔𝒕𝒊𝒐𝒏：zero-shot和开集目标检测有什么关系？
 🥳 𝑨𝒏𝒔𝒘𝒆𝒓：Zero-shot learning（零样本学习）和开集目标检测（Open-set Object Detection）是机器学习领域中的两种不同的概念，但它们在某些方面存在联系：
@@ -2431,16 +2389,7 @@ CLIP模型的输出如下：
 
 总的来说，零样本学习和开集目标检测都涉及到模型对未知类别的处理，但它们的焦点和目标略有不同。零样本学习更侧重于识别新类别，而开集目标检测更侧重于区分已知和未知类别。尽管如此，两者在提高模型泛化能力和处理未知类别方面存在一定的联系。
 
-
-
-
-
-
-
-
-
-
-## 6.3 LVIS数据集
+## 5.4 LVIS数据集<a id=6.4></a>
 
 LVIS（Large Vocabulary Instance Segmentation）数据集是由Facebook AI Research (FAIR)开发并发布的一个大规模细粒度词汇级标记数据集。这个数据集专门用于对象检测和实例分割的研究基准，它包含了超过1000类物体的约200万个高质量的实例分割标注，涵盖了164k大小的图像。
 
@@ -2453,7 +2402,7 @@ LVIS（Large Vocabulary Instance Segmentation）数据集是由Facebook AI Resea
 
 LVIS数据集的构建过程包括六个阶段：目标定位、穷尽标记、实例分割、验证、穷尽标注验证以及负例集标注。数据集的词汇表 V是通过迭代过程构建的，从大型超级词汇表开始，并使用目标定位过程逐步缩小，<font color='red'><b>最终确定包含 1723个同义词的词汇表</b></font>，这也是可以出现在 LVIS中的类别数量的上限。
 
-### 0.2.3 🔥 COCO数据集
+### 5.4.1 🔥 COCO数据集
 
 #### 1. 介绍
 
@@ -2800,10 +2749,9 @@ coco2017
 
 这里可以发现，<font color='red'><b>一张图片不一定只有一个caption，有可能会有多个captions</b></font>。
 
-### 0.2.4 MixedGrounding数据集
+### 5.4.4 MixedGrounding数据集
 
 和传统的目标检测数据集相比，MixedGrounding数据集多了文字描述，即<font color='red'><b>一张图片有一个caption</b></font>。
-
 
 # 参考文献
 
