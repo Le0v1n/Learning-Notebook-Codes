@@ -3,17 +3,18 @@
 // See KeyMap-README.html for more information on how to customize this file.
 
 // Uncomment the following line if you want to exit JPEGView with the Esc key immediately when playing an animation or a slideshow (default behavior: stops animation/slideshow)
-//Esc                     IDM_EXIT
+// Esc                  IDM_EXIT
 PgDn                    IDM_NEXT
 Right                   IDM_NEXT
-D                   IDM_NEXT
+D                       IDM_NEXT
 Left                    IDM_PREV
 PgUp                    IDM_PREV
-A                    IDM_PREV
+A                       IDM_PREV
 Ctrl+Left               IDM_TOGGLE
 Ctrl+Right              IDM_TOGGLE
 Home                    IDM_FIRST
 End                     IDM_LAST
+// Del                  IDM_MOVE_TO_RECYCLE_BIN_CONFIRM
 Del                     IDM_MOVE_TO_RECYCLE_BIN
 Plus                    IDM_ZOOM_INC
 Ctrl+Shift+Plus         IDM_CONTRAST_CORRECTION_INC
@@ -27,8 +28,8 @@ Ctrl+Alt+Minus          IDM_COLOR_CORRECTION_DEC
 Ctrl+Minus              IDM_CONTRAST_DEC
 Shift+Minus             IDM_GAMMA_DEC
 Alt+Minus               IDM_SHARPEN_DEC
-I                      IDM_SHOW_FILEINFO
-Ctrl+I                 IDM_SHOW_FILENAME
+Ctrl+I                  IDM_SHOW_FILEINFO
+Ctrl+F2                 IDM_SHOW_FILENAME
 F3                      IDM_TOGGLE_RESAMPLING_QUALITY
 F4                      IDM_KEEP_PARAMETERS
 F5                      IDM_AUTO_CORRECTION
@@ -70,7 +71,7 @@ Z                       IDM_SORT_RANDOM
 Ctrl+S                  IDM_SAVE_ALLOW_NO_PROMPT
 Ctrl+Shift+S            IDM_SAVE_SCREEN
 S                       IDM_SAVE_PARAM_DB
-//D                       IDM_CLEAR_PARAM_DB
+// D                    IDM_CLEAR_PARAM_DB
 Ctrl+Shift+E            IDM_TOUCH_IMAGE_EXIF
 Ctrl+O                  IDM_OPEN
 Ctrl+P                  IDM_PRINT
