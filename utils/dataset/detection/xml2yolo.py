@@ -78,6 +78,8 @@ def process(args: argparse, images: list) -> None:
         # 如果没有object -> 定义为负样本
         if not objects:
             RECORDER["background"] += 1
+            label_path = Path(args.target_path).joinpath(image.stem + '.txt')
+            label_path.touch()
             pbar.update()
             continue
         

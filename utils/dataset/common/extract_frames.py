@@ -4,6 +4,7 @@ import cv2
 from tqdm import tqdm
 import tabulate
 import threading
+from pathlib import Path
 sys.path.append(os.getcwd())
 from utils.generator import create_folder
 from utils.outer import print_arguments
@@ -23,14 +24,17 @@ xprint(__doc__, color='blue', bold=True, hl="=", hl_num=2)
 
 
 """============================ 需要修改的地方 ==================================="""
-videos_dir = ""  # 原始视频路径
-frames_save_path = ""  # 保存图片文件夹名称
+videos_dir = "/mnt/d/znv/项目/出差任务/20240908~20240913-河南郑州移动出差/数据准备-20240916/视频数据/原始视频/抽烟2"  # 原始视频路径
 
-sample_interval = 15  # 视频采样间隔，越小采样率越高 -> 60 | 30 | 15 | 10
+
+sample_interval = 30  # 视频采样间隔，越小采样率越高 -> 60 | 30 | 15 | 10
 video_default_fps = 25  # [optional] 视频默认的帧数
 
-save_img_format = '.png'  # 保存的图片格式(.jpg | .png)
+save_img_format = '.jpg'  # 保存的图片格式(.jpg | .png)
 """==============================================================================="""
+
+videos_dir: Path = Path(videos_dir)
+frames_save_path = videos_dir.joinpath('extracted_frames')  # 保存图片文件夹名称
 
 # 得到存放所有视频的list
 video_list = get_files(videos_dir, extension=VideoFormat, path_style=None)
@@ -66,13 +70,13 @@ def calculate_video_duration(video_list):
 total_duration = calculate_video_duration(video_list)
 
 print_arguments(
-    视频路径为=videos_dir,
+    视频路径为=videos_dir.__str__(),
     视频个数=count_video_num,
     视频默认帧率=video_default_fps,
     采样间隔=f"{sample_interval} fps",
     视频总时长=f"{total_duration:.2f} 秒",
     预计数量=f"{total_duration * (video_default_fps / sample_interval):.2f} 秒",
-    图片保存路径为=frames_save_path,
+    图片保存路径为=frames_save_path.__str__(),
     保存的图片格式为=save_img_format,
     wait=True
 )

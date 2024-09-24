@@ -41,7 +41,7 @@ def process(args: argparse, images: list) -> None:
         image = Path(image)  # 为了方便IDE给出代码提示
 
         # 更新进度条显示信息
-        pbar.set_description(f"Processing {colorstr(image.name):<30s}")
+        # pbar.set_description(f"Processing {colorstr(image.name):<30s}")
 
         RECORDER["touch"] += 1
         

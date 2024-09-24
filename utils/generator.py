@@ -2,6 +2,7 @@ import os
 import sys
 import random
 from typing import Union
+from pathlib import Path
 
 sys.path.append(os.getcwd())
 from utils.outer import xprint
@@ -34,7 +35,7 @@ def create_folder(dst_dir, increment=False, verbose=False) -> str:
         
     - ⚠️  WARNING：当开启 `increment=True`，请注意接受该函数的返回值，因为 `dst_dir` 已被更新
     """
-    assert isinstance(dst_dir, str), f"❌  请传入一个文件夹路径而非 {dst_dir}!"
+    assert isinstance(dst_dir, (str, Path)), f"❌  请传入一个文件夹路径而非 {dst_dir}!"
 
     # 如果文件夹存在
     if os.path.exists(dst_dir):
