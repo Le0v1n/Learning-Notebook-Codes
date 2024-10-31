@@ -21,6 +21,7 @@ VOC2012-5000
 
 # ---------- 排除冗余的文件夹 ----------
 __pycache__
+Papers
 logs
 ObjectDetection/YOLO-World/code/*.json
 # ----------------------------------------
