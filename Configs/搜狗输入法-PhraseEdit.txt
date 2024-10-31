@@ -92,6 +92,7 @@ eye,5=👀
 ffgexm,5===========  ==========
 ffgexm,4=----------  ----------
 ffgexm,3=>>>>>>  >>>>>>
+ffgexm,2=<<<<<<  >>>>>>
 file,5=📑
 file,4=🖺
 film,5=🎞️
@@ -103,6 +104,7 @@ folder,5=📂
 font,5=<font color='red'><b></b></font>
 font,4=<font color='red'></font>
 glasses,5=👓
+gsxi,5=🎉
 hehe,5=🙂
 ho,5=🔥
 hojm,5=🚀
@@ -175,6 +177,7 @@ tupm,5=
     width=90%>
     <center></center>
 </div></br>
+u,5=<u></u>
 ualz,5=⏳
 ualz,4=⌛
 ugqi,5=😠
@@ -192,6 +195,8 @@ xkqq,5=🪐
 xkxk,5=🌟
 xn,5=🤣
 xn,4=😄
+xn,3=😊
+xn,2=😂
 xniz,5=🤡
 xx,5=↓
 ybyt,5=🎵
@@ -213,6 +218,15 @@ Python,5=
 ```python
 
 ```
+QA,3=
+🤔 𝑸𝒖𝒆𝒔𝒕𝒊𝒐𝒏：
+
+🥳 𝑨𝒏𝒔𝒘𝒆𝒓：
+
+QA,2=
+<kbd>🤔 𝑸𝒖𝒆𝒔𝒕𝒊𝒐𝒏</kbd>：
+
+<kbd>🥳 𝑨𝒏𝒔𝒘𝒆𝒓</kbd>：
 QA,3=
 🤔 𝑸𝒖𝒆𝒔𝒕𝒊𝒐𝒏：
 🥳 𝑨𝒏𝒔𝒘𝒆𝒓：
