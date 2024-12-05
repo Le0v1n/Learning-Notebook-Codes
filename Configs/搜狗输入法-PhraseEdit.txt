@@ -60,6 +60,9 @@ bjuz,5=🛠️
 bofh,5=▶️
 bold,5=<b></b>
 book,5=📖
+br,5=<br></br>
+br,4=<br>
+br,6=</br>
 camera,5=📷
 camera,4=📸
 center,5=
@@ -105,6 +108,7 @@ font,5=<font color='red'><b></b></font>
 font,4=<font color='red'></font>
 glasses,5=👓
 gsxi,5=🎉
+guvh,5=👏
 hehe,5=🙂
 ho,5=🔥
 hojm,5=🚀
@@ -133,6 +137,7 @@ jbvi,5=🚫
 jkgc,5=⚠️
 jkgc,4=☣️
 jkgc,3=☢️
+jkli,5=🫡
 juvs,5=
 <div align=center>
 </div>
@@ -203,6 +208,7 @@ ybyt,5=🎵
 yjjk,5=👀
 yjjk,4=👓
 yz,5=→
+zj,5=👍
 zo,5=←
 CPP,5=
 ```cpp
