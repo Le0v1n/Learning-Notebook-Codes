@@ -56,6 +56,7 @@ bash,5=
 
 ```
 bdyj,5=🙄
+bee,5=🐝
 bjuz,5=🛠️
 bofh,5=▶️
 bold,5=<b></b>
@@ -63,12 +64,15 @@ book,5=📖
 br,5=<br></br>
 br,4=<br>
 br,6=</br>
+bug,5=🐛
+butterfly,5=🦋
 camera,5=📷
 camera,4=📸
 center,5=
 <div align=center>
 
 </div>
+check,5=☑️
 co,5=×
 co,4=❌
 config,5=🛠️
@@ -90,28 +94,65 @@ dollar,5=💲
 dv,5=√
 dv,4=✔️
 dv,3=✅
+dypd,5=🔰
 email,5=📧
 eye,5=👀
-ffgexm,5===========  ==========
-ffgexm,4=----------  ----------
+ffgexm,4===========  ==========
+ffgexm,5=----------  ----------
 ffgexm,3=>>>>>>  >>>>>>
 ffgexm,2=<<<<<<  >>>>>>
+fgx,5=----------  ----------
+fgx,4===========  ==========
+fgx,2=<<<<<<  >>>>>>
+fgx,3=>>>>>>  >>>>>>
 file,5=📑
 file,4=🖺
 film,5=🎞️
 film,4=🎥
 film,3=🎬
+find,5=find  -type f | wc -l
 fire,5=🔥
+fix,5=🛠️
 fjbdyj,5=🙄
+fjyi,4=
+请将下面内容翻译为中文：
+```python
+
+```
+fjyi,5=请将下面内容翻译为中文：
+fjyi,6=
+请将下面内容翻译为中文：
+```
+
+```
 folder,5=📂
 font,5=<font color='red'><b></b></font>
 font,4=<font color='red'></font>
+fy,5=请将下面内容翻译为中文：
+fy,4=
+请将下面内容翻译为中文：
+```python
+
+```
+fy,6=
+请将下面内容翻译为中文：
+```
+
+```
+gjxp,5=🙏
 glasses,5=👓
 gsxi,5=🎉
 guvh,5=👏
+half,5=
+<center class="half">
+    <img src= width=49%/>
+    <img src= width=49%/>
+</center>
 hehe,5=🙂
 ho,5=🔥
 hojm,5=🚀
+hudp,5=🦋
+hvxk,5=☄️
 hxji,5=🤪
 img,5=
 <a></a>
@@ -129,6 +170,7 @@ insertimg,5=
     <img src=
     width=100%>
 </div>
+iszi,5=🐛
 java,5=
 ```java
 
@@ -137,6 +179,7 @@ jbvi,5=🚫
 jkgc,5=⚠️
 jkgc,4=☣️
 jkgc,3=☢️
+jkgc,6=🚨
 jkli,5=🫡
 juvs,5=
 <div align=center>
@@ -145,11 +188,17 @@ kbd,5=<kbd></kbd>
 kohc,5=〔〕
 kuxn,5=😂
 kuxn,4=😅
+lajits,5=🗑️
 lifhti,5=🧊
 lqmhxk,5=✡️
+mifg,5=🐝
 music,5=🎵
 nerd,5=🤓
 new,5=🆕
+nv,5=watch -n 1 nvidia-smi
+nv,4=nvidia-smi
+nvidia,5=watch -n 1 nvidia-smi
+nvidia,4=nvidia-smi
 ok,5=👌
 ok,4=🆗
 option,4=⌥
@@ -173,7 +222,13 @@ sh,5=↑
 shit,5=💩
 soon,5=🔜
 stop,5=⏹️
+tiui,4=🔔
+tiui,5=🚨
+tixk,4=🔔
+tixk,5=🚨
 tkvi,5=⏹️
+tm,5=™️
+tm,4=™
 tsinghua,5=https://pypi.tuna.tsinghua.edu.cn/simple
 tupm,5=
 <a></a>
@@ -186,12 +241,21 @@ u,5=<u></u>
 ualz,5=⏳
 ualz,4=⌛
 ugqi,5=😠
+ujdm,5=⚡
+ultu,5=
+<center class="half">
+    <img src= width=49%/>
+    <img src= width=49%/>
+</center>
 uu,5=📖
 uzji,5=📱
 vfjk,5=😲
 vgfu,5=±
 vidk,5=🔝
 vuyi,5=❗
+wf,5=🤔
+wf,4=❓
+wf,6=❔
 wfjmjx,5=📂
 wjj,5=📂
 worry,5=😟
@@ -203,10 +267,15 @@ xn,4=😄
 xn,3=😊
 xn,2=😂
 xniz,5=🤡
+xpxp,5=🙏
+xqfu,5=🛠️
 xx,5=↓
 ybyt,5=🎵
 yjjk,5=👀
 yjjk,4=👓
+yy,5=☁️
+yy,4=🌥️
+yy,6=⛅
 yz,5=→
 zj,5=👍
 zo,5=←
