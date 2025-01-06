@@ -1,12 +1,12 @@
 import os
 import sys
+sys.path.append(os.getcwd())
 import tqdm
 import datetime
 from utils.items import ImageFormat, LabelFormat
 
 from utils.outer import print_arguments
 
-sys.path.append(os.getcwd())
 from utils.outer import xprint
 from utils.items import VideoFormat
 
@@ -21,14 +21,14 @@ xprint(__doc__, color='blue', bold=True, hl="=", hl_num=2)
 
 
 """============================ 需要修改的地方 ==================================="""
-src_path = 'utils/dataset/EXAMPLE_FOLDER'  # 目标文件夹路径
-file_type = ImageFormat  # 重命名文件的文件类型
+src_path = 'test-Le0v1n/湖南电信智维-现场老鼠视频'  # 目标文件夹路径
+file_type = '.mp4'  # 重命名文件的文件类型
 
 # -------------------重命名相关------------------
 retain_previous_name = False  # 是否保留之前的名称
-new_name = "Le0v1n"  # retain_previous_name为False时生效
+new_name = "HuNanDX-mouse"  # retain_previous_name为False时生效
 use_date_stamp = True  # 是否使用时间戳 -> e.g. 20231123
-comment = "X"  # 备注
+comment = ""  # 备注
 use_serial_numbering = True  # 是否使用顺序的编号 -> 1, 2, 3, 4, 5, 6, ...
 start_number = 1  # 从编号几开始 -> e.g. 1: 从 0001 开始编号
 numbering_placeholder = 4  # 编号保留的占位 -> e.g. 0001, 0002, 0003, ...

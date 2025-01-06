@@ -1,6 +1,8 @@
+import argparse
 import contextlib
 import logging
 import datetime
+import json
 from pathlib import Path
 from typing import Union
 from PIL import ExifTags, Image
@@ -8,7 +10,6 @@ from lxml import etree
 from datetime import timedelta
 from prettytable import PrettyTable
 from xml.dom.minidom import Document
-import json
 
 
 IMAGE_TYPE = ['.png', '.jpg', '.jpeg', '.bmp', 'webp']
@@ -887,3 +888,61 @@ class LabelVerifier():
 
         # 输出结果
         return self.msgs
+    
+
+def max_length_in_iterable(iterable):
+    max_length = 0
+    for item in iterable:
+        try:
+            # Try to get the length of the item
+            length = len(item)
+        except TypeError:
+            # If item does not have length (e.g., an integer), skip
+            length = 0
+        # Update max_length if the current item's length is greater
+        if length > max_length:
+            max_length = length
+    return max_length
+
+
+def show_args(*args, **kwargs) -> PrettyTable:
+    ptab = PrettyTable(field_names=['Arguments', 'Value'])
+    ptab.align = 'l'
+    interval_num = 5
+    
+    for v in args:
+        if isinstance(v, argparse.Namespace):
+            for _k, _v in vars(v).items():
+                if _k in ('classes', 'class', 'cls'):
+                    if _v:
+                        ptab.add_row(['🌟 The number of classes', len(_v)])
+                        for group_idx, i in enumerate(range(0, len(_v), interval_num), start=1):
+                            # 检查是否到达列表末尾
+                            if i + interval_num <= len(_v):
+                                three_elements = _v[i:i+interval_num]
+                            else:
+                                three_elements = _v[i:]
+                            ptab.add_row([f"{_k} [part{group_idx}({i + 1}~{i + len(three_elements)})]", three_elements])
+                    else:  # args.classes == None
+                        ptab.add_row([_k, _v])
+                elif isinstance(_v, (list, tuple, set)):  # 解决长度问题
+                    max_length = max_length_in_iterable(_v)
+                    if max_length > 20:
+                        for i, elem in enumerate(_v, start=1):
+                            ptab.add_row([f"{_k}-{i}", elem])
+                    else:
+                        ptab.add_row([_k, _v])
+                else:
+                    ptab.add_row([_k, _v])
+        else:
+            ptab.add_row(['', v])
+
+    for k, v in kwargs.items():
+        if isinstance(v, argparse.Namespace):
+            for _k, _v in vars(v).items():
+                ptab.add_row([_k, _v])
+        else:
+            ptab.add_row([k, v])
+    return ptab
+
+

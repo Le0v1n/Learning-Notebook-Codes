@@ -24,11 +24,11 @@ xprint(__doc__, color='blue', bold=True, hl="=", hl_num=2)
 
 
 """============================ 需要修改的地方 ==================================="""
-videos_dir = "/mnt/d/znv/项目/出差任务/20240908~20240913-河南郑州移动出差/数据准备-20240916/视频数据/原始视频/抽烟2"  # 原始视频路径
+videos_dir = "/mnt/d/znv/项目/数据处理/杭州联通数据/ch0005/smoking_test@HangzhouChinaUnicom"
 
 
 sample_interval = 30  # 视频采样间隔，越小采样率越高 -> 60 | 30 | 15 | 10
-video_default_fps = 25  # [optional] 视频默认的帧数
+video_default_fps = 60  # [optional] 视频默认的帧数
 
 save_img_format = '.jpg'  # 保存的图片格式(.jpg | .png)
 """==============================================================================="""
@@ -75,7 +75,7 @@ print_arguments(
     视频默认帧率=video_default_fps,
     采样间隔=f"{sample_interval} fps",
     视频总时长=f"{total_duration:.2f} 秒",
-    预计数量=f"{total_duration * (video_default_fps / sample_interval):.2f} 秒",
+    预计数量=f"{total_duration * (video_default_fps / sample_interval):.2f}",
     图片保存路径为=frames_save_path.__str__(),
     保存的图片格式为=save_img_format,
     wait=True
