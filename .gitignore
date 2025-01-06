@@ -24,4 +24,5 @@ __pycache__
 Papers
 logs
 ObjectDetection/YOLO-World/code/*.json
+CLIP
 # ----------------------------------------
