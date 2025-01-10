@@ -1,6 +1,4 @@
-# Learning-Notebook-Codes
-
-## TODO
+# TODO
 
 - [ ] ⏳ 学习mermaid语法
 - [ ] ⏳ 学习Ultralytics项目源码
@@ -20,7 +18,7 @@
 - [x] ❌ <font color='blue'>20240131</font> 更新 `rich` 相关文档
 
 
-## 1. 简介
+# 1. 简介
 
 这个仓库存放了我日常的笔记。
 + 如果你有疑问请[联系我](#contactme) :smile:
@@ -30,13 +28,13 @@
 1. [CSDN 博客-Le0v1n](https://blog.csdn.net/weixin_44878336)：这里有很多有趣的内容
 2. [Bilibili 视频-L0o0v1N](https://space.bilibili.com/13187602)：这里有视频版内容
 
-## 2. 仓库结构
+# 2. 仓库结构
 
-### 〔1〕root --> 根目录
+## 〔1〕root --> 根目录
 
 1. [CSDN封面(480x270).drawio](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/CSDN%E5%B0%81%E9%9D%A2(480x270).drawio): 制作 CSDN 博客的封面
    
-### 〔2〕Writing --> 与写作相关的
+## 〔2〕Writing --> 与写作相关的
 
 1. [LaTex公式常用语法.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/LaTex-and-Markdown/LaTex%E5%85%AC%E5%BC%8F%E5%B8%B8%E7%94%A8%E8%AF%AD%E6%B3%95.md): 与 LaTex 公式相关的常用命令
 2. [Markdown常用语法.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/LaTex-and-Markdown/Markdown%E5%B8%B8%E7%94%A8%E8%AF%AD%E6%B3%95.md): 与 Markdown 相关的常用命令
@@ -44,13 +42,13 @@
 4. [Office/论文模板.docx](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Writing/Office/%E8%AE%BA%E6%96%87%E6%A8%A1%E6%9D%BF.docx)：大论文模板
 5. [计算机视觉领域（CV）论文中“圈加”、“圈乘”和“点乘”的解释以及代码示例.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Writing/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89%E9%A2%86%E5%9F%9F%EF%BC%88CV%EF%BC%89%E8%AE%BA%E6%96%87%E4%B8%AD%E2%80%9C%E5%9C%88%E5%8A%A0%E2%80%9D%E3%80%81%E2%80%9C%E5%9C%88%E4%B9%98%E2%80%9D%E5%92%8C%E2%80%9C%E7%82%B9%E4%B9%98%E2%80%9D%E7%9A%84%E8%A7%A3%E9%87%8A%E4%BB%A5%E5%8F%8A%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B.md)：⊕、⊙、⊗ 的解释 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/124501040)
 
-### 〔3〕Dataset --> 数据集 (用于演示的小数据集)
+## 〔3〕Dataset --> 数据集 (用于演示的小数据集)
 1. [📂VOCdevkit](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Datasets/VOCdevkit): Lite 版 VOC 2012 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/124540069)
 2. [📂Web](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Datasets/Web): 用于 ONNX 推理测试的数据集
 3. [📂coco128](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Datasets/coco128): 修改后的 COCO 128 数据集（128 张训练图片 + 128 张验证图片）
 4. [📂imagenet_classes_indices.csv](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Datasets/imagenet_classes_indices.csv): ImageNet 数据集 1000 个类别的中英文翻译
 
-### 〔4〕Linux --> Linux 相关
+## 〔4〕Linux --> Linux 相关
 1. [配置Anaconda.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Linux/%E9%85%8D%E7%BD%AEAnaconda.md): 如何在 Linux 中下载、安装、配置 Anaconda | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133967607)
 2. [Linux常用命令.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Linux/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4.md): Linux 常用命令
 3. [📂shell](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Linux/shell): 存放《shell脚本基础语法（.sh ./ sh bash source shell）》的内容 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/136059003)
@@ -59,7 +57,7 @@
    2. [〔Part2〕Git进阶教程：分支](https://blog.csdn.net/weixin_44878336/article/details/122481847)
    3. [〔Part3〕Git实战教程：本地仓库、远程仓库](https://blog.csdn.net/weixin_44878336/article/details/122484071)
 
-### 〔5〕ObjectDetection --> 目标检测相关
+## 〔5〕ObjectDetection --> 目标检测相关
 1. [📂YOLOv5](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/ObjectDetection/YOLOv5/): YOLOv5 相关内容
    1. [📂codes](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/ObjectDetection/YOLOv5/codes): 存放 YOLOv5 相关代码
    2. [YOLOv5-参数说明.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ObjectDetection/YOLOv5/YOLOv5-%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E.md)
@@ -75,7 +73,7 @@
 3. [📂YOLOv8](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/ObjectDetection/YOLOv8): YOLOv8相关内容
    1. [YOLOv8初学者手册.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ObjectDetection/YOLOv8/YOLOv8%E5%88%9D%E5%AD%A6%E8%80%85%E6%89%8B%E5%86%8C.md): 相关笔记
 
-### 〔6〕Python --> Python 相关
+## 〔6〕Python --> Python 相关
 1. [📂Registry](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Python/Registry): Python注册机制相关内容
    1. [Registry.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/Registry/Registry.md): Python 的注册机制 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133887655)
 2. [📂Rich-美化（尚未完成）](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/Python/Rich-%E7%BE%8E%E5%8C%96): Rich库的相关内容
@@ -92,31 +90,31 @@
 13. [Python中的Python中的pathlib和Path](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/Python%E4%B8%AD%E7%9A%84pathlib%E5%92%8CPath.md) | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/139494419)
 14. [argparse常用语法解析与示例代码](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Python/argparse/argparse.md) | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/140094639)
 
-### 〔7〕PyTorch --> PyTorch 相关
+## 〔7〕PyTorch --> PyTorch 相关
 1. [mmcv_Registry.md](https://github.com/Le0v1n/Learning-Notebook-Codes/tree/main/PyTorch/mmcv_Registry): MMCV 的注册机制（:hammer_and_wrench:尚未完成）
 2. [PyTorch的hook函数.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/PyTorch/PyTorch%E7%9A%84hook%E5%87%BD%E6%95%B0%EF%BC%88register_hook%E3%80%81register_forward_hook%E3%80%81register_backward_hook%E3%80%81register_forward_pre_hook%EF%BC%89.md): PyTorch 的 hook 函数 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133859089)
 3. [AMP训练.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/PyTorch/AMP%E8%AE%AD%E7%BB%83.md) | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/136071842)
 
-### 〔8〕SemanticSegmentation --> 语义分割相关
+## 〔8〕SemanticSegmentation --> 语义分割相关
 1. [PP-LiteSeg.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/SemanticSegmentation/PP-LiteSeg.md)：PP-LiteSeg（百度飞桨）| [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/132211283) | 🎥对应视频：[1.理论](https://www.bilibili.com/video/BV1Xr4y1d7Y2)；[2.代码](https://www.bilibili.com/video/BV18p4y1P7dG)
 
-### 〔9〕Windows --> Windows 相关
+## 〔9〕Windows --> Windows 相关
  1.  [KMS.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/KMS%20Host.md)：KMS 主机配置 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133934093)
  2.  [WSL2.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/WSL2.md)：WSL2 的安装 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133967607)
  3.  [自用软件 + VSCode插件集合（持续更新...）.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Windows/%E8%87%AA%E7%94%A8%E8%BD%AF%E4%BB%B6%20%2B%20VSCode%E6%8F%92%E4%BB%B6%E9%9B%86%E5%90%88%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0...%EF%BC%89.md) | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/133272093)
 
-### 〔10〕常用配置文件 --> 存放常用的配置文件
+## 〔10〕常用配置文件 --> 存放常用的配置文件
 1.  [PotPlayerMini64.reg](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/PotPlayerMini64.reg): PotPlayer 配置文件
 2.  [JPEGView.ini](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/JPEGView.ini): JPEGView 配置文件
 3.  [KeyMap.txt.default](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/KeyMap.txt.default): JPEGView 配置文件（键盘映射）
 4.  [搜狗输入法-PhraseEdit.txt](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/%E6%90%9C%E7%8B%97%E8%BE%93%E5%85%A5%E6%B3%95-PhraseEdit.txt): 搜狗输入法自定义短语配置文件
 
-### 〔11〕ONNX --> ONNX 相关
+## 〔11〕ONNX --> ONNX 相关
 1.  [onnx基础.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ONNX/onnx%E5%9F%BA%E7%A1%80.md)：onnx 基础知识 | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/135820896)
 2.  [PyTorch2ONNX-分类模型.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/ONNX/PyTorch2ONNX-%E5%88%86%E7%B1%BB%E6%A8%A1%E5%9E%8B.md)：PyTorch2ONNX 实战（分类网络） | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/135915692)
 3. 📂 code：存放相关代码
 
-### 〔12〕Classification --> 分类（Backbone）相关
+## 〔12〕Classification --> 分类（Backbone）相关
 
 1.  [MnasNet.md](https://github.com/Le0v1n/Learning-Notebook-Codes/blob/main/Classification/MnasNet.md)：介绍一下 MnasNet | [📚对应博客](https://blog.csdn.net/weixin_44878336/article/details/124449479)
 
