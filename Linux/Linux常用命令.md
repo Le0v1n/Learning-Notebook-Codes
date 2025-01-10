@@ -217,9 +217,9 @@ passwd
 
 # Git相关
 
-## 1. 账号相关
+## 账号相关
 
-### 1. 生成SSH-Key
+### 生成SSH-Key
 
 ```bash
 # 查看ssh目录是否存在
@@ -237,13 +237,13 @@ cat id_rsa.pub
 # 在GitHub中添加公钥，URL为：https://github.com/settings/keys
 ```
 
-### 2. 克隆仓库
+### 克隆仓库
 
 ```bash
 git clone <ssh链接>
 ```
 
-### 3. 创建账户
+### 创建账户
 
 在`git commit`的时候可能会碰到问题 “please tell me who you are”，输入下面的命令：
 
@@ -255,7 +255,7 @@ git config --global user.email "you@example.com"
 git config --global user.name "Your Name"
 ```
 
-### 4. git push需要输入账号密码
+### git push需要输入账号密码
 
 运行以下命令将远程仓库地址更新为 SSH 地址：
 
@@ -263,9 +263,32 @@ git config --global user.name "Your Name"
 git remote set-url origin git@github.com:<用户名>/<仓库名>.git
 ```
 
-## 2. 命令
+## 命令
 
-### 1. branch分支相关
+### 查看远程地址
+
+```bash
+git remote -v
+```
+
+### 更新仓库名称
+
+```bash
+# 查看当前链接的远程
+(base) leovin@Laptop-Genisys:/mnt/d/GitHub/KnowledgeHub$ git remote -v
+origin  git@github.com:Le0v1n/Learning-Notebook-Codes.git (fetch)
+origin  git@github.com:Le0v1n/Learning-Notebook-Codes.git (push)
+
+# 重新设置远程地址
+(base) leovin@Laptop-Genisys:/mnt/d/GitHub/KnowledgeHub$ git remote set-url origin https://github.com/Le0v1n/KnowledgeHub.git
+
+# 再次验证
+(base) leovin@Laptop-Genisys:/mnt/d/GitHub/KnowledgeHub$ git remote -v
+origin  https://github.com/Le0v1n/KnowledgeHub.git (fetch)
+origin  https://github.com/Le0v1n/KnowledgeHub.git (push)
+```
+
+### branch分支相关
 
 ```bash
 # 列出所有分支
@@ -281,7 +304,7 @@ git branch -d <branch_name>
 git checkout <branch_name>
 ```
 
-### 2. 提交代码
+### 提交代码
 
 ```bash
 # 将文件或文件夹添加到暂存区
