@@ -323,6 +323,31 @@ CUDA_VISIBLE_DEVICES=0,1 python temp.py
 
 ## Python
 
+### monkey patches
+
+猴子补丁（Monkey Patching）是一种在运行时动态修改代码的技术，通常用于添加功能或修复缺陷。它允许开发者在不修改源代码的情况下，通过替换或修改模块、类、函数或对象的属性来改变程序的行为。猴子补丁通常用于以下场景：
+
+1. **测试和调试**：在测试过程中，可以用来模拟或替换某些难以测试的部分。
+2. **修复第三方库的bug**：当第三方库存在bug时，可以在运行时修改相关类或方法来修复问题。
+3. **提升性能**：例如，将性能较低的库或模块替换为性能更高的替代品。
+
+然而，猴子补丁也存在一些潜在风险，如破坏封装、导致代码难以理解和维护等。因此，开发者在使用猴子补丁时需要谨慎权衡其利弊。
+
+下面是Ultralytics项目在`ultralytics/utils/__init__.py`代码中的示例：
+
+```python
+# Apply monkey patches
+from ultralytics.utils.patches import imread, imshow, imwrite, torch_load, torch_save
+
+torch.load = torch_load
+torch.save = torch_save
+if WINDOWS:
+    # Apply cv2 patches for non-ASCII and non-UTF characters in image paths
+    cv2.imread, cv2.imwrite, cv2.imshow = imread, imwrite, imshow
+```
+
+
+
 ### warnings.filterwarnings()
 
 `warnings.filterwarnings()` 是 Python 标准库 `warnings` 模块中的一个函数，用于控制哪些类别的警告应该被显示，哪些应该被忽略。这个函数允许开发者在运行时动态地控制警告信息的过滤，而不是在代码中静态地定义。
