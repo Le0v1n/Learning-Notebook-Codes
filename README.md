@@ -2,7 +2,9 @@
 
 ## TODO
 
-- [ ] 📔 <font color='blue'>20240605</font> 重新撰写脚本：
+- [ ] ⏳ 学习mermaid语法
+- [ ] ⏳ 学习Ultralytics项目源码
+- [x] ✅ <font color='blue'>20240605</font> 重新撰写脚本：
   - [x] `xml2yolo.py`  @20240607
   - [x] `yolo2xml.py`  @20240608
   - [x] `yolo2json.py` @20240609
@@ -11,11 +13,11 @@
   - [x] `json2xml.py`  @20240609
   - [x] `create_empty_labels.py`  @20240609：可以为指定图片创建负样本（支持`.txt`、`.xml`、`.json`）
   - [x] `collect_negative_samples.py`  @20240610：[1] 检查图片和标签，挑选出所有的负样本（图片+标签）；[2] 挑选出没有对应图片的标签
-  - [ ] `create_dataset`    创建指定格式的数据集（VOC2007、VOC2012、MS COCO）
-- [ ] 📔 <font color='blue'>20240306</font> 学习 `glob`
-- [ ] 📔 <font color='blue'>20240220</font> 编写 `知识蒸馏` 相关文档
-- [ ] 📔 <font color='blue'>20240131</font> 编写 `tqdm.rich` 相关文档
-- [ ] 📔 <font color='blue'>20240131</font> 更新 `rich` 相关文档
+  - [x] `create_dataset`    创建指定格式的数据集（VOC2007、VOC2012、MS COCO）
+- [x] ✅ <font color='blue'>20240306</font> 学习 `glob`
+- [x] ❌ <font color='blue'>20240220</font> 编写 `知识蒸馏` 相关文档
+- [x] ❌ <font color='blue'>20240131</font> 编写 `tqdm.rich` 相关文档
+- [x] ❌ <font color='blue'>20240131</font> 更新 `rich` 相关文档
 
 
 ## 1. 简介
