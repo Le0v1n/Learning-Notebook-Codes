@@ -286,6 +286,9 @@ origin  git@github.com:Le0v1n/Learning-Notebook-Codes.git (push)
 (base) leovin@Laptop-Genisys:/mnt/d/GitHub/KnowledgeHub$ git remote -v
 origin  https://github.com/Le0v1n/KnowledgeHub.git (fetch)
 origin  https://github.com/Le0v1n/KnowledgeHub.git (push)
+
+# 防止git push需要输入密码
+git remote set-url origin git@github.com:Le0v1n/KnowledgeHub.git
 ```
 
 ### branch分支相关
