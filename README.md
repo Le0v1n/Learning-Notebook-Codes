@@ -1,22 +1,42 @@
 # TODO
 
-- [ ] ⏳ 学习mermaid语法
-- [ ] ⏳ 学习Ultralytics项目源码
-- [x] ✅ <font color='blue'>20240605</font> 重新撰写脚本：
-  - [x] `xml2yolo.py`  @20240607
-  - [x] `yolo2xml.py`  @20240608
-  - [x] `yolo2json.py` @20240609
-  - [x] `json2yolo.py` @20240609
-  - [x] `xml2json.py`  @20240609
-  - [x] `json2xml.py`  @20240609
-  - [x] `create_empty_labels.py`  @20240609：可以为指定图片创建负样本（支持`.txt`、`.xml`、`.json`）
-  - [x] `collect_negative_samples.py`  @20240610：[1] 检查图片和标签，挑选出所有的负样本（图片+标签）；[2] 挑选出没有对应图片的标签
-  - [x] `create_dataset`    创建指定格式的数据集（VOC2007、VOC2012、MS COCO）
-- [x] ✅ <font color='blue'>20240306</font> 学习 `glob`
-- [x] ❌ <font color='blue'>20240220</font> 编写 `知识蒸馏` 相关文档
-- [x] ❌ <font color='blue'>20240131</font> 编写 `tqdm.rich` 相关文档
-- [x] ❌ <font color='blue'>20240131</font> 更新 `rich` 相关文档
+```mermaid
+gantt
+	dateFormat YY-MM-DD
+	axisFormat %y.%m.%d
+	% excludes weekends  # 不排除周末
+	title 2025计划与记录
 
+	Ultralytics源码学习: active, a1, 25-01-01, 4w
+	✅学习mermaid语法: done, 2025-01-07, 1w
+	LLM原理学习: active, a2, after a1, 2w
+	LLM源码学习: active, a3, after a2, 1w
+	
+```
+
+```mermaid
+gantt
+	dateFormat YY-MM-DD
+	axisFormat %y.%m.%d
+	% excludes weekends  # 不排除周末
+	title 2024计划与记录
+	
+	section 文档编写
+	❌更新rich相关文档: active, a1, 24-01-31, 1w
+	❌编写tqdm.rich相关文档: active, a2, 24-01-31, 1w
+	❌编写知识蒸馏文档: active, a3, 24-02-20, 1w
+	✅学习glob: done, 2024/03/06, 1w
+	
+	section 脚本编写
+	✅xml2yolo.py: done, 2024-06-05, 2024-06-07
+	✅yolo2xml.py: done, 2024-06-05, 2024-06-08
+	✅yolo2json.py: done, 2024-06-05, 2024-06-09
+	✅json2yolo.py: done, 2024-06-05, 2024-06-09
+	✅xml2json.py: done, 2024-06-05, 2024-06-09
+	✅json2xml.py: done, 2024-06-05, 2024-06-09
+	✅create_empty_labels.py: done, 2024-06-05, 2024-06-09
+	✅create_dataset.py: done, 2024-06-05, 2024-06-09
+```
 
 # 1. 简介
 
