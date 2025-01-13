@@ -1,5 +1,7 @@
 # 计划与完成情况
 
+## 2025
+
 ```mermaid
 gantt
 	dateFormat YY-MM-DD
@@ -9,10 +11,18 @@ gantt
 
 	Ultralytics源码学习: active, a1, 25-01-01, 4w
 	✅学习mermaid语法: done, 2025-01-07, 1w
-	LLM原理学习: active, a2, after a1, 2w
-	LLM源码学习: active, a3, after a2, 1w
-	
+	BLIP2学习: active, a2, after a1, 2w
+	GLIP学习: active, a3, after a2, 1w
+	GroundDINO学习: active, a4, after a3, 1w
+	Lora学习: active, a5, after a4, 1w
+	QLora学习: active, a6, after a5, 1w
+	Bubo-GPT学习: active, a7, after a6, 1w
+	LLM多卡推理学习: active, a8, after a7, 1w
+	FlashAttention学习: active, a9, after a8, 1w
+	HuggingFace库学习: active, a10, after a9, 1w
 ```
+
+## 2024
 
 ```mermaid
 gantt
