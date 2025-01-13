@@ -2,6 +2,30 @@
 
 # 内置命令相关
 
+## 查看日志
+
+```bash
+# 从头查看日志（不会实时监控）
+head -n 100 log/xxx.log
+
+# 从头查看日志（实时监控）
+head -n 100 -f log/xxx.log
+
+# 从尾查看日志（不会实时监控）
+tail -n 100 log/xxx.log
+
+# 从尾查看日志（实时监控）
+tail -n 100 -f log/xxx.log
+
+# 从末尾的开头查看日志（不会实时监控）
+tail -n 100 log/xxx.log | head -n 50
+
+# 从末尾的开头查看日志（实时监控）
+tail -n 100 -f log/xxx.log | head -n 50
+```
+
+> ⚠️ 如果不声明`-n`，默认为`-n 10`
+
 ## 查看当前路径
 
 ```bash
