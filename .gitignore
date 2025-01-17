@@ -26,3 +26,7 @@ logs
 ObjectDetection/YOLO-World/code/*.json
 CLIP
 # ----------------------------------------
+
+# ---------- 排除其他文件夹 ----------
+ObjectDetection/Ultralytics/code/Ultralytics-8.3.8-Le0v1n
+# ----------------------------------------
