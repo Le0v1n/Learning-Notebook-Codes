@@ -12,6 +12,7 @@ gantt
 	Ultralytics源码学习: active, a1, 25-01-01, 4w
 	✅学习mermaid语法: done, 2025-01-07, 1w
 	✅学习vim语法: done, 2025-01-13, 1d
+	✅学习VSCode注释高亮语法: done, 2025-01-17, 1d
 	BLIP2学习: active, a2, after a1, 2w
 	GLIP学习: active, a3, after a2, 1w
 	GroundDINO学习: active, a4, after a3, 1w
